@@ -17,6 +17,7 @@
   const STORAGE_MODE_KEY = "rallyflag_mode";
 
   const NAV_ITEMS = [
+    { label: "This Week", href: "this-week.html", group: "thisweek" },
     { label: "Guides", href: "guides.html", group: "guides" },
     { label: "Puzzle Helper", href: "puzzle-helper.html", group: "puzzlehelper" },
     { label: "Distortions", href: "distortions.html", group: "distortions" },
