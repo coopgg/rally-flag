@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raid Guide — Rally Flag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  section{ max-width:760px; margin:44px auto 0; padding:0 24px 90px; }
+  .block{ padding:26px 28px; margin-bottom:16px; }
+  .block-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.14em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:14px;
+  }
+  .block-empty{ font-size:14px; color:var(--text-dimmer); font-style:italic; }
+  .block p{ font-size:14px; color:var(--text-dim); line-height:1.6; }
+
+  .encounter-block{ padding:18px 0; border-top:1px solid var(--panel-border); }
+  .encounter-block:first-child{ border-top:none; padding-top:0; }
+  .encounter-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .encounter-title{ font-family:'Oswald', sans-serif; font-weight:600; font-size:16px; color:var(--text); }
+  .encounter-field{ margin-bottom:10px; font-size:13.5px; color:var(--text-dim); line-height:1.55; }
+  .encounter-field-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em;
+    color:var(--accent); text-transform:uppercase; margin-right:6px;
+  }
+  .encounter-steps{ margin:8px 0 12px; padding-left:20px; }
+  .encounter-steps li{ font-size:13.5px; color:var(--text-dim); line-height:1.55; margin-bottom:6px; }
+  .encounter-wipe{
+    margin-top:12px; padding:12px 14px;
+    background:var(--accent-dim); border-left:3px solid var(--accent);
+    font-size:13px; color:var(--text-dim); line-height:1.55;
+  }
+  .encounter-wipe-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em;
+    color:var(--accent-bright); text-transform:uppercase; display:block; margin-bottom:4px;
+  }
+  em.term-buff{ font-style:italic; color:#7fd8a8; }
+  em.term-debuff{ font-style:italic; color:#e88a95; }
+  .encounter-map{ margin:14px 0; }
+  .encounter-map img{
+    width:100%; display:block; border-radius:4px; border:1px solid var(--panel-border);
+  }
+  .encounter-advanced{ margin-top:12px; }
+  .encounter-advanced-toggle{
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer; user-select:none;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.06em;
+    color:var(--text-dim); background:none; border:1px dashed var(--panel-border);
+    padding:6px 12px; border-radius:999px; text-transform:uppercase;
+    transition: all 0.15s ease;
+  }
+  .encounter-advanced-toggle:hover{ color:var(--accent-bright); border-color:var(--accent); }
+  .encounter-advanced-toggle .caret{ display:inline-block; transition: transform 0.18s ease; }
+  .encounter-advanced.open .encounter-advanced-toggle .caret{ transform:rotate(90deg); }
+  .encounter-advanced-body{ display:none; margin-top:10px; padding:12px 14px; background:var(--panel); border-left:3px solid var(--text-dimmer); }
+  .encounter-advanced.open .encounter-advanced-body{ display:block; }
+  .encounter-advanced-body p{ font-size:13px; color:var(--text-dim); line-height:1.55; margin:0 0 8px; }
+  .encounter-advanced-body p:last-child{ margin-bottom:0; }
+  .encounter-map-credit{
+    margin-top:6px; font-size:11.5px; font-family:'JetBrains Mono', monospace;
+    color:var(--text-dimmer);
+  }
+  .encounter-map-credit a{ color:var(--text-dim); }
+  .encounter-map-credit a:hover{ color:var(--accent-bright); }
+  .encounter-map-label{
+    margin-top:6px; font-size:11.5px; font-family:'JetBrains Mono', monospace;
+    color:var(--accent); text-transform:uppercase; letter-spacing:0.06em;
+  }
+
+  .puzzle-helper-link{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:14px 16px; background:var(--accent-dim); border:1px solid var(--panel-border);
+    border-radius:4px; text-decoration:none; transition:border-color 0.15s ease;
+  }
+  .puzzle-helper-link:hover{ border-color:var(--accent); }
+  .puzzle-helper-link-title{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--text); }
+  .puzzle-helper-link-sub{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .puzzle-helper-link-arrow{ font-family:'JetBrains Mono', monospace; color:var(--accent-bright); flex-shrink:0; }
+  .encounter-puzzle-helper-link{ margin-top:14px; }
+
+  .encounter-row{
+    display:flex; gap:14px; padding:14px 0; border-top:1px solid var(--panel-border);
+  }
+  .encounter-row:first-child{ border-top:none; }
+  .encounter-num{
+    flex-shrink:0; width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-dim); color:var(--accent-bright); border:1px solid var(--panel-border);
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700;
+  }
+  .encounter-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; color:var(--text); margin-bottom:4px; }
+  .encounter-notes{ font-size:13px; color:var(--text-dim); }
+
+  .set-links{ display:flex; flex-wrap:wrap; gap:8px; }
+  .set-link{
+    font-size:12.5px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
+    text-decoration:none; background:var(--accent-dim); border:1px solid var(--panel-border);
+    padding:8px 14px; border-radius:999px; transition: border-color 0.2s ease;
+  }
+  .set-link:hover, .set-link:focus-visible{ border-color:var(--accent-bright); }
+
+  .not-found{ text-align:center; padding:60px 20px; color:var(--text-dim); }
+</style>
+</head>
+<body data-nav-group="guides">
+
+<div id="site-nav"></div>
+
+<div class="hero" id="hero">
+  <div class="eyebrow">Destiny 2 · Raid Guide</div>
+  <h1 class="title" id="raid-title">—</h1>
+  <div class="subnav">
+    <a href="guides.html">Overview</a>
+    <a href="raids.html" class="active">Raids</a>
+    <a href="dungeons.html">Dungeons</a>
+  </div>
+</div>
+
+<section id="content"></section>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+</footer>
+
+<script src="assets/game-terms.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/raids-data.js"></script>
+<script src="assets/sets-data.js"></script>
+<script>
+(function(){
+  const slug = new URLSearchParams(window.location.search).get("slug");
+  const raid = window.RaidsData.RAIDS.find(r => r.slug === slug);
+  const content = document.getElementById("content");
+
+  if (!raid){
+    document.getElementById("raid-title").textContent = "Raid not found";
+    content.innerHTML = '<div class="not-found panel-card block">Head back to <a href="raids.html">the raid list</a> and pick one from there.</div>';
+    return;
+  }
+
+  document.title = raid.name + " — Rally Flag";
+  document.getElementById("raid-title").textContent = raid.name;
+
+  const setsBySlug = {};
+  window.ArmorSetsData.SETS.forEach(s => setsBySlug[s.slug] = s);
+
+  const setLinksHtml = raid.armorSlugs.map(slug => {
+    const set = setsBySlug[slug];
+    const label = set ? set.name : slug;
+    return '<a class="set-link" href="armor-set-bonuses.html?highlight=' + slug + '">' + label + ' \u2192</a>';
+  }).join("");
+
+  const encountersHtml = raid.encounters.length
+    ? raid.encounters.map((e, i) => {
+        if (e.objective || e.steps){
+          const hl = window.GameTerms.highlight;
+          const stepsHtml = (e.steps || []).map(s => '<li>' + hl(s) + '</li>').join("");
+          const mapHtml = e.mapImage
+            ? '<div class="encounter-map"><img src="' + e.mapImage.url + '" alt="' + e.name + ' encounter map" loading="lazy">' +
+              '<div class="encounter-map-credit">' + e.mapImage.credit +
+              (e.mapImage.creditUrl ? ' — <a href="' + e.mapImage.creditUrl + '" target="_blank" rel="noopener">original post</a>' : '') +
+              '</div></div>'
+            : '';
+          const secondaryMapHtml = e.secondaryMapImage
+            ? '<div class="encounter-map"><img src="' + e.secondaryMapImage.url + '" alt="' + e.name + ' encounter map variant" loading="lazy">' +
+              '<div class="encounter-map-credit">' + e.secondaryMapImage.credit +
+              (e.secondaryMapImage.creditUrl ? ' — <a href="' + e.secondaryMapImage.creditUrl + '" target="_blank" rel="noopener">original post</a>' : '') +
+              '</div></div>'
+            : '';
+          const strategyHtml = e.strategyImage
+            ? '<div class="encounter-map"><img src="' + e.strategyImage.url + '" alt="' + e.name + ' strategy diagram" loading="lazy">' +
+              (e.strategyImage.label ? '<div class="encounter-map-label">' + e.strategyImage.label + '</div>' : '') +
+              '</div>'
+            : '';
+          const advancedHtml = (e.advancedTactics && e.advancedTactics.length)
+            ? '<div class="encounter-advanced">' +
+                '<button class="encounter-advanced-toggle" type="button"><span class="caret">\u25b8</span> Advanced tactic (optional)</button>' +
+                '<div class="encounter-advanced-body">' +
+                  e.advancedTactics.map(t => '<p>' + hl(t) + '</p>').join("") +
+                '</div>' +
+              '</div>'
+            : '';
+          const encounterPuzzleHelperHtml = e.puzzleHelper
+            ? '<a class="block panel-card puzzle-helper-link encounter-puzzle-helper-link" href="puzzle-helper.html?tool=' + e.puzzleHelper.slug + '">' +
+                '<div>' +
+                  '<div class="puzzle-helper-link-title">' + e.puzzleHelper.title + '</div>' +
+                  '<div class="puzzle-helper-link-sub">' + e.puzzleHelper.blurb + '</div>' +
+                '</div>' +
+                '<div class="puzzle-helper-link-arrow">Open tool &rarr;</div>' +
+              '</a>'
+            : '';
+          return '<div class="encounter-block">' +
+            '<div class="encounter-head"><div class="encounter-num">' + (i + 1) + '</div><div class="encounter-title">' + e.name + '</div></div>' +
+            (e.objective ? '<div class="encounter-field"><span class="encounter-field-label">Objective</span>' + hl(e.objective) + '</div>' : '') +
+            (e.roles ? '<div class="encounter-field"><span class="encounter-field-label">Roles</span>' + hl(e.roles) + '</div>' : '') +
+            mapHtml +
+            secondaryMapHtml +
+            strategyHtml +
+            (stepsHtml ? '<ol class="encounter-steps">' + stepsHtml + '</ol>' : '') +
+            (e.wipe ? '<div class="encounter-wipe"><span class="encounter-wipe-label">What wipes you</span>' + hl(e.wipe) + '</div>' : '') +
+            advancedHtml +
+            encounterPuzzleHelperHtml +
+          '</div>';
+        }
+        // Fallback for older, simpler encounter entries
+        return '<div class="encounter-row"><div class="encounter-num">' + (i + 1) + '</div>' +
+          '<div><div class="encounter-name">' + e.name + '</div><div class="encounter-notes">' + (e.notes || "") + '</div></div></div>';
+      }).join("")
+    : '<div class="block-empty">Encounter notes coming soon.</div>';
+
+  const puzzleHelperHtml = raid.puzzleHelper
+    ? '<a class="block panel-card puzzle-helper-link" href="puzzle-helper.html?tool=' + raid.puzzleHelper.slug + '">' +
+        '<div>' +
+          '<div class="puzzle-helper-link-title">' + raid.puzzleHelper.title + '</div>' +
+          '<div class="puzzle-helper-link-sub">' + raid.puzzleHelper.blurb + '</div>' +
+        '</div>' +
+        '<div class="puzzle-helper-link-arrow">Open tool &rarr;</div>' +
+      '</a>'
+    : '';
+
+  content.innerHTML =
+    '<div class="block panel-card">' +
+      '<div class="block-label">Overview</div>' +
+      (raid.summary ? '<p>' + raid.summary + '</p>' : '<div class="block-empty">Overview coming soon.</div>') +
+    '</div>' +
+    '<div class="block panel-card">' +
+      '<div class="block-label">Encounters</div>' +
+      encountersHtml +
+    '</div>' +
+    puzzleHelperHtml +
+    '<div class="block panel-card">' +
+      '<div class="block-label">Armor Sets From This Raid</div>' +
+      '<div class="set-links">' + setLinksHtml + '</div>' +
+    '</div>';
+
+  content.querySelectorAll(".encounter-advanced-toggle").forEach(btn => {
+    btn.addEventListener("click", () => btn.closest(".encounter-advanced").classList.toggle("open"));
+  });
+})();
+</script>
+</body>
+</html>

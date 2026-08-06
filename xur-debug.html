@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Xur / Milestones API Spike Test — Rally Flag (throwaway, not linked in nav)</title>
+<style>
+  body{ background:#0b0700; color:#e8e2d4; font-family:'JetBrains Mono', monospace; font-size:12px; padding:24px; }
+  h1{ font-size:16px; color:#f0a830; }
+  h2{ font-size:13px; color:#f0a830; margin-top:32px; border-bottom:1px solid #333; padding-bottom:6px; }
+  .status{ padding:4px 8px; border-radius:3px; display:inline-block; margin-bottom:10px; }
+  .status.ok{ background:#1a3a1a; color:#7fd97f; }
+  .status.err{ background:#3a1a1a; color:#ff8080; }
+  .status.pending{ background:#333; color:#aaa; }
+  pre{ background:#1a1508; padding:14px; overflow:auto; max-height:500px; white-space:pre-wrap; word-break:break-all; border:1px solid #333; }
+  .note{ color:#999; margin-bottom:6px; }
+</style>
+</head>
+<body>
+
+<h1>Rally Flag — API Spike Test (throwaway, do not link in nav)</h1>
+<p class="note">This page calls the live Bungie API directly from your browser using assets/api-keys.js, exactly like god-rolls.html does. It exists only to see what GetPublicMilestones and GetPublicVendors actually return right now. Delete it once we're done.</p>
+
+<h2>1. GetPublicMilestones</h2>
+<div id="milestones-status" class="status pending">pending...</div>
+<pre id="milestones-out">(waiting)</pre>
+
+<h2>2. GetPublicVendors (looking specifically for Xur — vendor hash 2190858386)</h2>
+<div id="vendors-status" class="status pending">pending...</div>
+<pre id="vendors-out">(waiting)</pre>
+
+<script src="assets/api-keys.js"></script>
+<script>
+(function(){
+  const BUNGIE_ROOT = "https://www.bungie.net";
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const XUR_VENDOR_HASH = "2190858386"; // Xur's known vendor definition hash
+
+  function setStatus(elId, ok, text){
+    const el = document.getElementById(elId);
+    el.className = "status " + (ok ? "ok" : "err");
+    el.textContent = text;
+  }
+
+  async function callBungie(path){
+    const res = await fetch(BUNGIE_ROOT + path, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch(e){ json = null; }
+    return { httpStatus: res.status, ok: res.ok, json, raw: text };
+  }
+
+  // --- 1. Milestones ---
+  callBungie("/Platform/Destiny2/Milestones/").then(result => {
+    const out = document.getElementById("milestones-out");
+    if (!result.ok){
+      setStatus("milestones-status", false, "HTTP " + result.httpStatus + " — request failed");
+      out.textContent = result.raw.slice(0, 3000);
+      return;
+    }
+    const errorCode = result.json && result.json.ErrorCode;
+    if (errorCode !== 1){
+      setStatus("milestones-status", false, "Bungie ErrorCode " + errorCode + ": " + (result.json && result.json.Message));
+      out.textContent = JSON.stringify(result.json, null, 2).slice(0, 3000);
+      return;
+    }
+    const milestones = result.json.Response || {};
+    const count = Object.keys(milestones).length;
+    setStatus("milestones-status", true, "OK — " + count + " milestone(s) returned");
+    // Show just the hashes + top-level shape of the first few, since the full
+    // dump is huge and we mainly need to confirm the shape + hashes exist.
+    const sample = {};
+    Object.keys(milestones).slice(0, 8).forEach(k => { sample[k] = milestones[k]; });
+    out.textContent = JSON.stringify(sample, null, 2);
+  }).catch(err => {
+    setStatus("milestones-status", false, "Fetch threw: " + err.message);
+    document.getElementById("milestones-out").textContent = String(err);
+  });
+
+  // --- 2. Public Vendors ---
+  callBungie("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales").then(result => {
+    const out = document.getElementById("vendors-out");
+    if (!result.ok){
+      setStatus("vendors-status", false, "HTTP " + result.httpStatus + " — request failed");
+      out.textContent = result.raw.slice(0, 3000);
+      return;
+    }
+    const errorCode = result.json && result.json.ErrorCode;
+    if (errorCode !== 1){
+      setStatus("vendors-status", false, "Bungie ErrorCode " + errorCode + ": " + (result.json && result.json.Message));
+      out.textContent = JSON.stringify(result.json, null, 2).slice(0, 3000);
+      return;
+    }
+    const response = result.json.Response || {};
+    const vendorHashes = Object.keys((response.vendors && response.vendors.data) || {});
+    const hasXur = vendorHashes.indexOf(XUR_VENDOR_HASH) !== -1;
+    setStatus("vendors-status", hasXur, hasXur
+      ? "OK — Xur (" + XUR_VENDOR_HASH + ") IS present in public vendor data"
+      : "Public vendor data returned, but Xur is NOT in it (vendors present: " + vendorHashes.join(", ") + ")");
+    const dump = {
+      vendorHashesPresent: vendorHashes,
+      xurVendorEntry: response.vendors && response.vendors.data && response.vendors.data[XUR_VENDOR_HASH],
+      xurSaleItems: response.sales && response.sales.data && response.sales.data[XUR_VENDOR_HASH],
+      xurCategories: response.categories && response.categories.data && response.categories.data[XUR_VENDOR_HASH]
+    };
+    out.textContent = JSON.stringify(dump, null, 2);
+  }).catch(err => {
+    setStatus("vendors-status", false, "Fetch threw: " + err.message);
+    document.getElementById("vendors-out").textContent = String(err);
+  });
+})();
+</script>
+
+</body>
+</html>

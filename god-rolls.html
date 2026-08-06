@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>God Rolls — Rally Flag</title>
+<meta name="description" content="The weapon rolls that have earned a permanent spot in our loadouts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  .disclosure{
+    max-width:720px; margin:32px auto 0; padding:16px 20px;
+    font-size:13px; color:var(--text-dim); line-height:1.6;
+    text-align:center;
+  }
+  .disclosure strong{ color:var(--accent-bright); }
+
+  section{ max-width:1000px; margin:40px auto 0; padding:0 24px 90px; }
+  .weapon-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));
+    gap:16px;
+  }
+  .weapon-card{ padding:24px; }
+  .weapon-head{ display:flex; gap:16px; align-items:flex-start; margin-bottom:16px; }
+  .weapon-icon{
+    position:relative; flex-shrink:0; width:56px; height:56px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-dim); border:1px solid var(--panel-border);
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:16px;
+    color:var(--accent-bright); overflow:hidden;
+  }
+  .weapon-icon img{ width:100%; height:100%; object-fit:cover; }
+  .weapon-icon-watermark{
+    position:absolute; bottom:3px; right:3px; width:16px; height:16px;
+    object-fit:contain; pointer-events:none;
+  }
+  .weapon-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:19px; color:var(--text); }
+  .weapon-name.tier-exotic{ color:#ceae33; }
+  .weapon-name.tier-legendary{ color:#a892d1; }
+  .weapon-name-row{ display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
+  .weapon-badges{ display:flex; align-items:center; gap:6px; }
+  .alt-roll-btn{
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:5px 12px; cursor:pointer; margin-top:10px; transition: all 0.15s ease;
+  }
+  .alt-roll-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
+  .alt-roll-btn.showing-alt{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); }
+  .element-badge{
+    width:18px; height:18px; border-radius:50%; flex-shrink:0;
+    background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .element-badge img{ width:12px; height:12px; object-fit:contain; }
+  .ammo-badge{
+    width:18px; height:18px; border-radius:50%; flex-shrink:0;
+    background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
+  }
+  .ammo-badge img{ width:12px; height:12px; object-fit:contain; }
+  .weapon-meta{ font-size:11.5px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); }
+  .weapon-flavor{ font-size:12.5px; color:var(--text-dim); font-style:italic; margin-top:8px; line-height:1.5; }
+
+  .perk-section{ margin-top:16px; padding-top:16px; border-top:1px solid var(--panel-border); }
+  .perk-section-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:10px;
+  }
+  .perk-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+  .perk-chip{
+    display:flex; align-items:center; gap:8px;
+    background:var(--accent-dim); border:1px solid var(--panel-border);
+    border-radius:999px; padding:6px 12px 6px 6px;
+  }
+  .perk-chip-icon{
+    width:22px; height:22px; border-radius:50%; overflow:hidden;
+    background:rgba(0,0,0,0.55); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:9px; color:#fff;
+  }
+  .perk-chip-icon img{ width:100%; height:100%; object-fit:cover; }
+  .perk-chip-name{ font-size:12px; font-family:'Inter', sans-serif; font-weight:500; color:var(--accent-bright); }
+
+  .weapon-note{ margin-top:14px; font-size:13px; color:var(--text-dim); line-height:1.55; }
+
+  .pairing-section{ margin-top:16px; padding-top:16px; border-top:1px solid var(--panel-border); }
+  .pairing-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:8px;
+  }
+  .pairing-note{ font-size:13px; color:var(--text-dim); line-height:1.55; }
+  .pairing-armor-link{
+    display:inline-block; margin-top:8px; font-size:12px; font-family:'JetBrains Mono', monospace;
+    color:var(--accent-bright); text-decoration:none; border-bottom:1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+  .pairing-armor-link:hover, .pairing-armor-link:focus-visible{ border-color:var(--accent-bright); }
+
+  .cross-link{
+    display:inline-block; margin-top:14px; font-size:12px; font-family:'JetBrains Mono', monospace;
+    color:var(--text-dim); text-decoration:none; border-bottom:1px solid transparent;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .cross-link:hover, .cross-link:focus-visible{ color:var(--accent-bright); border-color:var(--accent-bright); }
+
+  .light-gg-link{
+    display:block; margin-top:12px; font-size:11px; font-family:'JetBrains Mono', monospace;
+    color:var(--text-dimmer); text-decoration:none;
+  }
+  .light-gg-link:hover{ color:var(--text-dim); }
+
+  .load-error{ font-size:12px; color:var(--text-dimmer); font-style:italic; }
+
+  /* ---------- Search / filter toolbar ---------- */
+  .controls{ max-width:1000px; margin:40px auto 0; padding:0 24px; }
+  .search-row{ display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+  .search-box{ flex:1; position:relative; }
+  .search-box input{
+    width:100%; background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--text); font-family:'Inter', sans-serif; font-size:14px;
+    padding:14px 16px; border-radius:10px; outline:none;
+    transition: border-color 0.2s ease;
+  }
+  .search-box input:focus{ border-color:var(--accent); }
+  .search-box input::placeholder{ color:var(--text-dimmer); }
+  .result-count{
+    font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .result-count strong{ color:var(--accent-bright); }
+
+  .filter-row{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
+    padding:12px 0; border-top:1px solid var(--panel-border);
+  }
+  .filter-row:last-child{ border-bottom:1px solid var(--panel-border); margin-bottom:30px; }
+  .filter-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
+  }
+  .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
+    color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
+    padding:7px 14px; border-radius:999px; cursor:pointer;
+    transition: all 0.15s ease; user-select:none;
+  }
+  .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
+  .chip.on{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); font-weight:600; }
+  .clear-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
+    background:none; border:none; cursor:pointer; text-decoration:underline;
+    text-underline-offset:2px; margin-left:auto;
+  }
+  .clear-btn:hover{ color:var(--accent-bright); }
+  .no-results{
+    text-align:center; padding:50px 20px; color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace; font-size:14px;
+  }
+  @media (max-width:640px){
+    .search-row{ flex-direction:column; align-items:stretch; }
+    .result-count{ text-align:center; }
+    .filter-label{ min-width:100%; margin-bottom:2px; }
+  }
+</style>
+</head>
+<body data-nav-group="godrolls">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">God Rolls</h1>
+  <p class="subtitle">What we actually run and why — the rolls that have earned a permanent spot in our loadouts.</p>
+</div>
+
+<div class="disclosure panel-card">
+  These aren't community popularity stats. What's here is <strong>our own personal picks from our own playtime</strong>: the rolls we've actually chased and use, not a claim that they're the objectively best for everyone. Your mileage — and your subclass, your playstyle, your favorite activity — may vary.
+</div>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search weapons or perks…" autocomplete="off">
+    </div>
+    <div class="result-count"><strong id="count-num">—</strong> weapons</div>
+  </div>
+
+  <div class="filter-row">
+    <div class="filter-label">Ammo</div>
+    <div class="chip-group" id="ammo-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Weapon Type</div>
+    <div class="chip-group" id="type-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Affinity</div>
+    <div class="chip-group" id="element-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Build</div>
+    <div class="chip-group" id="build-chips"></div>
+    <button class="clear-btn" id="clear-btn">Clear filters</button>
+  </div>
+</div>
+
+<section>
+  <div class="weapon-grid" id="weapon-grid"></div>
+</section>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+</footer>
+
+<script src="assets/nav.js"></script>
+<script src="assets/god-rolls-data.js"></script>
+<script src="assets/api-keys.js"></script>
+<script>
+(function(){
+  // ---------------------------------------------------------------
+  // The API key lives in assets/api-keys.js now — not here. That
+  // file never gets rebuilt/reset, so the key sticks around across
+  // future edits to this page's logic. Edit the key there, not here.
+  // ---------------------------------------------------------------
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const BUNGIE_ROOT = "https://www.bungie.net";
+
+  function monogram(name){
+    const words = name.replace(/[^A-Za-z0-9 ]/g, " ").trim().split(/\s+/);
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+
+  // Real Destiny ammo-type icons (Primary/Special/Heavy), inline as data URIs.
+  const AMMO_TYPE_ICONS = {
+    Primary: "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1434 1024'%3e%3cpath fill='white' d='M716.8 243.2c38.4 0 89.6 128 89.6 179.2H627.2c0-51.2 51.2-179.2 89.6-179.2M627.2 473.6h179.2V768H627.2z'/%3e%3cpath fill='white' d='M179.2 1024 0 844.8V179.2L179.2 0h1075.2l179.2 179.2v665.6L1254.4 1024zm51.2-128h972.8l102.4-102.4V230.4L1203.2 128H230.4L128 230.4v563.2z'/%3e%3c/svg%3e",
+    Special: "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1434 1024'%3e%3cpath fill='%237af48b' d='M588.8 243.2c38.4 0 89.6 128 89.6 179.2H499.2c0-51.2 51.2-179.2 89.6-179.2M499.2 473.6h179.2V768H499.2zM844.8 243.2c38.4 0 89.6 128 89.6 179.2H755.2c0-51.2 51.2-179.2 89.6-179.2M755.2 473.6h179.2V768H755.2z'/%3e%3cpath fill='%237af48b' d='M179.2 1024 0 844.8V179.2L179.2 0h1075.2l179.2 179.2v665.6L1254.4 1024zm51.2-128h972.8l102.4-102.4V230.4L1203.2 128H230.4L128 230.4v563.2z'/%3e%3c/svg%3e",
+    Heavy: "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1434 1024'%3e%3cpath fill='%23b286ff' d='M460.8 243.2c38.4 0 89.6 128 89.6 179.2H371.2c0-51.2 51.2-179.2 89.6-179.2M716.8 243.2c38.4 0 89.6 128 89.6 179.2H627.2c0-51.2 51.2-179.2 89.6-179.2M972.8 243.2c38.4 0 89.6 128 89.6 179.2H883.2c0-51.2 51.2-179.2 89.6-179.2M371.2 473.6h179.2V768H371.2zM627.2 473.6h179.2V768H627.2zM883.2 473.6h179.2V768H883.2z'/%3e%3cpath fill='%23b286ff' d='M179.2 1024 0 844.8V179.2L179.2 0h1075.2l179.2 179.2v665.6L1254.4 1024zm51.2-128h972.8l102.4-102.4V230.4L1203.2 128H230.4L128 230.4v563.2z'/%3e%3c/svg%3e"
+  };
+
+  // Fetch a single Destiny item's definition by its exact hash.
+  // This is the same core endpoint every major Destiny fan tool relies
+  // on (DIM, Braytech, D2Foundry) — far more stable than the fuzzy
+  // name-search endpoint this page used to depend on.
+  async function fetchItemByHash(hash){
+    const url = BUNGIE_ROOT + "/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/";
+    const res = await fetch(url, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    if (!res.ok) throw new Error("Item fetch failed for hash " + hash + ": " + res.status);
+    const data = await res.json();
+    const def = data?.Response;
+    if (!def) throw new Error("No definition returned for hash " + hash);
+
+    // Ammo type is a simple enum already in the response: 1 Primary, 2 Special, 3 Heavy.
+    const AMMO_TYPE_NAMES = { 1: "Primary", 2: "Special", 3: "Heavy" };
+    const ammoType = def.equippingBlock?.ammoType || 0;
+
+    return {
+      name: def.displayProperties?.name || ("Unknown (" + hash + ")"),
+      icon: def.displayProperties?.icon ? BUNGIE_ROOT + def.displayProperties.icon : null,
+      watermark: def.iconWatermark ? BUNGIE_ROOT + def.iconWatermark : null,
+      typeName: def.itemTypeDisplayName || "",
+      tierName: def.inventory?.tierTypeName || "",
+      flavorText: def.flavorText || "",
+      ammoTypeName: AMMO_TYPE_NAMES[ammoType] || null,
+      damageTypeHash: def.damageTypeHashes && def.damageTypeHashes.length ? def.damageTypeHashes[0] : null
+    };
+  }
+
+  const damageTypeCache = {};
+
+  // Fetch the real damage type (element) name + icon for a weapon,
+  // using the hash the weapon's own item definition points to —
+  // no guessing or hardcoded enum mapping needed.
+  async function fetchDamageType(hash){
+    if (damageTypeCache[hash] !== undefined) return damageTypeCache[hash];
+    const url = BUNGIE_ROOT + "/Platform/Destiny2/Manifest/DestinyDamageTypeDefinition/" + hash + "/";
+    const res = await fetch(url, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    if (!res.ok) throw new Error("Damage type fetch failed for hash " + hash + ": " + res.status);
+    const data = await res.json();
+    const def = data?.Response;
+    const result = def ? {
+      name: def.displayProperties?.name || null,
+      icon: def.displayProperties?.icon ? BUNGIE_ROOT + def.displayProperties.icon : null
+    } : null;
+    damageTypeCache[hash] = result;
+    return result;
+  }
+
+  function renderShell(weapon){
+    const card = document.createElement("div");
+    card.className = "weapon-card panel-card";
+    card.id = "weapon-" + weapon.slug;
+    card.dataset.builds = (weapon.buildTags || []).join("|");
+
+    card.innerHTML =
+      '<div class="weapon-head">' +
+        '<div class="weapon-icon" id="icon-' + weapon.slug + '">' + monogram(weapon.name) + '</div>' +
+        '<div><div class="weapon-name-row">' +
+          '<div class="weapon-name" id="name-' + weapon.slug + '">' + weapon.name + '</div>' +
+          '<span class="weapon-badges" id="badges-' + weapon.slug + '"></span>' +
+        '</div>' +
+        '<div class="weapon-meta" id="meta-' + weapon.slug + '">Loading live data\u2026</div></div>' +
+      '</div>' +
+      '<div class="weapon-flavor" id="flavor-' + weapon.slug + '"></div>' +
+      '<div class="perk-section">' +
+        '<div class="perk-section-label">Recommended Perks</div>' +
+        '<div class="perk-grid" id="perks-' + weapon.slug + '"><span class="load-error">Loading\u2026</span></div>' +
+      '</div>' +
+      (weapon.altRoll ? '<button class="alt-roll-btn" id="alt-btn-' + weapon.slug + '" type="button">Show alternate roll</button>' : '') +
+      (weapon.note ? '<div class="weapon-note">' + weapon.note + '</div>' : '') +
+      (weapon.pairing ? '<div class="pairing-section">' +
+        '<div class="pairing-label">Pairs Well With</div>' +
+        '<div class="pairing-note">' + weapon.pairing.note + '</div>' +
+        (weapon.pairing.armorSlug ? '<a class="pairing-armor-link" href="armor-set-bonuses.html?highlight=' + weapon.pairing.armorSlug + '">View armor set \u2192</a>' : '') +
+      '</div>' : '') +
+      (weapon.raidSlug ? '<a class="cross-link" href="raid-guide.html?slug=' + weapon.raidSlug + '">View the raid guide it drops from \u2192</a>' : '') +
+      (weapon.dungeonSlug ? '<a class="cross-link" href="dungeon-guide.html?slug=' + weapon.dungeonSlug + '">View the dungeon guide it drops from \u2192</a>' : '') +
+      '<a class="light-gg-link" id="lightgg-' + weapon.slug + '" href="https://www.light.gg/db/items/' + weapon.itemHash + '/" target="_blank" rel="noopener">View on light.gg \u2192</a>';
+
+    return card;
+  }
+
+  async function hydrateWeapon(weapon, roll){
+    roll = roll || { itemHash: weapon.itemHash, perkHashes: weapon.perkHashes };
+    const card = document.getElementById("weapon-" + weapon.slug);
+
+    const lightGgEl = document.getElementById("lightgg-" + weapon.slug);
+    if (lightGgEl) lightGgEl.href = "https://www.light.gg/db/items/" + roll.itemHash + "/";
+
+    // Weapon itself
+    try {
+      const item = await fetchItemByHash(roll.itemHash);
+      const nameEl = document.getElementById("name-" + weapon.slug);
+      nameEl.textContent = item.name;
+      nameEl.classList.remove("tier-exotic", "tier-legendary");
+      if (item.tierName === "Exotic") nameEl.classList.add("tier-exotic");
+      else if (item.tierName === "Legendary") nameEl.classList.add("tier-legendary");
+
+      document.getElementById("meta-" + weapon.slug).textContent =
+        (item.tierName ? item.tierName + " " : "") + item.typeName;
+      card.dataset.type = item.typeName || "";
+      card.dataset.ammo = item.ammoTypeName || "";
+      if (item.flavorText){
+        document.getElementById("flavor-" + weapon.slug).textContent = "\u201c" + item.flavorText + "\u201d";
+      }
+      if (item.icon){
+        let iconHtml = '<img src="' + item.icon + '" alt="' + item.name + '">';
+        if (item.watermark){
+          iconHtml += '<img class="weapon-icon-watermark" src="' + item.watermark + '" alt="Season watermark">';
+        }
+        document.getElementById("icon-" + weapon.slug).innerHTML = iconHtml;
+      }
+
+      const badgesEl = document.getElementById("badges-" + weapon.slug);
+      let badgesHtml = "";
+      if (item.damageTypeHash){
+        try {
+          const dmgType = await fetchDamageType(item.damageTypeHash);
+          if (dmgType && dmgType.icon){
+            badgesHtml += '<span class="element-badge" title="' + dmgType.name + '"><img src="' + dmgType.icon + '" alt="' + dmgType.name + '"></span>';
+          }
+          card.dataset.element = (dmgType && dmgType.name) || "";
+        } catch (err){
+          console.warn("Damage type fetch failed for " + weapon.name + ":", err.message);
+        }
+      }
+      if (item.ammoTypeName && AMMO_TYPE_ICONS[item.ammoTypeName]){
+        badgesHtml += '<span class="ammo-badge" title="' + item.ammoTypeName + '"><img src="' + AMMO_TYPE_ICONS[item.ammoTypeName] + '" alt="' + item.ammoTypeName + '"></span>';
+      }
+      badgesEl.innerHTML = badgesHtml;
+    } catch (err){
+      console.warn("Weapon fetch failed for " + weapon.name + ":", err.message);
+      document.getElementById("meta-" + weapon.slug).innerHTML = '<span class="load-error">Live data unavailable \u2014 check console</span>';
+    }
+
+    // Perks, fetched independently so one bad hash doesn't hide the rest
+    const perksEl = document.getElementById("perks-" + weapon.slug);
+    const results = await Promise.allSettled(roll.perkHashes.map(fetchItemByHash));
+    const chipsHtml = results.map((r, i) => {
+      if (r.status === "fulfilled"){
+        const p = r.value;
+        return '<div class="perk-chip">' +
+          '<div class="perk-chip-icon">' + (p.icon ? '<img src="' + p.icon + '" alt="' + p.name + '">' : '?') + '</div>' +
+          '<div class="perk-chip-name">' + p.name + '</div>' +
+        '</div>';
+      }
+      console.warn("Perk fetch failed for " + weapon.name + " (hash " + roll.perkHashes[i] + "):", r.reason.message);
+      return '<div class="perk-chip"><div class="perk-chip-name">Hash ' + roll.perkHashes[i] + ' failed \u2014 check console</div></div>';
+    }).join("");
+    perksEl.innerHTML = chipsHtml;
+  }
+
+  function wireAltRollToggle(weapon){
+    if (!weapon.altRoll) return;
+    const btn = document.getElementById("alt-btn-" + weapon.slug);
+    let showingAlt = false;
+    btn.addEventListener("click", async () => {
+      showingAlt = !showingAlt;
+      btn.classList.toggle("showing-alt", showingAlt);
+      btn.textContent = showingAlt ? "Show original roll" : "Show alternate roll";
+      btn.disabled = true;
+      await hydrateWeapon(weapon, showingAlt ? weapon.altRoll : null);
+      btn.disabled = false;
+    });
+  }
+
+  async function render(){
+    const grid = document.getElementById("weapon-grid");
+    grid.innerHTML = "";
+    for (const weapon of window.GodRollsData.WEAPONS){
+      grid.appendChild(renderShell(weapon));
+      await hydrateWeapon(weapon); // one weapon (and its perks) at a time, not all at once
+      wireAltRollToggle(weapon);
+    }
+    initFilters();
+  }
+
+  // ---------------------------------------------------------------
+  // Filtering: ammo/type/element come from live-fetched data, so
+  // these chip groups are only built after every weapon has finished
+  // loading. Build tags are static (from god-rolls-data.js) and are
+  // available immediately, but built here too for one consistent pass.
+  // ---------------------------------------------------------------
+  const filterState = { search: "", ammo: new Set(), type: new Set(), element: new Set(), build: new Set() };
+
+  function buildChipGroup(containerId, values, stateSet){
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    values.forEach(value => {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.textContent = value;
+      chip.addEventListener("click", () => {
+        if (stateSet.has(value)) stateSet.delete(value); else stateSet.add(value);
+        chip.classList.toggle("on");
+        applyFilters();
+      });
+      container.appendChild(chip);
+    });
+  }
+
+  function initFilters(){
+    const cards = Array.from(document.querySelectorAll(".weapon-card"));
+    const ammoValues = [...new Set(cards.map(c => c.dataset.ammo).filter(Boolean))].sort();
+    const typeValues = [...new Set(cards.map(c => c.dataset.type).filter(Boolean))].sort();
+    const elementValues = [...new Set(cards.map(c => c.dataset.element).filter(Boolean))].sort();
+    const buildValues = [...new Set(window.GodRollsData.WEAPONS.flatMap(w => w.buildTags || []))].sort();
+
+    buildChipGroup("ammo-chips", ammoValues, filterState.ammo);
+    buildChipGroup("type-chips", typeValues, filterState.type);
+    buildChipGroup("element-chips", elementValues, filterState.element);
+    buildChipGroup("build-chips", buildValues, filterState.build);
+
+    document.getElementById("search-input").addEventListener("input", e => {
+      filterState.search = e.target.value.trim().toLowerCase();
+      applyFilters();
+    });
+    document.getElementById("clear-btn").addEventListener("click", () => {
+      filterState.search = "";
+      filterState.ammo.clear();
+      filterState.type.clear();
+      filterState.element.clear();
+      filterState.build.clear();
+      document.getElementById("search-input").value = "";
+      document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+      applyFilters();
+    });
+
+    applyFilters();
+  }
+
+  function cardMatches(card){
+    if (filterState.ammo.size && !filterState.ammo.has(card.dataset.ammo)) return false;
+    if (filterState.type.size && !filterState.type.has(card.dataset.type)) return false;
+    if (filterState.element.size && !filterState.element.has(card.dataset.element)) return false;
+    if (filterState.build.size){
+      const builds = (card.dataset.builds || "").split("|");
+      if (![...filterState.build].some(b => builds.includes(b))) return false;
+    }
+    if (filterState.search && !card.textContent.toLowerCase().includes(filterState.search)) return false;
+    return true;
+  }
+
+  function applyFilters(){
+    const cards = Array.from(document.querySelectorAll(".weapon-card"));
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const match = cardMatches(card);
+      card.style.display = match ? "" : "none";
+      if (match) visibleCount++;
+    });
+    document.getElementById("count-num").textContent = visibleCount;
+
+    let emptyMsg = document.getElementById("no-results-msg");
+    if (visibleCount === 0){
+      if (!emptyMsg){
+        emptyMsg = document.createElement("div");
+        emptyMsg.id = "no-results-msg";
+        emptyMsg.className = "no-results";
+        emptyMsg.textContent = "No weapons match those filters.";
+        document.getElementById("weapon-grid").appendChild(emptyMsg);
+      }
+    } else if (emptyMsg){
+      emptyMsg.remove();
+    }
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

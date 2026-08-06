@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armor Set Bonuses — Rally Flag</title>
+<meta name="description" content="Every Destiny 2 armor set bonus: 2-piece and 4-piece perks, weapon pairings, and drop sources, in one searchable page.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  /* ---------- Controls ---------- */
+  .controls{ max-width:1180px; margin:40px auto 0; padding:0 24px; }
+
+  .search-row{ display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+  .search-box{ flex:1; position:relative; }
+  .search-box input{
+    width:100%; background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--text); font-family:'Inter', sans-serif; font-size:14px;
+    padding:14px 16px; border-radius:2px; outline:none;
+    transition: border-color 0.2s ease;
+  }
+  .search-box input:focus{ border-color:var(--accent); }
+  .search-box input::placeholder{ color:var(--text-dimmer); }
+  .set-count{
+    font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .set-count strong{ color:var(--accent-bright); }
+
+  .filter-row{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
+    padding:12px 0; border-top:1px solid var(--panel-border);
+  }
+  .filter-row:last-child{ border-bottom:1px solid var(--panel-border); }
+  .filter-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
+  }
+  .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
+    color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
+    padding:7px 14px; border-radius:999px; cursor:pointer;
+    transition: all 0.15s ease; user-select:none;
+  }
+  .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
+  .chip.on{
+    color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright);
+    font-weight:600;
+  }
+  .clear-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
+    background:none; border:none; cursor:pointer; text-decoration:underline;
+    text-underline-offset:2px; margin-left:auto;
+  }
+  .clear-btn:hover{ color:var(--accent-bright); }
+
+  /* ---------- Grid ---------- */
+  .grid-section{ max-width:1180px; margin:36px auto 0; padding:0 24px 80px; }
+  .card-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+    gap:14px;
+  }
+  .set-card{
+    padding:22px 22px 20px;
+    scroll-margin-top: 30px;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+  .set-card.highlighted{ border-color: var(--accent); background: var(--accent-dim); }
+  .set-card-head{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .set-monogram{
+    position:relative; flex-shrink:0; width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-dim); border:1px solid var(--panel-border);
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:14px;
+    color:var(--accent-bright); overflow:hidden;
+  }
+  .set-monogram img{ width:100%; height:100%; object-fit:cover; }
+  .set-icon-watermark{
+    position:absolute; bottom:1px; right:1px; width:12px; height:12px;
+    object-fit:contain; pointer-events:none;
+  }
+  .set-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:18px; color:var(--text); }
+  .set-source{ font-size:11px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-top:2px; }
+
+  .perk{ display:flex; gap:10px; margin-bottom:14px; }
+  .perk-badge{
+    flex-shrink:0; width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:10px; font-weight:700;
+    background:#68a0b7; color:#fff; border:2px solid #fff;
+    margin-top:2px; overflow:hidden;
+  }
+  .perk-badge img{ width:70%; height:70%; object-fit:contain; }
+  .perk-body{ flex:1; }
+  .perk-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:13.5px; color:var(--accent-bright); text-transform:uppercase; letter-spacing:0.02em; margin-bottom:4px; }
+  .perk-desc{ font-size:13px; color:var(--text-dim); line-height:1.45; }
+
+  .pairs-row{
+    margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+  }
+  .pairs-label{ font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.08em; margin-right:4px; }
+  .pair-tag{
+    font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
+    background:var(--accent-dim); border:1px solid var(--panel-border);
+    padding:3px 9px; border-radius:999px;
+  }
+
+  .subclass-pairs-row{
+    margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+  }
+  .subclass-tag{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
+    color:#0b0700; border:1px solid transparent; padding:3px 9px; border-radius:999px;
+  }
+  .subclass-tag-icon{ width:12px; height:12px; object-fit:contain; flex-shrink:0; display:block; }
+  .subclass-solar{ background:#ff8f3f; }
+  .subclass-void{ background:#b56bff; }
+  .subclass-arc{ background:#3fd6ff; }
+  .subclass-stasis{ background:#7fb9ff; }
+  .subclass-strand{ background:#3ddc84; }
+  .subclass-prismatic{ background:#ff6fd5; }
+
+  .artifact-pairs-row{
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--panel-border);
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+  }
+  .artifact-pair-tag{
+    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
+    color:#0b0700; background:var(--accent-bright); border:1px solid transparent;
+    padding:3px 9px; border-radius:999px; text-decoration:none; display:inline-block;
+    transition: filter 0.15s ease;
+  }
+  .artifact-pair-tag:hover{ filter:brightness(1.12); }
+
+  .no-results{
+    text-align:center; padding:60px 20px; color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace; font-size:14px;
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width:640px){
+    .search-row{ flex-direction:column; align-items:stretch; }
+    .set-count{ text-align:center; }
+    .filter-label{ min-width:100%; margin-bottom:2px; }
+  }
+</style>
+</head>
+<body data-nav-group="setbonuses">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">Armor Set Bonuses</h1>
+  <p class="subtitle">Every 2-piece and 4-piece armor set perk in one place. Filter by source, subclass, weapon pairing, or artifact synergy, or search for a build piece by name.</p>
+</div>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search sets or bonuses…" autocomplete="off">
+    </div>
+    <div class="set-count"><strong id="count-num">0</strong> sets</div>
+  </div>
+
+  <div class="filter-row">
+    <div class="filter-label">Source</div>
+    <div class="chip-group" id="source-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Subclass</div>
+    <div class="chip-group" id="subclass-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Pairs with</div>
+    <div class="chip-group" id="weapon-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Artifact</div>
+    <div class="chip-group" id="artifact-chips"></div>
+    <button class="clear-btn" id="clear-btn">Clear filters</button>
+  </div>
+</div>
+
+<div class="grid-section">
+  <div class="card-grid" id="card-grid"></div>
+</div>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+  <p>Set names, perk text, and drop sources sourced from public game data. Data © Bungie. Cross-referenced with the <a href="https://wewantdestiny3.com/armor-set-bonuses/" target="_blank" rel="noopener">We Want Destiny 3</a> set bonus database.</p>
+</footer>
+
+<script src="assets/nav.js"></script>
+<script src="assets/sets-data.js"></script>
+<script src="assets/artifacts-data.js"></script>
+<script src="assets/api-keys.js"></script>
+<script>
+(function(){
+  const SETS = window.ArmorSetsData.SETS;
+  const ARTIFACTS = window.ArtifactsData.ARTIFACTS;
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const BUNGIE_ROOT = "https://www.bungie.net";
+
+  // Same real subclass icons used on the Artifacts page — static Bungie
+  // CDN paths, no API key needed.
+  const ELEMENT_ICON_PATHS = {
+    solar:     "/common/destiny2_content/icons/8d9818f39c419bbe081d78397362406d.png",
+    void:      "/common/destiny2_content/icons/6c9ea5cd14b20cd2af43522151a9ebbf.png",
+    arc:       "/common/destiny2_content/icons/e0a4d33058adbb90c0499cf84444b4b0.png",
+    stasis:    "/common/destiny2_content/icons/5724cfee09280d8d4f725e34281cec8b.png",
+    strand:    "/common/destiny2_content/icons/e2f88241a0deb487b306679155c5cfeb.png",
+    prismatic: "/common/destiny2_content/icons/8f8283c4f518dbd2239ba1f60b91d14f.png"
+  };
+  const ELEMENT_ORDER = ["Solar", "Void", "Arc", "Stasis", "Strand", "Prismatic"];
+
+  // ---------- Artifact pairing ----------
+  // Cross-references a set's weapon pairings against each artifact's
+  // weapons list to surface which seasonal artifact's mods actually
+  // support this set's build. Deliberately weapon-type only, not
+  // element-based: nearly every artifact touches 3-4 of the same 6
+  // elements, so matching on element alone ties across most of the
+  // artifacts and tells you nothing useful. A shared weapon archetype
+  // is a much rarer, more specific signal.
+  // Weapon-type strings aren't written consistently between the two
+  // data files (e.g. "Rockets" here vs "Rocket Launchers" there), so
+  // both sides get normalized to the same canonical key before comparing.
+  const WEAPON_SYNONYMS = {
+    fusions: "fusionrifle",
+    rockets: "rocketlauncher",
+    rocketsidearms: "micromissile",  // sidearms with a micro-missile alt-fire
+    scouts: "scoutrifle",
+    linearfusions: "linearfusionrifle",
+    smgs: "smg"
+  };
+  function normalizeWeapon(str){
+    const key = str.toLowerCase().replace(/[^a-z]/g, "");
+    return WEAPON_SYNONYMS[key] || key.replace(/s$/, "");
+  }
+
+  function matchingArtifacts(set){
+    const setWeaponKeys = (set.pairs || []).map(normalizeWeapon);
+    if (!setWeaponKeys.length) return [];
+
+    const scored = ARTIFACTS.map(artifact => {
+      const weaponKeys = artifact.weapons.map(normalizeWeapon);
+      const hits = setWeaponKeys.filter(k => weaponKeys.includes(k)).length;
+      return { artifact, score: hits };
+    }).filter(s => s.score > 0);
+
+    scored.sort((a, b) => b.score - a.score);
+    const topScore = scored.length ? scored[0].score : 0;
+    // Only surface the strongest match(es) — ties at the top score all show,
+    // weaker partial overlaps stay hidden so this doesn't turn into noise.
+    return scored.filter(s => s.score === topScore).map(s => s.artifact);
+  }
+
+  // Fetch a single Destiny item's definition by its exact hash — same
+  // reliable single-item endpoint used on the God Rolls page.
+  const itemCache = {};
+  async function fetchItemByHash(hash){
+    if (itemCache[hash] !== undefined) return itemCache[hash];
+    const url = BUNGIE_ROOT + "/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/";
+    const res = await fetch(url, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    if (!res.ok) throw new Error("Item fetch failed for hash " + hash + ": " + res.status);
+    const data = await res.json();
+    const def = data?.Response;
+    if (!def) throw new Error("No definition returned for hash " + hash);
+    const result = {
+      name: def.displayProperties?.name || null,
+      icon: def.displayProperties?.icon ? BUNGIE_ROOT + def.displayProperties.icon : null,
+      watermark: def.iconWatermark ? BUNGIE_ROOT + def.iconWatermark : null
+    };
+    itemCache[hash] = result;
+    return result;
+  }
+
+  async function hydrateSetIcons(set){
+    // Static URLs (no API call needed) take priority over hash-based fetching.
+    if (set.armorIconUrl){
+      const iconEl = document.getElementById("icon-" + set.slug);
+      if (iconEl) iconEl.innerHTML = '<img src="' + set.armorIconUrl + '" alt="' + set.name + '">';
+    } else if (set.armorItemHash){
+      try {
+        const item = await fetchItemByHash(set.armorItemHash);
+        const iconEl = document.getElementById("icon-" + set.slug);
+        if (iconEl && item.icon){
+          iconEl.innerHTML = '<img src="' + item.icon + '" alt="' + set.name + '">' +
+            (item.watermark ? '<img class="set-icon-watermark" src="' + item.watermark + '" alt="Season">' : '');
+        }
+      } catch (err){
+        console.warn("Armor icon fetch failed for " + set.name + ":", err.message);
+      }
+    }
+
+    if (set.twoPieceIconUrl){
+      const badgeEl = document.getElementById("two-badge-" + set.slug);
+      if (badgeEl) badgeEl.innerHTML = '<img src="' + set.twoPieceIconUrl + '" alt="2-piece">';
+    } else if (set.twoPieceIconHash){
+      try {
+        const perk = await fetchItemByHash(set.twoPieceIconHash);
+        const badgeEl = document.getElementById("two-badge-" + set.slug);
+        if (badgeEl && perk.icon) badgeEl.innerHTML = '<img src="' + perk.icon + '" alt="2-piece">';
+      } catch (err){
+        console.warn("2-piece icon fetch failed for " + set.name + ":", err.message);
+      }
+    }
+
+    if (set.fourPieceIconUrl){
+      const badgeEl = document.getElementById("four-badge-" + set.slug);
+      if (badgeEl) badgeEl.innerHTML = '<img src="' + set.fourPieceIconUrl + '" alt="4-piece">';
+    } else if (set.fourPieceIconHash){
+      try {
+        const perk = await fetchItemByHash(set.fourPieceIconHash);
+        const badgeEl = document.getElementById("four-badge-" + set.slug);
+        if (badgeEl && perk.icon) badgeEl.innerHTML = '<img src="' + perk.icon + '" alt="4-piece">';
+      } catch (err){
+        console.warn("4-piece icon fetch failed for " + set.name + ":", err.message);
+      }
+    }
+  }
+
+  let hydrationInProgress = false;
+  async function hydrateAllVisible(visibleSets){
+    if (hydrationInProgress) return; // avoid overlapping fetch loops from rapid search typing
+    hydrationInProgress = true;
+    try {
+      // Sequential, not concurrent — firing dozens of requests at once
+      // to Bungie's API causes 500s, learned the hard way on God Rolls.
+      // fetchItemByHash caches by hash, so already-loaded icons resolve
+      // instantly here with no new network calls — this just re-applies
+      // them to whatever fresh DOM nodes render() just created.
+      for (const set of visibleSets){
+        await hydrateSetIcons(set);
+      }
+    } finally {
+      hydrationInProgress = false;
+    }
+  }
+
+  // ---------- Filter state ----------
+  const state = { search:"", sources:new Set(), weapons:new Set(), artifacts:new Set(), subclasses:new Set() };
+
+  const ALL_SOURCES = [...new Set(SETS.map(s => s.source))].sort();
+  const ALL_WEAPONS = [...new Set(SETS.flatMap(s => s.pairs))].sort();
+  // Only list artifacts that actually pair with at least one set — otherwise
+  // this filter would include dead-end chips (e.g. an artifact whose weapons
+  // don't line up with any set's pairs) that always return zero results.
+  const ALL_ARTIFACTS = [...new Set(SETS.flatMap(s => matchingArtifacts(s).map(a => a.name)))].sort();
+  const ALL_SUBCLASSES = ELEMENT_ORDER.filter(e => SETS.some(s => (s.elementPairs || []).includes(e)));
+
+  function buildChips(container, values, set){
+    container.innerHTML = "";
+    values.forEach(v => {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.textContent = v;
+      chip.addEventListener("click", () => {
+        if (set.has(v)) set.delete(v); else set.add(v);
+        chip.classList.toggle("on");
+        render();
+      });
+      container.appendChild(chip);
+    });
+  }
+  buildChips(document.getElementById("source-chips"), ALL_SOURCES, state.sources);
+  buildChips(document.getElementById("weapon-chips"), ALL_WEAPONS, state.weapons);
+  buildChips(document.getElementById("artifact-chips"), ALL_ARTIFACTS, state.artifacts);
+  buildChips(document.getElementById("subclass-chips"), ALL_SUBCLASSES, state.subclasses);
+
+  document.getElementById("search-input").addEventListener("input", e => {
+    state.search = e.target.value.trim().toLowerCase();
+    render();
+  });
+
+  document.getElementById("clear-btn").addEventListener("click", () => {
+    state.search = "";
+    state.sources.clear();
+    state.weapons.clear();
+    state.artifacts.clear();
+    state.subclasses.clear();
+    document.getElementById("search-input").value = "";
+    document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+    render();
+  });
+
+  function monogram(name){
+    const words = name.replace(/'/g, "").split(" ");
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+
+  function matches(set){
+    if (state.sources.size && !state.sources.has(set.source)) return false;
+    if (state.weapons.size && !set.pairs.some(p => state.weapons.has(p))) return false;
+    if (state.artifacts.size && !matchingArtifacts(set).some(a => state.artifacts.has(a.name))) return false;
+    if (state.subclasses.size && !(set.elementPairs || []).some(e => state.subclasses.has(e))) return false;
+    if (state.search){
+      const hay = (set.name + " " + set.two[0] + " " + set.two[1] + " " + set.four[0] + " " + set.four[1] + " " + set.sourceDetail).toLowerCase();
+      if (!hay.includes(state.search)) return false;
+    }
+    return true;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const highlightSlug = params.get("highlight");
+
+  function render(){
+    const grid = document.getElementById("card-grid");
+    grid.innerHTML = "";
+    const visible = SETS.filter(matches);
+    document.getElementById("count-num").textContent = visible.length;
+
+    if (!visible.length){
+      const empty = document.createElement("div");
+      empty.className = "no-results";
+      empty.textContent = "No sets match those filters.";
+      grid.appendChild(empty);
+      return;
+    }
+
+    visible.forEach(set => {
+      const card = document.createElement("div");
+      card.className = "set-card panel-card" + (set.slug === highlightSlug ? " highlighted" : "");
+      card.id = "set-" + set.slug;
+
+      const subclassPairsHtml = (set.elementPairs || []).length
+        ? '<div class="subclass-pairs-row"><span class="pairs-label">Pairs with</span>' +
+          set.elementPairs.map(e => {
+            const key = e.toLowerCase();
+            const iconUrl = ELEMENT_ICON_PATHS[key] ? BUNGIE_ROOT + ELEMENT_ICON_PATHS[key] : null;
+            const icon = iconUrl ? '<img class="subclass-tag-icon" src="' + iconUrl + '" alt="">' : "";
+            return '<span class="subclass-tag subclass-' + key + '">' + icon + e + '</span>';
+          }).join("") + '</div>'
+        : "";
+
+      const pairsHtml = set.pairs.length
+        ? '<div class="pairs-row"><span class="pairs-label">Pairs with</span>' +
+          set.pairs.map(p => '<span class="pair-tag">' + p + '</span>').join("") + '</div>'
+        : "";
+
+      const artifactMatches = matchingArtifacts(set);
+      const artifactPairsHtml = artifactMatches.length
+        ? '<div class="artifact-pairs-row"><span class="pairs-label">Pairs well with</span>' +
+          artifactMatches.map(a => '<a class="artifact-pair-tag" href="artifacts.html#artifact-' + a.slug + '">' + a.name + '</a>').join("") + '</div>'
+        : "";
+
+      card.innerHTML =
+        '<div class="set-card-head">' +
+          '<div class="set-monogram" id="icon-' + set.slug + '">' + monogram(set.name) + '</div>' +
+          '<div><div class="set-name">' + set.name + '</div><div class="set-source">' + set.source + ' \u00b7 ' + set.sourceDetail + '</div></div>' +
+        '</div>' +
+        '<div class="perk"><div class="perk-badge" id="two-badge-' + set.slug + '">2</div><div class="perk-body"><div class="perk-name">2 Piece | ' + set.two[0] + '</div><div class="perk-desc">' + set.two[1] + '</div></div></div>' +
+        '<div class="perk"><div class="perk-badge" id="four-badge-' + set.slug + '">4</div><div class="perk-body"><div class="perk-name">4 Piece | ' + set.four[0] + '</div><div class="perk-desc">' + set.four[1] + '</div></div></div>' +
+        subclassPairsHtml +
+        pairsHtml +
+        artifactPairsHtml;
+
+      grid.appendChild(card);
+    });
+
+    hydrateAllVisible(visible);
+
+    if (highlightSlug){
+      const el = document.getElementById("set-" + highlightSlug);
+      if (el) setTimeout(() => el.scrollIntoView({ behavior:"smooth", block:"center" }), 100);
+    }
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>

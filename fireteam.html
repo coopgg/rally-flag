@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fireteam — Rally Flag</title>
+<meta name="description" content="Look up a player's current fireteam and see everyone's equipped gear at a glance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  .disclosure{
+    max-width:720px; margin:32px auto 0; padding:16px 20px;
+    font-size:13px; color:var(--text-dim); line-height:1.6; text-align:center;
+  }
+  .disclosure strong{ color:var(--accent-bright); }
+
+  section{ max-width:1000px; margin:32px auto 0; padding:0 24px 90px; }
+
+  .search-row{ display:flex; gap:10px; max-width:420px; margin:0 auto 8px; }
+  .search-row input{
+    flex:1; background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--text); font-family:'Inter', sans-serif; font-size:14px;
+    padding:12px 14px; border-radius:4px; outline:none;
+  }
+  .search-row input:focus{ border-color:var(--accent); }
+  .search-row button{
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; color:#0b0700;
+    background:var(--accent-bright); border:none; border-radius:4px; padding:0 20px;
+    cursor:pointer; -webkit-appearance:none;
+  }
+  .search-error{
+    max-width:420px; margin:8px auto 0; text-align:center; font-size:13px; color:#e88a95;
+    display:none;
+  }
+  .search-error.show{ display:block; }
+
+  .settings-row{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+    max-width:800px; margin:24px auto 0; padding-top:16px; border-top:1px solid var(--panel-border);
+  }
+  .settings-row label{
+    display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:6px 12px; cursor:pointer;
+  }
+  .settings-row input{ width:14px; height:14px; accent-color:var(--accent-bright); cursor:pointer; }
+
+  .section-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase; margin:36px 0 14px; text-align:center;
+  }
+
+  .player-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+    gap:16px; max-width:900px; margin:0 auto;
+  }
+  .player-card{ padding:20px; text-align:center; }
+  .player-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:17px; color:var(--text); }
+  .player-class{ font-size:12px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-bottom:10px; }
+  .player-emblem{ width:100%; border-radius:4px; display:block; margin-bottom:14px; }
+  .gear-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .gear-slot{
+    aspect-ratio:1/1; border-radius:4px; overflow:hidden; background:var(--panel-border);
+    position:relative;
+  }
+  .gear-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gear-slot.hidden-slot{ display:none; }
+  .empty-state{
+    text-align:center; padding:40px 20px; color:var(--text-dimmer);
+    font-family:'JetBrains Mono', monospace; font-size:13px; grid-column:1/-1;
+  }
+  .loading-state{
+    text-align:center; padding:20px; color:var(--text-dimmer);
+    font-family:'JetBrains Mono', monospace; font-size:13px;
+  }
+</style>
+</head>
+<body data-nav-group="fireteam">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">Fireteam</h1>
+  <p class="subtitle">Search a Bungie name to see their current gear, and everyone else currently in their fireteam — built for the Ghost-recognition moments in encounters like Verity.</p>
+</div>
+
+<div class="disclosure panel-card">
+  This reads live party membership through Bungie's public API. It only works for <strong>public</strong> profiles, and only shows people currently grouped up in-game right now — if nobody's shown under "Current Fireteam," either nobody's partied up, or their profile is set to private.
+</div>
+
+<section>
+  <div class="search-row">
+    <input type="text" id="search-input" placeholder="Name#1234" autocomplete="off">
+    <button id="search-btn" type="button">Go</button>
+  </div>
+  <div class="search-error" id="search-error"></div>
+
+  <div class="settings-row">
+    <label><input type="checkbox" data-slot="helmet" checked> Helmet</label>
+    <label><input type="checkbox" data-slot="arms" checked> Arms</label>
+    <label><input type="checkbox" data-slot="chest" checked> Chest</label>
+    <label><input type="checkbox" data-slot="legs" checked> Legs</label>
+    <label><input type="checkbox" data-slot="classitem" checked> Class Item</label>
+    <label><input type="checkbox" data-slot="ghost" checked> Ghost</label>
+  </div>
+
+  <div class="section-label">Selected Player</div>
+  <div class="player-grid" id="selected-grid"></div>
+
+  <div class="section-label">Current Fireteam</div>
+  <div class="player-grid" id="fireteam-grid"></div>
+</section>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+  <p>Destiny data and equipped-gear icons sourced from public game data via the Bungie API. Data © Bungie.</p>
+</footer>
+
+<script src="assets/nav.js"></script>
+<script src="assets/api-keys.js"></script>
+<script>
+(function(){
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const BUNGIE_ROOT = "https://www.bungie.net";
+
+  // Standard armor bucket hashes (confirmed against a real GetProfile response).
+  const SLOT_BUCKETS = {
+    helmet: 3448274439,
+    arms: 3551918588,
+    chest: 14239492,
+    legs: 20886954,
+    classitem: 1585787867,
+    ghost: 4023194814
+  };
+  const SLOT_ORDER = ["helmet", "arms", "chest", "legs", "classitem", "ghost"];
+
+  const selectedGrid = document.getElementById("selected-grid");
+  const fireteamGrid = document.getElementById("fireteam-grid");
+  const errorEl = document.getElementById("search-error");
+
+  function showError(msg){
+    errorEl.textContent = msg;
+    errorEl.classList.add("show");
+  }
+  function clearError(){
+    errorEl.classList.remove("show");
+    errorEl.textContent = "";
+  }
+
+  async function apiGet(path){
+    const res = await fetch(BUNGIE_ROOT + path, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    const data = await res.json();
+    if (data.ErrorCode !== 1) throw new Error(data.Message || "Bungie API error");
+    return data.Response;
+  }
+
+  // Bungie name search (e.g. "CoopGG#9399") -> { membershipId, membershipType }
+  async function resolvePlayer(bungieName){
+    const hashIdx = bungieName.lastIndexOf("#");
+    if (hashIdx === -1) throw new Error("Enter a full name, like Name#1234");
+    const name = bungieName.slice(0, hashIdx);
+    const code = bungieName.slice(hashIdx + 1);
+    const res = await fetch(BUNGIE_ROOT + "/Platform/Destiny2/SearchDestinyPlayerByBungieName/-1/", {
+      method: "POST",
+      headers: { "X-API-Key": BUNGIE_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ displayName: name, displayNameCode: Number(code) })
+    });
+    const data = await res.json();
+    if (data.ErrorCode !== 1 || !data.Response || !data.Response.length){
+      throw new Error("No player found with that name");
+    }
+    // Prefer the cross-save primary membership if present.
+    const primary = data.Response.find(m => m.crossSaveOverride === m.membershipType) || data.Response[0];
+    return { membershipId: primary.membershipId, membershipType: primary.membershipType };
+  }
+
+  async function getProfile(membershipId, membershipType){
+    return apiGet("/Platform/Destiny2/" + membershipType + "/Profile/" + membershipId + "/?components=100,200,205,1000");
+  }
+
+  function mostRecentCharacterId(profile){
+    const chars = profile.characters.data;
+    let best = null, bestTime = 0;
+    Object.keys(chars).forEach(id => {
+      const t = new Date(chars[id].dateLastPlayed).getTime();
+      if (t > bestTime){ bestTime = t; best = id; }
+    });
+    return best;
+  }
+
+  const CLASS_NAMES = { 0: "Titan", 1: "Hunter", 2: "Warlock" };
+
+  function buildEquipMap(profile, characterId){
+    const items = profile.characterEquipment.data[characterId]?.items || [];
+    const map = {};
+    SLOT_ORDER.forEach(slot => {
+      const item = items.find(i => i.bucketHash === SLOT_BUCKETS[slot]);
+      if (item) map[slot] = item.itemHash;
+    });
+    return map;
+  }
+
+  async function fetchItemIcon(hash){
+    try {
+      const def = await apiGet("/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/");
+      return def.displayProperties && def.displayProperties.icon ? BUNGIE_ROOT + def.displayProperties.icon : null;
+    } catch (err){
+      console.warn("Icon fetch failed for hash " + hash + ":", err.message);
+      return null;
+    }
+  }
+
+  function slotVisible(slot){
+    const cb = document.querySelector('.settings-row input[data-slot="' + slot + '"]');
+    return cb ? cb.checked : true;
+  }
+
+  async function renderPlayerCard(container, displayName, profile){
+    const card = document.createElement("div");
+    card.className = "player-card panel-card";
+    const charId = mostRecentCharacterId(profile);
+    const character = charId ? profile.characters.data[charId] : null;
+    const className = character ? CLASS_NAMES[character.classType] || "" : "";
+    const emblemPath = character && character.emblemBackgroundPath ? BUNGIE_ROOT + character.emblemBackgroundPath : null;
+    card.innerHTML =
+      '<div class="player-name">' + displayName + '</div>' +
+      '<div class="player-class">' + className + '</div>' +
+      (emblemPath ? '<img class="player-emblem" src="' + emblemPath + '" alt="">' : '') +
+      '<div class="gear-grid">' +
+        SLOT_ORDER.map(slot => '<div class="gear-slot' + (slotVisible(slot) ? '' : ' hidden-slot') + '" data-slot="' + slot + '"></div>').join("") +
+      '</div>';
+    container.appendChild(card);
+
+    if (!charId) return;
+    const equip = buildEquipMap(profile, charId);
+    for (const slot of SLOT_ORDER){
+      const hash = equip[slot];
+      if (!hash) continue;
+      const icon = await fetchItemIcon(hash);
+      if (icon){
+        const slotEl = card.querySelector('.gear-slot[data-slot="' + slot + '"]');
+        if (slotEl) slotEl.innerHTML = '<img src="' + icon + '" alt="">';
+      }
+    }
+  }
+
+  document.querySelectorAll(".settings-row input").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const slot = cb.dataset.slot;
+      document.querySelectorAll('.gear-slot[data-slot="' + slot + '"]').forEach(el => {
+        el.classList.toggle("hidden-slot", !cb.checked);
+      });
+    });
+  });
+
+  async function runSearch(){
+    clearError();
+    selectedGrid.innerHTML = '<div class="loading-state">Loading\u2026</div>';
+    fireteamGrid.innerHTML = "";
+
+    const name = document.getElementById("search-input").value.trim();
+    if (!name){ selectedGrid.innerHTML = ""; return; }
+
+    try {
+      const { membershipId, membershipType } = await resolvePlayer(name);
+      const profile = await getProfile(membershipId, membershipType);
+
+      selectedGrid.innerHTML = "";
+      await renderPlayerCard(selectedGrid, profile.profile.data.userInfo.bungieGlobalDisplayName || name, profile);
+
+      // Party members live in profileTransitoryData (component 1000). Based
+      // on a real captured request, party entries appear to carry only a
+      // bare membershipId — no display name or platform attached. Each one
+      // gets resolved through GetLinkedProfiles(-1, membershipId), which
+      // hands back both the correct membershipType and display name from
+      // just that ID (confirmed against a real captured response).
+      const transitory = profile.profileTransitoryData && profile.profileTransitoryData.data;
+      const partyMembers = (transitory && transitory.partyMembers) || [];
+      const others = partyMembers.filter(m => String(m.membershipId) !== String(membershipId));
+
+      if (!others.length){
+        fireteamGrid.innerHTML = '<div class="empty-state">Not currently in a fireteam with anyone else.</div>';
+        return;
+      }
+
+      for (const member of others){
+        try {
+          const linked = await apiGet("/Platform/Destiny2/-1/Profile/" + member.membershipId + "/LinkedProfiles/");
+          const memberProfileInfo = linked.profiles && linked.profiles[0];
+          if (!memberProfileInfo) continue;
+          const memberName = memberProfileInfo.bungieGlobalDisplayName || memberProfileInfo.displayName;
+          // Note: a linked profile can come back isPublic:false and its
+          // gear still be fetchable — that flag doesn't reliably predict
+          // whether GetProfile's equipment component will work, so we
+          // just attempt the fetch rather than pre-emptively skipping it.
+          const memberProfile = await getProfile(memberProfileInfo.membershipId, memberProfileInfo.membershipType);
+          await renderPlayerCard(fireteamGrid, memberName, memberProfile);
+        } catch (err){
+          console.warn("Fireteam member fetch failed:", err.message);
+        }
+      }
+    } catch (err){
+      selectedGrid.innerHTML = "";
+      showError(err.message);
+    }
+  }
+
+  document.getElementById("search-btn").addEventListener("click", runSearch);
+  document.getElementById("search-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") runSearch();
+  });
+})();
+</script>
+</body>
+</html>

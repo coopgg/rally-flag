@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artifacts — Rally Flag</title>
+<meta name="description" content="Every seasonal artifact and what its mods actually do, organized by tier.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  .disclosure{
+    max-width:720px; margin:32px auto 0; padding:16px 20px;
+    font-size:13px; color:var(--text-dim); line-height:1.6; text-align:center;
+  }
+  .disclosure strong{ color:var(--accent-bright); }
+
+  section{ max-width:1100px; margin:32px auto 0; padding:0 24px 90px; }
+  .artifact-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(420px, 1fr));
+    gap:16px;
+  }
+  .artifact-card{ padding:24px; }
+  .artifact-head{ margin-bottom:6px; }
+  .artifact-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:19px; color:var(--text); }
+  .artifact-season{ font-size:11.5px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); margin-top:2px; }
+
+  .tag-row{ display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 16px; }
+  .tag{
+    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
+    padding:3px 9px; border-radius:999px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border);
+  }
+  .tag-solar{ background:#ff8f3f; color:#0b0700; border-color:transparent; }
+  .tag-void{ background:#b56bff; color:#0b0700; border-color:transparent; }
+  .tag-arc{ background:#3fd6ff; color:#0b0700; border-color:transparent; }
+  .tag-stasis{ background:#7fb9ff; color:#0b0700; border-color:transparent; }
+  .tag-strand{ background:#3ddc84; color:#0b0700; border-color:transparent; }
+  .tag-prismatic{ background:#ff6fd5; color:#0b0700; border-color:transparent; }
+  .tag-kinetic{ background:#c9c9c9; color:#0b0700; border-color:transparent; }
+
+  .tag{ display:inline-flex; align-items:center; gap:5px; }
+  .tag-icon{ width:12px; height:12px; object-fit:contain; flex-shrink:0; display:block; }
+  /* Weapon-archetype icons (destiny-icons project) are plain black glyphs,
+     so they need inverting to stay visible on the site's default dark
+     panel background. Element icons come straight off Bungie's CDN on a
+     matching colored pill and never need this. */
+  .tag-weapon .tag-icon{ filter:invert(1); }
+  [data-mode="light"] .tag-weapon .tag-icon{ filter:none; }
+
+  .tier-block{ margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border); }
+  .tier-block:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
+  .tier-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:8px;
+  }
+  .tier-note{ font-size:10.5px; color:var(--text-dimmer); font-weight:400; text-transform:none; letter-spacing:0; }
+  .mod-list{ margin:0; padding:0; list-style:none; }
+  .mod-item{ margin-bottom:10px; }
+  .mod-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:12.5px; color:var(--accent-bright); text-transform:uppercase; letter-spacing:0.02em; }
+  .mod-desc{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-top:2px; }
+</style>
+</head>
+<body data-nav-group="artifacts">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">Artifacts</h1>
+  <p class="subtitle">What each seasonal artifact's mods actually do, organized by tier, so you can decide what to unlock first.</p>
+</div>
+
+<div class="disclosure panel-card">
+  Every mod fills a specific tier of slots: <strong>Tier 1</strong> perks can go in any of your 7 slots, <strong>Tier 2</strong> perks are restricted to the last 5 slots, and <strong>Tier 3</strong> perks are capped at 2 slots total.
+</div>
+
+<section>
+  <div class="artifact-grid" id="artifact-grid"></div>
+</section>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+</footer>
+
+<script src="assets/nav.js"></script>
+<script src="assets/artifacts-data.js"></script>
+<script>
+(function(){
+  const grid = document.getElementById("artifact-grid");
+
+  const BUNGIE_ROOT = "https://www.bungie.net";
+
+  // Same real subclass icons nav.js uses for the appearance picker —
+  // static Bungie CDN paths, no API key needed.
+  const ELEMENT_ICON_PATHS = {
+    solar:     "/common/destiny2_content/icons/8d9818f39c419bbe081d78397362406d.png",
+    void:      "/common/destiny2_content/icons/6c9ea5cd14b20cd2af43522151a9ebbf.png",
+    arc:       "/common/destiny2_content/icons/e0a4d33058adbb90c0499cf84444b4b0.png",
+    stasis:    "/common/destiny2_content/icons/5724cfee09280d8d4f725e34281cec8b.png",
+    strand:    "/common/destiny2_content/icons/e2f88241a0deb487b306679155c5cfeb.png",
+    prismatic: "/common/destiny2_content/icons/8f8283c4f518dbd2239ba1f60b91d14f.png"
+  };
+  // Kinetic isn't a subclass, so it has no Bungie CDN path above — pull its
+  // damage-type glyph from the same destiny-icons set used for weapons below.
+  const KINETIC_ICON_URL = "https://raw.githubusercontent.com/justrealmilk/destiny-icons/master/weapons/damage_kinetic.svg";
+
+  // Real Bungie-style weapon-archetype icons, from the destiny-icons project
+  // referenced in DIM's issue #3929 (github.com/DestinyItemManager/DIM/issues/3929).
+  // Keyed by a normalized (lowercase, no spaces/punctuation) weapon-type string.
+  const WEAPON_ICON_BASE = "https://raw.githubusercontent.com/justrealmilk/destiny-icons/master/weapons/";
+  const WEAPON_ICON_FILES = {
+    autorifle: "auto_rifle", handcannon: "hand_cannon", pulserifle: "pulse_rifle",
+    scoutrifle: "scout_rifle", sidearm: "sidearm", smg: "smg", submachinegun: "smg",
+    sniperrifle: "sniper_rifle", shotgun: "shotgun", fusionrifle: "fusion_rifle",
+    linearfusionrifle: "wire_rifle", tracerifle: "beam_weapon", bow: "bow",
+    rocketlauncher: "rocket_launcher", grenadelauncher: "grenade_launcher",
+    machinegun: "machinegun", sword: "sword_heavy", glaive: "glaive"
+  };
+
+  function normalize(str){
+    return str.toLowerCase().replace(/[^a-z]/g, "").replace(/s$/, "");
+  }
+
+  function weaponIconUrl(name){
+    const key = normalize(name);
+    const file = WEAPON_ICON_FILES[key];
+    return file ? WEAPON_ICON_BASE + file + ".svg" : null;
+  }
+
+  function tagsHtml(values){
+    return values.map(v => {
+      const key = v.toLowerCase();
+      let iconUrl = null;
+      if (ELEMENT_ICON_PATHS[key]) iconUrl = BUNGIE_ROOT + ELEMENT_ICON_PATHS[key];
+      else if (key === "kinetic") iconUrl = KINETIC_ICON_URL;
+      const icon = iconUrl ? '<img class="tag-icon" src="' + iconUrl + '" alt="">' : "";
+      return '<span class="tag tag-' + key + '">' + icon + v + '</span>';
+    }).join("");
+  }
+
+  function weaponTagsHtml(values){
+    return values.map(w => {
+      const iconUrl = weaponIconUrl(w);
+      const icon = iconUrl ? '<img class="tag-icon" src="' + iconUrl + '" alt="">' : "";
+      return '<span class="tag tag-weapon">' + icon + w + '</span>';
+    }).join("");
+  }
+
+  function tierHtml(perks, tierNum, note){
+    const filtered = perks.filter(p => p.column === tierNum);
+    if (!filtered.length) return "";
+    return (
+      '<div class="tier-block">' +
+        '<div class="tier-label">Tier ' + tierNum + ' <span class="tier-note">' + note + '</span></div>' +
+        '<ul class="mod-list">' +
+          filtered.map(p => '<li class="mod-item"><div class="mod-name">' + p.name + '</div><div class="mod-desc">' + p.desc + '</div></li>').join("") +
+        '</ul>' +
+      '</div>'
+    );
+  }
+
+  window.ArtifactsData.ARTIFACTS.forEach(artifact => {
+    const card = document.createElement("div");
+    card.className = "artifact-card panel-card";
+    card.id = "artifact-" + artifact.slug;
+
+    const weaponTags = weaponTagsHtml(artifact.weapons || []);
+
+    card.innerHTML =
+      '<div class="artifact-head">' +
+        '<div class="artifact-name">' + artifact.name + '</div>' +
+        '<div class="artifact-season">' + artifact.season + '</div>' +
+      '</div>' +
+      '<div class="tag-row">' + tagsHtml(artifact.elements || []) + weaponTags + '</div>' +
+      tierHtml(artifact.perks, 1, "\u2014 fills any slot") +
+      tierHtml(artifact.perks, 2, "\u2014 last 5 slots only") +
+      tierHtml(artifact.perks, 3, "\u2014 max 2 slots");
+
+    grid.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>

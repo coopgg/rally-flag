@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puzzle Helper — Rally Flag</title>
+<meta name="description" content="Interactive lookup tools for raid and dungeon secrets — Wish Wall codes, Oracle callouts, and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  .tool-picker{
+    display:flex; flex-wrap:wrap; gap:10px; max-width:1000px; margin:48px auto 32px; padding:0 24px;
+  }
+  .tool-chip{
+    font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
+    color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
+    padding:9px 16px; border-radius:999px; cursor:pointer; text-decoration:none;
+    transition: all 0.15s ease; -webkit-appearance:none; appearance:none; margin:0;
+  }
+  .tool-chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
+  .tool-chip.active{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); font-weight:600; }
+
+  .tool-section{ max-width:1000px; margin:0 auto; padding:0 24px 90px; }
+  .tool-head{ margin-bottom:14px; }
+  .tool-title{ font-family:'Oswald', sans-serif; font-weight:700; font-size:26px; color:var(--text); }
+  .tool-raid-link{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
+    text-decoration:none;
+  }
+  .tool-raid-link:hover{ color:var(--accent-bright); }
+  .tool-intro{ font-size:13.5px; color:var(--text-dim); line-height:1.65; margin:16px 0 32px; }
+  .tool-banner{ width:100%; display:block; border-radius:4px; margin-bottom:18px; }
+
+  .wall-stage{
+    position:relative; width:100%; max-width:520px; aspect-ratio:800/700;
+    background-image:url('puzzle-assets/wall-banner.svg'); background-size:100% 100%;
+    margin:24px auto 8px; border-radius:4px; overflow:hidden;
+  }
+  .wall-slot{
+    position:absolute; width:8.5%; aspect-ratio:1/1; transform:translate(-50%,-50%);
+    border-radius:50%; opacity:0; transition:opacity 0.2s ease;
+  }
+  .wall-slot.on{ opacity:1; }
+  .wall-stage-hint{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
+    text-transform:uppercase; letter-spacing:0.06em; pointer-events:none; transition:opacity 0.2s ease;
+  }
+  .wall-stage.active .wall-stage-hint{ opacity:0; }
+
+  .wish-grid{
+    display:flex; flex-wrap:wrap; justify-content:center;
+    gap:12px; margin-top:24px;
+  }
+  .wish-card{
+    flex:1 1 260px; max-width:340px;
+    padding:14px 16px; background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
+    cursor:pointer; transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .wish-card:hover{ border-color:rgba(255,255,255,0.2); }
+  .wish-card.active{ border-color:var(--accent-bright); background:var(--accent-dim); }
+  .wish-card-head{
+    display:flex; align-items:baseline; gap:8px;
+    font-family:'Oswald', sans-serif; color:var(--text);
+  }
+  .wish-card-num{ font-weight:700; font-size:15px; color:var(--accent-bright); flex-shrink:0; }
+  .wish-card-sep{ color:var(--text-dimmer); flex-shrink:0; }
+  .wish-card-theme{ font-weight:600; font-size:14.5px; font-style:italic; }
+  .wish-card-effect{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-top:8px; }
+
+  /* ---------- Rune-selection tool (King's Fall) ---------- */
+  .rune-tool-wrap{ max-width:420px; margin:0 auto; }
+  .rune-picker-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    color:var(--text-dimmer); text-transform:uppercase; margin:20px 0 14px; text-align:center;
+  }
+  .rune-picker-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); grid-auto-rows:1fr; gap:10px;
+  }
+  .rune-picker-cell{
+    aspect-ratio:1/1; background:var(--panel); border:2px solid var(--panel-border);
+    border-radius:6px; cursor:pointer; padding:10px; box-sizing:border-box;
+    transition: all 0.15s ease; position:relative;
+  }
+  .rune-picker-cell img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .sprite-icon{ width:100%; height:100%; display:block; background-repeat:no-repeat; }
+  /* Oryx's Extra Chest (King's Fall) runes are hard to see against the dark
+     panel background at full white, so this tool alone gets a green tint.
+     Scoped to this tool's slug only — Crota's/Rhulk's chest icons stay plain. */
+  .tool-section[data-tool="oryx-extra-chest"] .rune-picker-cell img{
+    filter: brightness(0) saturate(100%) invert(70%) sepia(46%) saturate(506%) hue-rotate(65deg) brightness(97%) contrast(92%);
+  }
+  .rune-picker-cell:hover{ border-color:var(--accent); }
+  .rune-picker-cell.selected{ border-color:var(--accent-bright); background:var(--accent-dim); }
+  .rune-picker-cell.disabled{ opacity:0.35; cursor:not-allowed; }
+  .rune-picker-num{
+    position:absolute; bottom:3px; right:6px; font-family:'JetBrains Mono', monospace;
+    font-size:10px; color:var(--text-dimmer);
+  }
+  .rune-picker-hint{ font-size:12.5px; color:var(--text-dim); margin-top:18px; text-align:center; }
+  .rune-picker-hint strong{ color:var(--accent-bright); }
+
+  .rune-stage{ margin-top:28px; display:none; flex-direction:column; gap:12px; }
+  .rune-stage.active{ display:flex; }
+  .rune-stage-row{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:4px; overflow:hidden;
+  }
+  .rune-stage-row.done{ opacity:0.45; }
+  .rune-row-main{ display:flex; align-items:center; gap:14px; padding:16px 18px; }
+  .rune-row-icon{ width:34px; height:34px; flex-shrink:0; border-radius:4px; overflow:hidden; background:var(--accent-dim); }
+  .rune-row-icon img{ width:100%; height:100%; object-fit:contain; }
+  .rune-row-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--text); flex:1; }
+  .rune-row-name b{ color:var(--accent); margin-right:6px; }
+  .rune-next-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:#0b0700;
+    background:var(--accent-bright); border:none; border-radius:4px; padding:8px 16px;
+    cursor:pointer; flex-shrink:0;
+  }
+  .rune-row-detail{
+    display:none; padding:16px 18px; background:var(--panel-border); font-size:13px;
+    color:var(--text-dim); line-height:1.6;
+  }
+  .rune-stage-row.current .rune-row-detail{ display:block; }
+  .rune-next-btn{ display:none; }
+  .rune-stage-row.current .rune-next-btn{ display:inline-block; }
+  .rune-stage-done-msg{
+    text-align:center; padding:16px; color:var(--accent-bright);
+    font-family:'JetBrains Mono', monospace; font-size:13px; display:none;
+  }
+  .rune-stage-done-msg.show{ display:block; }
+  .rune-reset-btn{
+    display:block; margin:20px auto 0; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:8px 16px; cursor:pointer; transition: all 0.15s ease;
+  }
+  .rune-reset-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
+
+  /* ---------- Verity solver (Salvation's Edge) ---------- */
+  .verity-wrap{ max-width:720px; margin:0 auto; }
+  .verity-subtabs{
+    display:flex; gap:8px; max-width:720px; margin:0 auto 24px;
+  }
+  .verity-subtab{
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
+    padding:10px 18px; cursor:pointer; -webkit-appearance:none; flex:1;
+    transition: all 0.15s ease;
+  }
+  .verity-subtab:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
+  .verity-subtab.active{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); }
+
+  .ft-panel{ max-width:900px; margin:0 auto; }
+  .ft-disclosure{
+    font-size:12.5px; color:var(--text-dim); line-height:1.6; padding:14px 16px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
+    margin-bottom:20px;
+  }
+  .ft-disclosure strong{ color:var(--accent-bright); }
+  .ft-search-row{ display:flex; gap:10px; max-width:420px; margin:0 auto 8px; }
+  .ft-search-row input{
+    flex:1; background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--text); font-family:'Inter', sans-serif; font-size:14px;
+    padding:12px 14px; border-radius:4px; outline:none;
+  }
+  .ft-search-row input:focus{ border-color:var(--accent); }
+  .ft-search-row button{
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; color:#0b0700;
+    background:var(--accent-bright); border:none; border-radius:4px; padding:0 20px;
+    cursor:pointer; -webkit-appearance:none;
+  }
+  .ft-search-error{
+    max-width:420px; margin:8px auto 0; text-align:center; font-size:13px; color:#e88a95; display:none;
+  }
+  .ft-search-error.show{ display:block; }
+  .ft-settings-row{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+    max-width:800px; margin:24px auto 0; padding-top:16px; border-top:1px solid var(--panel-border);
+  }
+  .ft-settings-row label{
+    display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:6px 12px; cursor:pointer;
+  }
+  .ft-settings-row input{ width:14px; height:14px; accent-color:var(--accent-bright); cursor:pointer; }
+  .ft-section-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase; margin:32px 0 14px; text-align:center;
+  }
+  .ft-player-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+    gap:14px;
+  }
+  .ft-player-card{ padding:12px; text-align:center; }
+  .ft-player-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:13px; color:var(--text); }
+  .ft-player-class{ font-size:10px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-bottom:8px; }
+  .ft-player-emblem{ width:100%; border-radius:4px; display:block; margin-bottom:8px; }
+  .ft-gear-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; }
+  .ft-gear-slot{ aspect-ratio:1/1; border-radius:3px; overflow:hidden; background:var(--panel-border); }
+  .ft-gear-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .ft-gear-slot.ft-hidden-slot{ display:none; }
+  .ft-loading-state{
+    text-align:center; padding:20px; color:var(--text-dimmer);
+    font-family:'JetBrains Mono', monospace; font-size:13px; grid-column:1/-1;
+  }
+  .ft-note{
+    text-align:center; padding:10px 0 0; color:var(--text-dimmer);
+    font-family:'JetBrains Mono', monospace; font-size:12px;
+  }
+
+  .verity-master-label{
+    display:flex; align-items:center; gap:8px; max-width:720px; margin:0 auto 20px;
+    font-size:13px; color:var(--text-dim); cursor:pointer;
+  }
+  .verity-master-label input{ width:16px; height:16px; accent-color:var(--accent-bright); cursor:pointer; }
+  .verity-section-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    color:var(--accent); text-transform:uppercase; margin:26px 0 12px;
+  }
+  .verity-section-label:first-child{ margin-top:0; }
+  .verity-hint{ font-size:12.5px; color:var(--text-dim); margin-bottom:14px; line-height:1.5; }
+  .verity-lanes{ display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
+  .verity-lane{
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px; padding:14px;
+    text-align:center;
+  }
+  .verity-lane-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer);
+    text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;
+  }
+  .verity-shape-row{ display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
+  .verity-shape-btn{
+    aspect-ratio:1/1; padding:6px; background:var(--panel-border); border:2px solid transparent;
+    border-radius:4px; cursor:pointer; transition: all 0.15s ease;
+    -webkit-appearance:none; appearance:none; position:relative;
+  }
+  .verity-shape-btn img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .verity-shape-btn:hover:not(.disabled){ border-color:rgba(255,255,255,0.3); }
+  .verity-shape-btn.selected{ background:var(--accent-dim); border-color:var(--accent-bright); }
+  .verity-shape-btn.disabled{ opacity:0.25; cursor:not-allowed; }
+  .verity-outside-rows{ display:flex; flex-direction:column; gap:6px; }
+  .verity-target{
+    margin-top:10px; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer);
+  }
+  .verity-target b{ color:var(--accent-bright); }
+
+  .verity-solution{ display:none; margin-top:26px; }
+  .verity-solution.active{ display:block; }
+  .verity-solution-steps{ counter-reset:vstep; }
+  .verity-solution-step{
+    display:flex; align-items:center; gap:12px; padding:14px 16px; margin-bottom:8px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
+    font-size:15px; color:var(--text);
+  }
+  .verity-solution-step .step-num{
+    width:22px; height:22px; border-radius:50%; background:var(--accent-dim); color:var(--accent-bright);
+    border:1px solid var(--panel-border); flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700;
+  }
+  .verity-already-solved{
+    text-align:center; padding:14px; color:var(--accent-bright);
+    font-family:'JetBrains Mono', monospace; font-size:13px;
+  }
+  .verity-ogre-step{
+    background:var(--accent-dim); border-color:var(--accent);
+  }
+  .verity-ogre-step .step-num{ background:var(--accent); color:#0b0700; border-color:var(--accent); }
+  .verity-solution-step-icon{
+    width:22px; height:22px; border-radius:50%; overflow:hidden; flex-shrink:0;
+    background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
+  }
+  .verity-solution-step-icon img{ width:100%; height:100%; object-fit:cover; }
+  .verity-solution-step-text{ min-width:0; }
+  .verity-progress-row{
+    display:flex; align-items:center; justify-content:center; gap:22px;
+    padding:16px; margin:2px 0 8px; background:var(--panel); border:1px dashed var(--panel-border);
+    border-radius:4px;
+  }
+  .verity-progress-lane{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .verity-progress-lane img{
+    width:34px; height:34px; object-fit:contain; background:rgba(0,0,0,0.55);
+    border-radius:50%; padding:6px; box-sizing:border-box;
+  }
+  .verity-progress-lane span{
+    font-family:'JetBrains Mono', monospace; font-size:9.5px; letter-spacing:0.06em;
+    color:var(--text-dimmer); text-transform:uppercase;
+  }
+  .verity-progress-label{
+    text-align:center; font-family:'JetBrains Mono', monospace; font-size:10px;
+    letter-spacing:0.06em; color:var(--text-dimmer); text-transform:uppercase; margin:-4px 0 8px;
+  }
+  .verity-ogre-tip{
+    margin-top:20px; padding:14px 16px; background:var(--panel); border-left:3px solid var(--accent);
+    font-size:13px; color:var(--text-dim); line-height:1.55;
+  }
+  .verity-ogre-tip.verity-warning{ border-left-color:#f2c94c; }
+
+  /* ---------- Left/Right statue-pair tool (Crota's End) ---------- */
+  .lr-tool-wrap{ max-width:560px; margin:0 auto; }
+  .lr-section-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+  }
+  .lr-reference-text{
+    font-size:13.5px; color:var(--text-dim); line-height:1.65; text-align:left;
+    margin-bottom:28px;
+  }
+  .lr-pair-row{
+    display:flex; align-items:center; gap:16px; padding:16px 18px; margin-bottom:12px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px;
+  }
+  .lr-pair-icon{ width:40px; height:40px; flex-shrink:0; }
+  .lr-pair-icon img{ width:100%; height:100%; object-fit:contain; }
+  .lr-pair-label{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--text); flex:1; }
+  .lr-pair-label b{ color:var(--accent); margin-right:8px; }
+  .lr-pair-buttons{ display:flex; gap:8px; flex-shrink:0; }
+  .lr-btn{
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; color:var(--text-dim);
+    background:var(--panel-border); border:1px solid var(--panel-border); border-radius:4px;
+    width:42px; height:38px; cursor:pointer; transition: all 0.15s ease;
+    -webkit-appearance:none; appearance:none;
+  }
+  .lr-btn:hover{ color:var(--text); border-color:rgba(255,255,255,0.25); }
+  .lr-btn.selected{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); }
+
+  .no-tools{
+    text-align:center; padding:60px 20px; color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace; font-size:14px;
+  }
+</style>
+</head>
+<body data-nav-group="puzzlehelper">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">Puzzle Helper</h1>
+  <p class="subtitle">Interactive lookup tools for raid and dungeon puzzle mechanics — pick a tool below.</p>
+</div>
+
+<div class="tool-picker" id="tool-picker"></div>
+
+<div class="tool-section" id="tool-section"></div>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+</footer>
+
+<script src="assets/wish-grid.js"></script>
+<script src="assets/nav.js"></script>
+<script src="assets/api-keys.js"></script>
+<script src="assets/puzzle-helper-data.js"></script>
+<script>
+(function(){
+  const TOOLS = window.PuzzleHelperData.TOOLS;
+  const picker = document.getElementById("tool-picker");
+  const section = document.getElementById("tool-section");
+
+  function getRequestedSlug(){
+    return new URLSearchParams(window.location.search).get("tool");
+  }
+
+  function renderPicker(activeSlug){
+    picker.innerHTML = TOOLS.map(t =>
+      '<button type="button" class="tool-chip' + (t.slug === activeSlug ? ' active' : '') + '" data-slug="' + t.slug + '">' + t.title + '</button>'
+    ).join("");
+    picker.querySelectorAll(".tool-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const slug = chip.dataset.slug;
+        const isActive = chip.classList.contains("active");
+        selectTool(isActive ? null : slug);
+      });
+    });
+  }
+
+  function selectTool(slug){
+    const url = slug ? ("puzzle-helper.html?tool=" + slug) : "puzzle-helper.html";
+    history.pushState({ slug: slug }, "", url);
+    renderActive(slug);
+  }
+
+  window.addEventListener("popstate", () => renderActive(getRequestedSlug()));
+
+  // Slot positions (%) matching the 20 recesses carved into wall-banner.svg
+  // (800x700 viewBox, 5 cols x 4 rows, cell spacing 110/110, origin 180/260).
+  const SLOT_POS = [];
+  for (let r = 0; r < 4; r++){
+    for (let c = 0; c < 5; c++){
+      SLOT_POS.push({
+        left: (180 + c * 110) / 800 * 100,
+        top: (260 + r * 110) / 700 * 100
+      });
+    }
+  }
+
+  function buildWallStageHtml(){
+    const slots = SLOT_POS.map((pos, i) =>
+      '<img class="wall-slot" data-slot="' + i + '" style="left:' + pos.left + '%; top:' + pos.top + '%;" alt="">'
+    ).join("");
+    return '<div class="wall-stage" id="wall-stage">' + slots +
+      '<div class="wall-stage-hint">Click a wish below</div>' +
+    '</div>';
+  }
+
+  function updateWallStage(grid){
+    const stage = document.getElementById("wall-stage");
+    const slots = stage.querySelectorAll(".wall-slot");
+    const nums = grid ? window.WishGrid.parseGridCode(typeof grid === "string" ? grid : grid.join(" ")) : null;
+    slots.forEach((slot, i) => {
+      const n = nums ? nums[i] : 0;
+      if (n > 0){
+        slot.src = "puzzle-assets/LW_" + String(n).padStart(2, "0") + ".png";
+        slot.classList.add("on");
+      } else {
+        slot.removeAttribute("src");
+        slot.classList.remove("on");
+      }
+    });
+    stage.classList.toggle("active", !!grid);
+  }
+
+  function renderWishTool(tool){
+    const wishesHtml = tool.wishes.map(w =>
+      '<div class="wish-card" data-num="' + w.number + '">' +
+        '<div class="wish-card-head"><span class="wish-card-num">Wish ' + w.number + '</span>' +
+        (w.theme ? '<span class="wish-card-sep">|</span><span class="wish-card-theme">' + w.theme + '</span>' : '') +
+        '</div>' +
+        '<div class="wish-card-effect">' + w.effect + '</div>' +
+      '</div>'
+    ).join("");
+
+    section.innerHTML =
+      buildWallStageHtml() +
+      '<div class="tool-head">' +
+        '<div class="tool-title">' + tool.title + '</div>' +
+        '<a class="tool-raid-link" href="raid-guide.html?slug=' + tool.raidSlug + '">&larr; ' + tool.raidName + ' guide</a>' +
+      '</div>' +
+      '<p class="tool-intro">' + tool.intro + ' Click a wish below to see its button pattern on the wall.</p>' +
+      '<div class="wish-grid">' + wishesHtml + '</div>';
+
+    const allCards = section.querySelectorAll(".wish-card");
+    allCards.forEach(card => {
+      card.addEventListener("click", () => {
+        const wasActive = card.classList.contains("active");
+        allCards.forEach(c => c.classList.remove("active"));
+        if (!wasActive){
+          card.classList.add("active");
+          const w = tool.wishes.find(x => x.number == card.getAttribute("data-num"));
+          updateWallStage(w.grid);
+          document.getElementById("wall-stage").scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else {
+          updateWallStage(null);
+        }
+      });
+    });
+  }
+
+  function renderRuneTool(tool){
+    let selected = []; // rune numbers, in click order
+    let currentIndex = 0; // index into the sorted selection, once locked in
+
+    // Renders one frame of a vertical sprite strip using percentage-based
+    // background-position, so it works regardless of the sheet's actual
+    // pixel dimensions — same trick used by the reference tool we looked at.
+    function iconHtml(r){
+      if (!tool.spriteSheet) return '<img src="' + r.icon + '" alt="">';
+      const frameCount = tool.spriteFrameCount || tool.runes.length;
+      const posY = frameCount > 1 ? (r.frame - 1) / (frameCount - 1) * 100 : 0;
+      return '<div class="sprite-icon" style="background-image:url(\'' + tool.spriteSheet + '\'); ' +
+        'background-size:100% ' + (frameCount * 100) + '%; background-position-y:' + posY + '%;"></div>';
+    }
+
+    section.innerHTML =
+      '<div class="tool-head">' +
+        '<div class="tool-title">' + tool.title + '</div>' +
+        '<a class="tool-raid-link" href="raid-guide.html?slug=' + tool.raidSlug + '">&larr; ' + tool.raidName + ' guide</a>' +
+      '</div>' +
+      (tool.bannerImage ? '<img class="tool-banner" src="' + tool.bannerImage + '" alt="' + tool.title + '">' : '') +
+      '<p class="tool-intro">' + tool.intro + '</p>' +
+      '<div class="rune-tool-wrap">' +
+        '<div class="rune-picker-label">Select the 3 runes shown at ' + tool.referencePoint + '</div>' +
+        '<div class="rune-picker-grid" id="rune-picker-grid"></div>' +
+        '<div class="rune-picker-hint" id="rune-picker-hint">Pick exactly 3 runes.</div>' +
+        '<div class="rune-stage" id="rune-stage"></div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found \u2014 you\'re set for this run.</div>' +
+        '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
+      '</div>';
+
+    const grid = document.getElementById("rune-picker-grid");
+    const hint = document.getElementById("rune-picker-hint");
+    const stage = document.getElementById("rune-stage");
+    const doneMsg = document.getElementById("rune-done-msg");
+
+    tool.runes.forEach(r => {
+      const cell = document.createElement("div");
+      cell.className = "rune-picker-cell";
+      cell.dataset.num = r.number;
+      cell.innerHTML = iconHtml(r) + '<span class="rune-picker-num">' + r.number + '</span>';
+      cell.addEventListener("click", () => toggleRune(r.number, cell));
+      grid.appendChild(cell);
+    });
+
+    function toggleRune(num, cell){
+      const idx = selected.indexOf(num);
+      if (idx > -1){
+        selected.splice(idx, 1);
+        cell.classList.remove("selected");
+      } else {
+        if (selected.length >= 3) return;
+        selected.push(num);
+        cell.classList.add("selected");
+      }
+      updatePickerState();
+      if (selected.length === 3) lockInStage();
+      else clearStage();
+    }
+
+    function updatePickerState(){
+      const cells = grid.querySelectorAll(".rune-picker-cell");
+      cells.forEach(c => {
+        const isSelected = c.classList.contains("selected");
+        c.classList.toggle("disabled", selected.length >= 3 && !isSelected);
+      });
+      hint.textContent = selected.length === 3
+        ? "3 selected \u2014 locked in below."
+        : "Pick exactly 3 runes (" + selected.length + "/3 selected).";
+    }
+
+    function clearStage(){
+      stage.classList.remove("active");
+      stage.innerHTML = "";
+      doneMsg.classList.remove("show");
+    }
+
+    function lockInStage(){
+      const ordered = [...selected].sort((a, b) => a - b).map(n => tool.runes.find(r => r.number === n));
+      currentIndex = 0;
+      stage.innerHTML = ordered.map((r, i) =>
+        '<div class="rune-stage-row' + (i === 0 ? ' current' : '') + '" data-num="' + r.number + '">' +
+          '<div class="rune-row-main">' +
+            '<div class="rune-row-icon">' + iconHtml(r) + '</div>' +
+            '<div class="rune-row-name"><b>' + r.number + '</b>' + r.simpleLocation + '</div>' +
+            '<button class="rune-next-btn" type="button">Next</button>' +
+          '</div>' +
+          '<div class="rune-row-detail">' + r.detailedLocation + '</div>' +
+        '</div>'
+      ).join("");
+      stage.classList.add("active");
+      doneMsg.classList.remove("show");
+
+      const rows = stage.querySelectorAll(".rune-stage-row");
+      rows.forEach((row, i) => {
+        row.querySelector(".rune-next-btn").addEventListener("click", () => {
+          if (i !== currentIndex) return; // out-of-order click, ignore
+          row.classList.remove("current");
+          row.classList.add("done");
+          currentIndex++;
+          if (rows[currentIndex]){
+            rows[currentIndex].classList.add("current");
+          } else {
+            doneMsg.classList.add("show");
+          }
+        });
+      });
+    }
+
+    document.getElementById("rune-reset-btn").addEventListener("click", () => {
+      selected = [];
+      grid.querySelectorAll(".rune-picker-cell").forEach(c => c.classList.remove("selected", "disabled"));
+      hint.textContent = "Pick exactly 3 runes.";
+      clearStage();
+    });
+  }
+
+  function renderLRTool(tool){
+    const choices = {}; // pairNumber -> "L" | "R"
+
+    const pairRowsHtml = tool.pairs.map(p =>
+      '<div class="lr-pair-row" data-num="' + p.number + '">' +
+        '<div class="lr-pair-icon"><img src="' + tool.icon + '" alt=""></div>' +
+        '<div class="lr-pair-label"><b>' + p.number + '</b>' + p.name + '</div>' +
+        '<div class="lr-pair-buttons">' +
+          '<button class="lr-btn" type="button" data-side="L">L</button>' +
+          '<button class="lr-btn" type="button" data-side="R">R</button>' +
+        '</div>' +
+      '</div>'
+    ).join("");
+
+    section.innerHTML =
+      '<div class="tool-head">' +
+        '<div class="tool-title">' + tool.title + '</div>' +
+        '<a class="tool-raid-link" href="raid-guide.html?slug=' + tool.raidSlug + '">&larr; ' + tool.raidName + ' guide</a>' +
+      '</div>' +
+      (tool.bannerImage ? '<img class="tool-banner" src="' + tool.bannerImage + '" alt="' + tool.title + '">' : '') +
+      '<p class="tool-intro">' + tool.intro + '</p>' +
+      '<div class="lr-tool-wrap">' +
+        '<div class="lr-section-label">Reference statues</div>' +
+        '<div class="lr-reference-text">' + tool.referencePoint + '</div>' +
+        pairRowsHtml +
+        '<div class="rune-stage" id="rune-stage"></div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found \u2014 you\'re set for this run.</div>' +
+        '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
+      '</div>';
+
+    const stage = document.getElementById("rune-stage");
+    const doneMsg = document.getElementById("rune-done-msg");
+    let currentIndex = 0;
+
+    section.querySelectorAll(".lr-pair-row").forEach(row => {
+      const num = Number(row.dataset.num);
+      row.querySelectorAll(".lr-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          choices[num] = btn.dataset.side;
+          row.querySelectorAll(".lr-btn").forEach(b => b.classList.toggle("selected", b === btn));
+          maybeLockIn();
+        });
+      });
+    });
+
+    function maybeLockIn(){
+      if (Object.keys(choices).length < tool.pairs.length) { clearStage(); return; }
+      lockInStage();
+    }
+
+    function clearStage(){
+      stage.classList.remove("active");
+      stage.innerHTML = "";
+      doneMsg.classList.remove("show");
+    }
+
+    function lockInStage(){
+      currentIndex = 0;
+      stage.innerHTML = tool.pairs.map((p, i) => {
+        const side = choices[p.number];
+        const detail = side === "L" ? p.detailedLocation.L : p.detailedLocation.R;
+        return '<div class="rune-stage-row' + (i === 0 ? ' current' : '') + '" data-num="' + p.number + '">' +
+          '<div class="rune-row-main">' +
+            '<div class="rune-row-icon"><img src="' + tool.icon + '" alt=""></div>' +
+            '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + ' (' + side + ')</div>' +
+            '<button class="rune-next-btn" type="button">Next</button>' +
+          '</div>' +
+          '<div class="rune-row-detail">' + detail + '</div>' +
+        '</div>';
+      }).join("");
+      stage.classList.add("active");
+      doneMsg.classList.remove("show");
+
+      const rows = stage.querySelectorAll(".rune-stage-row");
+      rows.forEach((row, i) => {
+        row.querySelector(".rune-next-btn").addEventListener("click", () => {
+          if (i !== currentIndex) return;
+          row.classList.remove("current");
+          row.classList.add("done");
+          currentIndex++;
+          if (rows[currentIndex]) rows[currentIndex].classList.add("current");
+          else doneMsg.classList.add("show");
+        });
+      });
+    }
+
+    document.getElementById("rune-reset-btn").addEventListener("click", () => {
+      Object.keys(choices).forEach(k => delete choices[k]);
+      section.querySelectorAll(".lr-btn.selected").forEach(b => b.classList.remove("selected"));
+      clearStage();
+    });
+  }
+
+  // ---------- Verity solver (Salvation's Edge) ----------
+  const VERITY_SHAPES = ["C", "S", "T"];
+  const VERITY_NAMES = { C: "Circle", S: "Square", T: "Triangle" };
+  const VERITY_3D = ["Sphere", "Cylinder", "Cone", "Cube", "Prism", "Pyramid"];
+  const VERITY_3D_ROW1 = ["Sphere", "Cylinder", "Cone"];
+  const VERITY_3D_ROW2 = ["Cube", "Prism", "Pyramid"];
+  // The 3D target is built from the two shapes an Inside statue is NOT holding.
+  const VERITY_MISSING = { C: ["S", "T"], S: ["C", "T"], T: ["C", "S"] };
+  const VERITY_COMPOSITE_NAME = { ST: "Prism", CT: "Cone", CS: "Cylinder", CC: "Sphere", SS: "Cube", TT: "Pyramid" };
+  const VERITY_NAME_TO_PAIR = { Sphere: ["C","C"], Cube: ["S","S"], Pyramid: ["T","T"], Prism: ["S","T"], Cone: ["C","T"], Cylinder: ["C","S"] };
+
+  function verityImgBtn(icons, key){
+    return '<button type="button" class="verity-shape-btn" data-shape="' + key + '"><img src="' + icons[key] + '" alt="' + (VERITY_NAMES[key] || key) + '"></button>';
+  }
+
+  function pairKey(pair){ return [...pair].sort().join(""); }
+
+  // BFS over the tiny state space (3 statues x 2 slots) to find the minimum
+  // number of single-token swaps between two different statues needed to
+  // turn the current outside composites into the required targets.
+  // Flattens a swap path into its individual deposit targets, in order,
+  // so we can check the Equal Distribution rule (never deposit into the
+  // same statue twice in a row).
+  function depositSequence(path){
+    const seq = [];
+    path.forEach(m => { seq.push(m.fromLane); seq.push(m.toLane); });
+    return seq;
+  }
+  function respectsEqualDistribution(path){
+    const seq = depositSequence(path);
+    for (let i = 1; i < seq.length; i++){
+      if (seq[i] === seq[i - 1]) return false;
+    }
+    return true;
+  }
+
+  function solveVerity(startState, targetState){
+    const key = state => state.map(pairKey).join("|");
+    const targetKey = key(targetState);
+    if (key(startState) === targetKey) return { path: [], equalDistribution: true };
+
+    const visited = new Set([key(startState)]);
+    let frontier = [{ state: startState, path: [] }];
+
+    while (frontier.length){
+      const next = [];
+      const solutionsAtThisDepth = [];
+      for (const { state, path } of frontier){
+        for (let i = 0; i < 3; i++){
+          for (let pi = 0; pi < 2; pi++){
+            for (let j = 0; j < 3; j++){
+              if (j === i) continue;
+              for (let qi = 0; qi < 2; qi++){
+                const newState = state.map(pair => [...pair]);
+                const movedShape = newState[i][pi];
+                const receivedShape = newState[j][qi];
+                if (movedShape === receivedShape) continue; // no-op swap
+                newState[i][pi] = receivedShape;
+                newState[j][qi] = movedShape;
+                const k = key(newState);
+                if (visited.has(k)) continue;
+                const move = { fromLane: i, fromShape: movedShape, toLane: j, toShape: receivedShape };
+                const newPath = [...path, move];
+                if (k === targetKey){
+                  solutionsAtThisDepth.push(newPath);
+                  continue; // keep searching this depth for a cleaner alternative
+                }
+                visited.add(k);
+                next.push({ state: newState, path: newPath });
+              }
+            }
+          }
+        }
+      }
+      if (solutionsAtThisDepth.length){
+        // Prefer any solution at this minimum depth that never deposits
+        // into the same statue twice in a row (Equal Distribution).
+        const clean = solutionsAtThisDepth.find(respectsEqualDistribution);
+        const chosen = clean || solutionsAtThisDepth[0];
+        return { path: chosen, equalDistribution: !!clean };
+      }
+      frontier = next;
+    }
+    return null; // shouldn't happen for valid inputs
+  }
+
+  // ---------- Fireteam Fashion (merged in from the standalone tool) ----------
+  const FT_BUNGIE_ROOT = "https://www.bungie.net";
+  const FT_SLOT_BUCKETS = {
+    helmet: 3448274439, arms: 3551918588, chest: 14239492,
+    legs: 20886954, classitem: 1585787867, ghost: 4023194814
+  };
+  const FT_SLOT_ORDER = ["helmet", "arms", "chest", "legs", "classitem", "ghost"];
+  const FT_CLASS_NAMES = { 0: "Titan", 1: "Hunter", 2: "Warlock" };
+
+  function buildFireteamPanelHtml(){
+    return '<div id="verity-fireteam-panel" class="ft-panel" style="display:none">' +
+      '<div class="ft-disclosure">This reads live party membership through Bungie\u2019s public API. Only works for <strong>public</strong> profiles, and only shows people currently grouped up in-game right now.</div>' +
+      '<div class="ft-search-row">' +
+        '<input type="text" id="ft-search-input" placeholder="Name#1234" autocomplete="off">' +
+        '<button id="ft-search-btn" type="button">Go</button>' +
+      '</div>' +
+      '<div class="ft-search-error" id="ft-search-error"></div>' +
+      '<div class="ft-settings-row">' +
+        '<label><input type="checkbox" data-ft-slot="helmet" checked> Helmet</label>' +
+        '<label><input type="checkbox" data-ft-slot="arms" checked> Arms</label>' +
+        '<label><input type="checkbox" data-ft-slot="chest" checked> Chest</label>' +
+        '<label><input type="checkbox" data-ft-slot="legs" checked> Legs</label>' +
+        '<label><input type="checkbox" data-ft-slot="classitem" checked> Class Item</label>' +
+        '<label><input type="checkbox" data-ft-slot="ghost" checked> Ghost</label>' +
+      '</div>' +
+      '<div class="ft-section-label">Fireteam</div>' +
+      '<div class="ft-player-grid" id="ft-all-grid"></div>' +
+      '<div class="ft-note" id="ft-status-note"></div>' +
+    '</div>';
+  }
+
+  function initFireteamPanel(){
+    const allGrid = document.getElementById("ft-all-grid");
+    const statusNote = document.getElementById("ft-status-note");
+    const errorEl = document.getElementById("ft-search-error");
+    const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+
+    function showError(msg){ errorEl.textContent = msg; errorEl.classList.add("show"); }
+    function clearError(){ errorEl.classList.remove("show"); errorEl.textContent = ""; }
+
+    async function apiGet(path){
+      const res = await fetch(FT_BUNGIE_ROOT + path, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+      const data = await res.json();
+      if (data.ErrorCode !== 1) throw new Error(data.Message || "Bungie API error");
+      return data.Response;
+    }
+
+    async function resolvePlayer(bungieName){
+      const hashIdx = bungieName.lastIndexOf("#");
+      if (hashIdx === -1) throw new Error("Enter a full name, like Name#1234");
+      const name = bungieName.slice(0, hashIdx);
+      const code = bungieName.slice(hashIdx + 1);
+      const res = await fetch(FT_BUNGIE_ROOT + "/Platform/Destiny2/SearchDestinyPlayerByBungieName/-1/", {
+        method: "POST",
+        headers: { "X-API-Key": BUNGIE_API_KEY, "Content-Type": "application/json" },
+        body: JSON.stringify({ displayName: name, displayNameCode: Number(code) })
+      });
+      const data = await res.json();
+      if (data.ErrorCode !== 1 || !data.Response || !data.Response.length){
+        throw new Error("No player found with that name");
+      }
+      const primary = data.Response.find(m => m.crossSaveOverride === m.membershipType) || data.Response[0];
+      return { membershipId: primary.membershipId, membershipType: primary.membershipType };
+    }
+
+    async function getProfile(membershipId, membershipType){
+      return apiGet("/Platform/Destiny2/" + membershipType + "/Profile/" + membershipId + "/?components=100,200,205,1000");
+    }
+
+    function mostRecentCharacterId(profile){
+      const chars = profile.characters.data;
+      let best = null, bestTime = 0;
+      Object.keys(chars).forEach(id => {
+        const t = new Date(chars[id].dateLastPlayed).getTime();
+        if (t > bestTime){ bestTime = t; best = id; }
+      });
+      return best;
+    }
+
+    function buildEquipMap(profile, characterId){
+      const items = profile.characterEquipment.data[characterId]?.items || [];
+      const map = {};
+      FT_SLOT_ORDER.forEach(slot => {
+        const item = items.find(i => i.bucketHash === FT_SLOT_BUCKETS[slot]);
+        // If an ornament is equipped, overrideStyleItemHash points to it —
+        // that's the visually-correct icon, not the base item's own icon.
+        if (item) map[slot] = item.overrideStyleItemHash || item.itemHash;
+      });
+      return map;
+    }
+
+    async function fetchItemIcon(hash){
+      try {
+        const def = await apiGet("/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/");
+        return def.displayProperties && def.displayProperties.icon ? FT_BUNGIE_ROOT + def.displayProperties.icon : null;
+      } catch (err){
+        console.warn("Icon fetch failed for hash " + hash + ":", err.message);
+        return null;
+      }
+    }
+
+    function slotVisible(slot){
+      const cb = document.querySelector('.ft-settings-row input[data-ft-slot="' + slot + '"]');
+      return cb ? cb.checked : true;
+    }
+
+    async function renderPlayerCard(container, displayName, profile){
+      const card = document.createElement("div");
+      card.className = "ft-player-card panel-card";
+      const charId = mostRecentCharacterId(profile);
+      const character = charId ? profile.characters.data[charId] : null;
+      const className = character ? FT_CLASS_NAMES[character.classType] || "" : "";
+      const emblemPath = character && character.emblemBackgroundPath ? FT_BUNGIE_ROOT + character.emblemBackgroundPath : null;
+      card.innerHTML =
+        '<div class="ft-player-name">' + displayName + '</div>' +
+        '<div class="ft-player-class">' + className + '</div>' +
+        (emblemPath ? '<img class="ft-player-emblem" src="' + emblemPath + '" alt="">' : '') +
+        '<div class="ft-gear-grid">' +
+          FT_SLOT_ORDER.map(slot => '<div class="ft-gear-slot' + (slotVisible(slot) ? '' : ' ft-hidden-slot') + '" data-ft-gear-slot="' + slot + '"></div>').join("") +
+        '</div>';
+      container.appendChild(card);
+
+      if (!charId) return;
+      const equip = buildEquipMap(profile, charId);
+      for (const slot of FT_SLOT_ORDER){
+        const hash = equip[slot];
+        if (!hash) continue;
+        const icon = await fetchItemIcon(hash);
+        if (icon){
+          const slotEl = card.querySelector('.ft-gear-slot[data-ft-gear-slot="' + slot + '"]');
+          if (slotEl) slotEl.innerHTML = '<img src="' + icon + '" alt="">';
+        }
+      }
+    }
+
+    document.querySelectorAll(".ft-settings-row input").forEach(cb => {
+      cb.addEventListener("change", () => {
+        const slot = cb.dataset.ftSlot;
+        document.querySelectorAll('.ft-gear-slot[data-ft-gear-slot="' + slot + '"]').forEach(el => {
+          el.classList.toggle("ft-hidden-slot", !cb.checked);
+        });
+      });
+    });
+
+    async function runSearch(){
+      clearError();
+      allGrid.innerHTML = '<div class="ft-loading-state">Loading\u2026</div>';
+      statusNote.textContent = "";
+
+      const name = document.getElementById("ft-search-input").value.trim();
+      if (!name){ allGrid.innerHTML = ""; return; }
+
+      try {
+        const { membershipId, membershipType } = await resolvePlayer(name);
+        const profile = await getProfile(membershipId, membershipType);
+
+        allGrid.innerHTML = "";
+        await renderPlayerCard(allGrid, profile.profile.data.userInfo.bungieGlobalDisplayName || name, profile);
+
+        const transitory = profile.profileTransitoryData && profile.profileTransitoryData.data;
+        const partyMembers = (transitory && transitory.partyMembers) || [];
+        const others = partyMembers.filter(m => String(m.membershipId) !== String(membershipId));
+
+        if (!others.length){
+          statusNote.textContent = "Not currently in a fireteam with anyone else.";
+          return;
+        }
+
+        for (const member of others){
+          try {
+            const linked = await apiGet("/Platform/Destiny2/-1/Profile/" + member.membershipId + "/LinkedProfiles/");
+            const memberProfileInfo = linked.profiles && linked.profiles[0];
+            if (!memberProfileInfo) continue;
+            const memberName = memberProfileInfo.bungieGlobalDisplayName || memberProfileInfo.displayName;
+            const memberProfile = await getProfile(memberProfileInfo.membershipId, memberProfileInfo.membershipType);
+            await renderPlayerCard(allGrid, memberName, memberProfile);
+          } catch (err){
+            console.warn("Fireteam member fetch failed:", err.message);
+          }
+        }
+      } catch (err){
+        allGrid.innerHTML = "";
+        showError(err.message);
+      }
+    }
+
+    document.getElementById("ft-search-btn").addEventListener("click", runSearch);
+    document.getElementById("ft-search-input").addEventListener("keydown", e => {
+      if (e.key === "Enter") runSearch();
+    });
+  }
+
+  function renderVerityTool(tool){
+    const icons = tool.icons;
+    const LANES = ["Left", "Middle", "Right"];
+    const insideHeld = [null, null, null]; // 2D shape held per lane
+    const insideForced = [false, false, false]; // was this lane auto-filled rather than clicked?
+    const outsideSelected = [null, null, null]; // named 3D shape currently on each statue
+    const outsideForced = [false, false, false];
+
+    section.innerHTML =
+      '<div class="tool-head">' +
+        '<div class="tool-title">' + tool.title + '</div>' +
+        '<a class="tool-raid-link" href="raid-guide.html?slug=' + tool.raidSlug + '">&larr; ' + tool.raidName + ' guide</a>' +
+      '</div>' +
+      (tool.bannerImage ? '<img class="tool-banner" src="' + tool.bannerImage + '" alt="' + tool.title + '">' : "") +
+      '<p class="tool-intro">' + tool.intro + '</p>' +
+      '<div class="verity-subtabs">' +
+        '<button type="button" class="verity-subtab active" data-panel="solver">Dissection Solver</button>' +
+        '<button type="button" class="verity-subtab" data-panel="fireteam">Fireteam Fashion</button>' +
+      '</div>' +
+      '<div id="verity-solver-panel">' +
+      '<label class="verity-master-label"><input type="checkbox" id="verity-master-toggle"> Master challenge (Varied Geometry) \u2014 find a round-2 solution using different final shapes than usual</label>' +
+      '<div class="verity-wrap">' +
+        '<div class="verity-section-label">Inside callouts</div>' +
+        '<div class="verity-hint">Click the shape each Inside player calls out, Left to Right. Once two are set, the third fills in automatically \u2014 there are only three shapes and no repeats.</div>' +
+        '<div class="verity-lanes" id="verity-inside">' +
+          LANES.map((lane, i) =>
+            '<div class="verity-lane" data-lane="' + i + '">' +
+              '<div class="verity-lane-label">' + lane + ' \u2014 Inside</div>' +
+              '<div class="verity-shape-row">' +
+                VERITY_SHAPES.map(s => verityImgBtn(icons, s)).join("") +
+              '</div>' +
+              '<div class="verity-target" data-lane-target="' + i + '"></div>' +
+            '</div>'
+          ).join("") +
+        '</div>' +
+
+        '<div class="verity-section-label">Outside statues \u2014 what you see right now</div>' +
+        '<div class="verity-hint">For each statue, click the 3D shape you currently see.</div>' +
+        '<div class="verity-lanes" id="verity-outside">' +
+          LANES.map((lane, i) =>
+            '<div class="verity-lane" data-lane="' + i + '">' +
+              '<div class="verity-lane-label">' + lane + ' \u2014 Outside</div>' +
+              '<div class="verity-outside-rows">' +
+                '<div class="verity-shape-row">' + VERITY_3D_ROW1.map(s => verityImgBtn(icons, s)).join("") + '</div>' +
+                '<div class="verity-shape-row">' + VERITY_3D_ROW2.map(s => verityImgBtn(icons, s)).join("") + '</div>' +
+              '</div>' +
+            '</div>'
+          ).join("") +
+        '</div>' +
+
+        '<div class="verity-solution" id="verity-solution"></div>' +
+
+        '<div class="verity-ogre-tip">Outside: 3 Knights per cycle, then Ogre for 3 more. Inside: 2 per cycle. Already factored into the solution above.</div>' +
+
+        '<button class="rune-reset-btn" id="verity-reset-btn" type="button">Reset</button>' +
+      '</div>' +
+      '</div>' +
+      buildFireteamPanelHtml();
+
+    document.querySelectorAll(".verity-subtab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".verity-subtab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById("verity-solver-panel").style.display = tab.dataset.panel === "solver" ? "block" : "none";
+        document.getElementById("verity-fireteam-panel").style.display = tab.dataset.panel === "fireteam" ? "block" : "none";
+      });
+    });
+    initFireteamPanel();
+
+    const insideEl = document.getElementById("verity-inside");
+    const outsideEl = document.getElementById("verity-outside");
+    const solutionEl = document.getElementById("verity-solution");
+
+    function updateInsideAvailability(){
+      const taken = insideHeld.filter(Boolean);
+      insideEl.querySelectorAll(".verity-lane").forEach((laneEl, i) => {
+        laneEl.querySelectorAll(".verity-shape-btn").forEach(btn => {
+          const shape = btn.dataset.shape;
+          const selected = insideHeld[i] === shape;
+          btn.classList.toggle("selected", selected);
+          btn.classList.toggle("disabled", !selected && taken.includes(shape));
+        });
+        const targetEl = laneEl.querySelector("[data-lane-target]");
+        if (insideHeld[i]){
+          const missing = VERITY_MISSING[insideHeld[i]];
+          const targetName = VERITY_COMPOSITE_NAME[pairKey(missing)];
+          targetEl.innerHTML = "Target: <b>" + targetName + "</b> (" + VERITY_NAMES[missing[0]] + " + " + VERITY_NAMES[missing[1]] + ")";
+        } else {
+          targetEl.textContent = "";
+        }
+      });
+    }
+
+    // If exactly two lanes are set, the third is forced (only one shape left).
+    function autoForceThirdLane(){
+      // Clear out any lane we auto-filled before, so a stale forced value
+      // from a previous selection doesn't stick around after the user
+      // changes their mind on a different lane.
+      for (let i = 0; i < 3; i++){
+        if (insideForced[i]){ insideHeld[i] = null; insideForced[i] = false; }
+      }
+      const unsetIdx = insideHeld.map((v, i) => v === null ? i : -1).filter(i => i > -1);
+      if (unsetIdx.length === 1){
+        const taken = insideHeld.filter(Boolean);
+        const remaining = VERITY_SHAPES.filter(s => !taken.includes(s));
+        if (remaining.length === 1){
+          insideHeld[unsetIdx[0]] = remaining[0];
+          insideForced[unsetIdx[0]] = true;
+        }
+      }
+    }
+
+    insideEl.querySelectorAll(".verity-lane").forEach((laneEl, i) => {
+      laneEl.querySelectorAll(".verity-shape-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (btn.classList.contains("disabled")) return;
+          insideHeld[i] = insideHeld[i] === btn.dataset.shape ? null : btn.dataset.shape;
+          insideForced[i] = false;
+          autoForceThirdLane();
+          updateInsideAvailability();
+          // An Inside change can invalidate an already-picked Outside shape
+          // (it might no longer contain the newly-held 2D shape).
+          for (let lane = 0; lane < 3; lane++){
+            if (outsideSelected[lane] && !outsideOptionValid(lane, outsideSelected[lane])){
+              outsideSelected[lane] = null;
+              outsideForced[lane] = false;
+            }
+          }
+          updateOutsideDisplay();
+          maybeSolve();
+        });
+      });
+    });
+
+    // Outside only has 2 of each 2D shape total to work with across all three
+    // statues combined (Inside already used the third of each). Selecting an
+    // option that would push any shape's total past 2 gets disabled, so an
+    // invalid combination can't be created in the first place.
+    function outsideUsedCounts(excludeLane){
+      const counts = { C: 0, S: 0, T: 0 };
+      outsideSelected.forEach((name, i) => {
+        if (i === excludeLane || !name) return;
+        const pair = VERITY_NAME_TO_PAIR[name];
+        counts[pair[0]]++;
+        counts[pair[1]]++;
+      });
+      return counts;
+    }
+
+    function outsideOptionValid(lane, shapeName){
+      const pair = VERITY_NAME_TO_PAIR[shapeName];
+      // Confirmed rule: a statue's starting composite always contains the
+      // 2D shape its own Inside lane is holding (the puzzle deliberately
+      // starts you off "wrong" with the shape you're not meant to end on).
+      const held = insideHeld[lane];
+      if (held && !pair.includes(held)) return false;
+      const used = outsideUsedCounts(lane);
+      const projected = { ...used };
+      projected[pair[0]]++;
+      projected[pair[1]]++;
+      return projected.C <= 2 && projected.S <= 2 && projected.T <= 2;
+    }
+
+    function updateOutsideDisplay(){
+      outsideEl.querySelectorAll(".verity-lane").forEach((laneEl, i) => {
+        laneEl.querySelectorAll(".verity-shape-btn").forEach(btn => {
+          const shape = btn.dataset.shape;
+          const isSelected = outsideSelected[i] === shape;
+          btn.classList.toggle("selected", isSelected);
+          btn.classList.toggle("disabled", !isSelected && !outsideOptionValid(i, shape));
+        });
+      });
+    }
+
+    // The named 3D shape whose pair exactly matches a given remaining
+    // shape allowance, e.g. {C:2} -> Sphere, {C:1,S:1} -> Cylinder.
+    const VERITY_PAIR_TO_NAME = {};
+    Object.keys(VERITY_NAME_TO_PAIR).forEach(name => {
+      VERITY_PAIR_TO_NAME[pairKey(VERITY_NAME_TO_PAIR[name])] = name;
+    });
+
+    // If exactly two Outside lanes are set, the third is often forced —
+    // only 2 of each shape exist total, so whatever's left over may only
+    // fit one specific named shape.
+    function autoForceThirdOutsideLane(){
+      for (let i = 0; i < 3; i++){
+        if (outsideForced[i]){ outsideSelected[i] = null; outsideForced[i] = false; }
+      }
+      const unsetIdx = outsideSelected.map((v, i) => v === null ? i : -1).filter(i => i > -1);
+      if (unsetIdx.length !== 1) return;
+      const lane = unsetIdx[0];
+      const used = outsideUsedCounts(lane);
+      const remaining = { C: 2 - used.C, S: 2 - used.S, T: 2 - used.T };
+      if (remaining.C < 0 || remaining.S < 0 || remaining.T < 0) return; // already invalid, don't guess
+      const remainingShapes = [];
+      VERITY_SHAPES.forEach(s => { for (let n = 0; n < remaining[s]; n++) remainingShapes.push(s); });
+      if (remainingShapes.length !== 2) return;
+      const forcedName = VERITY_PAIR_TO_NAME[pairKey(remainingShapes)];
+      if (forcedName){
+        outsideSelected[lane] = forcedName;
+        outsideForced[lane] = true;
+      }
+    }
+
+    outsideEl.querySelectorAll(".verity-lane").forEach((laneEl, i) => {
+      laneEl.querySelectorAll(".verity-shape-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const shape = btn.dataset.shape;
+          if (btn.classList.contains("disabled")) return;
+          outsideSelected[i] = outsideSelected[i] === shape ? null : shape;
+          outsideForced[i] = false;
+          autoForceThirdOutsideLane();
+          updateOutsideDisplay();
+          maybeSolve();
+        });
+      });
+    });
+
+    // Master "Varied Geometry" challenge: round 2 needs three final shapes
+    // that all differ from the normal solution. A statue just has to avoid
+    // the 2D shape its Inside player holds — it doesn't have to be the
+    // exact missing-pair shape. Finds any valid alternate target set, or
+    // null if this setup has none.
+    function findAlternateTarget(heldShapes){
+      const normal = heldShapes.map(shape => VERITY_MISSING[shape]);
+      const normalNames = normal.map(pair => VERITY_PAIR_TO_NAME[pairKey(pair)]);
+      const optionsPerLane = heldShapes.map((held, i) => {
+        return VERITY_SHAPES_ALL_NAMES.filter(name => {
+          const pair = VERITY_NAME_TO_PAIR[name];
+          return !pair.includes(held) && name !== normalNames[i];
+        });
+      });
+      for (const nameL of optionsPerLane[0]){
+        for (const nameM of optionsPerLane[1]){
+          for (const nameR of optionsPerLane[2]){
+            const pairs = [nameL, nameM, nameR].map(n => VERITY_NAME_TO_PAIR[n]);
+            const counts = { C: 0, S: 0, T: 0 };
+            pairs.forEach(p => { counts[p[0]]++; counts[p[1]]++; });
+            if (counts.C === 2 && counts.S === 2 && counts.T === 2){
+              return pairs;
+            }
+          }
+        }
+      }
+      return null;
+    }
+    const VERITY_SHAPES_ALL_NAMES = Object.keys(VERITY_NAME_TO_PAIR);
+
+    function maybeSolve(){
+      solutionEl.classList.remove("active");
+      solutionEl.innerHTML = "";
+      if (insideHeld.some(s => !s)) return;
+      if (outsideSelected.some(s => !s)) return;
+
+      let targetState = insideHeld.map(shape => VERITY_MISSING[shape]);
+      const masterMode = document.getElementById("verity-master-toggle")?.checked;
+      if (masterMode){
+        const alt = findAlternateTarget(insideHeld);
+        if (!alt){
+          solutionEl.classList.add("active");
+          solutionEl.innerHTML = '<div class="verity-already-solved">No alternate shape set exists for this setup \u2014 play this round with the normal solution instead.</div>';
+          return;
+        }
+        targetState = alt;
+      }
+      const startState = outsideSelected.map(name => VERITY_NAME_TO_PAIR[name]);
+
+      const solveResult = solveVerity(startState, targetState);
+      solutionEl.classList.add("active");
+      if (!solveResult){
+        solutionEl.innerHTML = '<div class="verity-already-solved">Couldn\u2019t find a solution \u2014 double check the shapes you entered.</div>';
+        return;
+      }
+      const solution = solveResult.path;
+      if (solution.length === 0){
+        solutionEl.innerHTML = '<div class="verity-already-solved">Already correct \u2014 no swaps needed.</div>';
+        return;
+      }
+      const equalDistWarning = solveResult.equalDistribution ? "" :
+        '<div class="verity-ogre-tip verity-warning">Heads up: this sequence deposits into the same statue twice in a row somewhere below. Equal Distribution also counts Inside\u2019s deposits, so time this step so an Inside deposit lands in between \u2014 no shorter Outside-only sequence avoids it here.</div>';
+      // Flatten into individual pickup actions first, so an Ogre-kill step
+      // can be inserted at the right point — Outside only gets 3 Knights
+      // per cycle before needing to kill the Ogre for 3 more.
+      //
+      // IMPORTANT: nothing is ever carried cross-lane. Each lane's Knight
+      // always drops whatever shape that lane's Inside player originally
+      // called out (fixed for the whole attempt — invert insideHeld to find
+      // it). A deposit is only valid at a statue that ALREADY holds that
+      // exact shape as one of its two components, and it's deposited at
+      // THAT statue, not carried elsewhere. Once both halves of a swap are
+      // deposited (into two different statues), the game auto-swaps their
+      // other, non-participating components — that's what workingState
+      // below simulates.
+      const knightLaneForShape = {};
+      insideHeld.forEach((shape, laneIdx) => { knightLaneForShape[shape] = laneIdx; });
+
+      const pickups = [];
+      solution.forEach(m => {
+        pickups.push({ shape: m.fromShape, knightLane: knightLaneForShape[m.fromShape], depositLane: m.fromLane });
+        pickups.push({ shape: m.toShape, knightLane: knightLaneForShape[m.toShape], depositLane: m.toLane });
+      });
+
+      // Composite-icon snapshot of all 3 lanes at a given point, so a player
+      // can visually confirm the statues match before moving on.
+      function progressSnapshotHtml(state){
+        return '<div class="verity-progress-row">' +
+          LANES.map((lane, i) => {
+            const name = VERITY_COMPOSITE_NAME[pairKey(state[i])];
+            return '<div class="verity-progress-lane"><img src="' + icons[name] + '" alt="' + name + '"><span>' + lane + '</span></div>';
+          }).join("") +
+        '</div>';
+      }
+
+      let workingState = startState.map(pair => [...pair]);
+      let stepNum = 0;
+      const rows = [];
+      pickups.forEach((p, idx) => {
+        if (idx > 0 && idx % 3 === 0){
+          stepNum++;
+          rows.push(
+            '<div class="verity-solution-step verity-ogre-step"><span class="step-num">' + stepNum + '</span>' +
+            'Kill Ogres</div>'
+          );
+        }
+        stepNum++;
+        rows.push(
+          '<div class="verity-solution-step"><span class="step-num">' + stepNum + '</span>' +
+          '<span class="verity-solution-step-icon"><img src="' + icons[p.shape] + '" alt=""></span>' +
+          '<span class="verity-solution-step-text">Kill Knight at ' + LANES[p.knightLane] + '; Pickup <b>' + VERITY_NAMES[p.shape] + '</b>; Put ' + VERITY_NAMES[p.shape] + ' in ' + LANES[p.depositLane] + '</span></div>'
+        );
+        // Second pickup of a pair completes one full swap — update the
+        // working state and drop in a visual checkpoint.
+        if (idx % 2 === 1){
+          const m = solution[(idx - 1) / 2];
+          const fromPair = workingState[m.fromLane];
+          const toPair = workingState[m.toLane];
+          fromPair.splice(fromPair.indexOf(m.fromShape), 1, m.toShape);
+          toPair.splice(toPair.indexOf(m.toShape), 1, m.fromShape);
+          rows.push('<div class="verity-progress-label">Statues now look like this</div>');
+          rows.push(progressSnapshotHtml(workingState));
+        }
+      });
+
+      solutionEl.innerHTML =
+        '<div class="verity-section-label">Solution \u2014 ' + solution.length + (solution.length === 1 ? " swap" : " swaps") + ' (' + pickups.length + ' pickups)</div>' +
+        '<div class="verity-hint">Each deposit only works at a statue that already holds that exact shape. Once both halves of a swap are down, the other component at each statue trades places automatically.</div>' +
+        '<div class="verity-solution-steps">' + rows.join("") + '</div>' +
+        equalDistWarning;
+    }
+
+    document.getElementById("verity-reset-btn").addEventListener("click", () => {
+      for (let i = 0; i < 3; i++){
+        insideHeld[i] = null;
+        insideForced[i] = false;
+        outsideSelected[i] = null;
+        outsideForced[i] = false;
+      }
+      updateInsideAvailability();
+      updateOutsideDisplay();
+      solutionEl.classList.remove("active");
+      solutionEl.innerHTML = "";
+    });
+
+    document.getElementById("verity-master-toggle").addEventListener("change", maybeSolve);
+
+    updateInsideAvailability();
+    updateOutsideDisplay();
+  }
+
+  function renderActive(slug){
+    if (!TOOLS.length){
+      renderPicker(null);
+      section.innerHTML = '<div class="no-tools">No puzzle helpers added yet.</div>';
+      return;
+    }
+    const tool = TOOLS.find(t => t.slug === slug);
+    renderPicker(tool ? tool.slug : null);
+    if (!tool){
+      section.removeAttribute("data-tool");
+      section.innerHTML = '<div class="no-tools">Pick a tool above to get started.</div>';
+      return;
+    }
+    section.setAttribute("data-tool", tool.slug);
+    if (tool.type === "rune-select") renderRuneTool(tool);
+    else if (tool.type === "lr-select") renderLRTool(tool);
+    else if (tool.type === "verity-solver") renderVerityTool(tool);
+    else renderWishTool(tool);
+  }
+
+  renderActive(getRequestedSlug());
+})();
+</script>
+
+</body>
+</html>

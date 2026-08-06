@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rally Flag — Destiny 2 Database</title>
+<meta name="description" content="A Destiny 2 companion site: live Distortion tracking, armor set bonuses, guides, and god rolls.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  .hero{ margin-top:56px; }
+  h1.title{ font-size:clamp(40px, 7vw, 66px); }
+
+  .link-grid{
+    max-width:1000px; margin:56px auto 0; padding:0 24px 90px;
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;
+  }
+  @media (max-width:640px){ .link-grid{ grid-template-columns:1fr; } }
+
+  .link-card{
+    position:relative; display:block; text-decoration:none;
+    padding:28px 26px; overflow:hidden;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .link-card:hover, .link-card:focus-visible{
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .link-card:hover .link-arrow, .link-card:focus-visible .link-arrow{ transform: translateX(4px); }
+
+  .link-eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.14em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+  }
+  .link-title{
+    font-family:'Oswald', sans-serif; font-weight:700; font-size:24px;
+    color:var(--text); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .link-arrow{ color:var(--accent-bright); font-size:20px; transition: transform 0.2s ease; }
+  .link-desc{ font-size:13.5px; color:var(--text-dim); line-height:1.5; }
+
+  .link-card.soon{ opacity:0.6; cursor:default; }
+  .link-card.soon:hover{ border-color:var(--panel-border); background:var(--panel); }
+  .link-card.soon .link-arrow{ display:none; }
+  .soon-tag{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em;
+    color:var(--text-dimmer); text-transform:uppercase;
+    border:1px solid var(--panel-border); border-radius:999px; padding:3px 9px;
+  }
+</style>
+</head>
+<body data-nav-group="">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">Rally Flag</h1>
+  <p class="subtitle">A companion site for Destiny 2 — live Distortion tracking, the full armor set bonus database, guides, and god rolls, all in one place.</p>
+</div>
+
+<div class="link-grid">
+  <a href="distortions.html" class="link-card panel-card">
+    <div class="link-eyebrow">Live · Updates Hourly</div>
+    <div class="link-title">Distortions <span class="link-arrow">→</span></div>
+    <div class="link-desc">What's distorted right now, what's up next, the full rotation schedule, and answers to common questions.</div>
+  </a>
+
+  <a href="armor-set-bonuses.html" class="link-card panel-card">
+    <div class="link-eyebrow">56 Sets</div>
+    <div class="link-title">Armor Sets <span class="link-arrow">→</span></div>
+    <div class="link-desc">Every 2-piece and 4-piece armor set bonus, searchable and filterable by source and weapon pairing.</div>
+  </a>
+
+  <a href="guides.html" class="link-card panel-card">
+    <div class="link-eyebrow">11 Raids · 10 Dungeons</div>
+    <div class="link-title">Guides <span class="link-arrow">→</span></div>
+    <div class="link-desc">Step-by-step encounter walkthroughs for every raid and dungeon in the game.</div>
+  </a>
+
+  <a href="artifacts.html" class="link-card panel-card">
+    <div class="link-eyebrow">7 Artifacts</div>
+    <div class="link-title">Artifacts <span class="link-arrow">→</span></div>
+    <div class="link-desc">What each seasonal artifact's mods actually do.</div>
+  </a>
+
+  <a href="god-rolls.html" class="link-card panel-card">
+    <div class="link-eyebrow">Live Bungie Data</div>
+    <div class="link-title">God Rolls <span class="link-arrow">→</span></div>
+    <div class="link-desc">The rolls we actually run, from our own playtime.</div>
+  </a>
+</div>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+  <p>Destiny data and set bonus text sourced from public game data. Data and icons © Bungie.</p>
+</footer>
+
+<script src="assets/nav.js"></script>
+</body>
+</html>

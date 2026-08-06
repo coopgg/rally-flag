@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redemption Codes — Rally Flag</title>
+<meta name="description" content="Every active Bungie.net redemption code we know of, grouped by reward type — tap a code to redeem it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  .disclosure{
+    max-width:720px; margin:28px auto 0; padding:16px 20px;
+    font-size:13px; color:var(--text-dim); line-height:1.6; text-align:center;
+  }
+  .disclosure strong{ color:var(--accent-bright); }
+
+  section{ max-width:1000px; margin:0 auto; padding:32px 24px 90px; }
+
+  .code-group{ margin-bottom:36px; }
+  .code-group-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:14px;
+    padding-bottom:10px; border-bottom:1px solid var(--panel-border);
+  }
+  .code-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:10px;
+  }
+  .code-link{
+    display:flex; align-items:center; gap:10px; padding:12px 14px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
+    text-decoration:none; transition: all 0.15s ease;
+  }
+  .code-link:hover{ border-color:var(--accent); background:var(--accent-dim); }
+  .code-token{
+    font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--accent-bright);
+    white-space:nowrap; flex-shrink:0;
+  }
+  .code-name{ font-size:12.5px; color:var(--text); font-weight:500; }
+</style>
+</head>
+<body data-nav-group="codes">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">Redemption Codes</h1>
+  <p class="subtitle">Every currently-active Bungie.net redemption code we've tracked down, grouped by what it unlocks. Tap any code to open the redemption page with it pre-filled.</p>
+</div>
+
+<div class="disclosure">
+  Codes are redeemed once per Bungie account at <strong>bungie.net/7/en/codes/redeem</strong>. If a code comes back "already redeemed" or "invalid," it's either already linked to your account or has expired — this list is updated when we catch changes, but Bungie can retire codes at any time.
+</div>
+
+<section>
+
+  <div class="code-group">
+    <div class="code-group-label">Monument of Triumph — Ornament &amp; Cosmetic Sets</div>
+    <div class="code-grid" id="group-monument"></div>
+  </div>
+
+  <div class="code-group">
+    <div class="code-group-label">Emblems</div>
+    <div class="code-grid" id="group-emblems"></div>
+  </div>
+
+  <div class="code-group">
+    <div class="code-group-label">Shaders, Emotes &amp; Effects</div>
+    <div class="code-grid" id="group-cosmetic"></div>
+  </div>
+
+</section>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+  <p>Redemption codes sourced from Bungie's own code redemption page and cross-referenced against community trackers. Data © Bungie.</p>
+</footer>
+
+<script src="assets/nav.js"></script>
+<script>
+(function(){
+  const REDEEM_BASE = "https://www.bungie.net/7/en/codes/redeem?token=";
+
+  const MONUMENT = [
+    { code:"3TG-G67-PYD", name:"Deadlands Titan Ornament Set" },
+    { code:"MMX-3HF-CJ4", name:"Deadlands Warlock Ornament Set" },
+    { code:"6MC-A3F-X3R", name:"Deadlands Hunter Ornament Set" },
+    { code:"FPP-NHV-HNC", name:"Field Transcriber Ghost Shell" },
+    { code:"7AM-PJR-GMX", name:"Mobile Array Sparrow" },
+    { code:"M3L-7DA-67C", name:"Evergreen Destrier Sparrow" },
+    { code:"K9P-PVD-NR6", name:"Dynamic Equivalence Ship" },
+    { code:"FLK-TXG-P4A", name:"Hot and Cold Shader" }
+  ];
+
+  const EMBLEMS = [
+    { code:"VMG-HXK-VAL", name:"Broken and Bruised" },
+    { code:"F6K-D44-JH4", name:"Gloriabundus" },
+    { code:"JRR-7YA-CCC", name:"Last Blush" },
+    { code:"FCX-P94-JCV", name:"Little Light" },
+    { code:"7LD-PLJ-FN3", name:"Lofty Wail" },
+    { code:"J64-HYC-HTD", name:"Red Shift Returning" },
+    { code:"9NG-KDD-PNG", name:"Tethered Storm" },
+    { code:"DXL-XHC-X37", name:"Runner" },
+    { code:"JND-HLR-L69", name:"M:\\>START" },
+    { code:"JA9-PRC-XKX", name:"Take the Mantle" },
+    { code:"JGN-PX4-DFN", name:"Secret Signal" },
+    { code:"JXJ-HVA-RCX", name:"Ever Forward" },
+    { code:"VHT-6A7-3MM", name:"Conqueror of Infinity" },
+    { code:"HG7-YRG-HHF", name:"Year of the Snake" },
+    { code:"9FY-KDD-PRT", name:"Adventurous Spirit" },
+    { code:"THR-33A-YKC", name:"Risen" },
+    { code:"L3P-XXR-GJ4", name:"Out the Airlock" },
+    { code:"PTD-GKG-CVN", name:"Archived" },
+    { code:"3J9-AMM-7MG", name:"Folding Space" },
+    { code:"3CV-D6K-RD4", name:"Gone Home" },
+    { code:"FMM-44A-RKP", name:"Myopia" },
+    { code:"6AJ-XFR-9ND", name:"Tigris Fati" },
+    { code:"A67-C7X-3GN", name:"Bulbul Tarang" },
+    { code:"VXN-V3T-MRP", name:"Harmonic Commencement" },
+    { code:"HN3-7K9-93G", name:"Airlock Invitation" },
+    { code:"TNN-DKM-6LG", name:"Jade's Burrow" },
+    { code:"YAA-37T-FCN", name:"Neon Mirage" },
+    { code:"993-H3H-M6K", name:"Visio Spei" },
+    { code:"XVK-RLA-RAM", name:"In Urbe Inventa" },
+    { code:"J6P-9YH-LLP", name:"In Vino Mendacium" },
+    { code:"XMY-G9M-6XH", name:"Limitless Horizon" },
+    { code:"9LX-7YC-6TX", name:"Schr\u00f6dinger's Gun" },
+    { code:"XVX-DKJ-CVM", name:"Seraphim's Gauntlets" },
+    { code:"T67-JXY-PH6", name:"Stag's Spirit" },
+    { code:"D97-YCX-7JK", name:"Crushed Gamma" },
+    { code:"ML3-FD4-ND9", name:"Be True" },
+    { code:"L7T-CVV-3RD", name:"Heliotrope Warren" },
+    { code:"PKH-JL6-L4R", name:"Tangled Web" },
+    { code:"6LJ-GH7-TPA", name:"Sneer of the Oni" },
+    { code:"F99-KPX-NCF", name:"Shadow's Light" },
+    { code:"VA7-L7H-PNC", name:"Liminal Nadir" },
+    { code:"PHV-6LF-9CP", name:"Countdown to Convergence" },
+    { code:"7D4-PKR-MD7", name:"Sequence Flourish" },
+    { code:"YRC-C3D-YNC", name:"A Classy Order" },
+    { code:"RA9-XPH-6KJ", name:"Cryonautics" },
+    { code:"7LV-GTK-T7J", name:"Future in Shadow" },
+    { code:"JYN-JAA-Y7D", name:"Galilean Excursion" },
+    { code:"XFV-KHP-N97", name:"The Visionary" },
+    { code:"JVG-VNT-GGG", name:"\u0421\u043e\u043d\u044f\u0448\u043d\u0438\u043a" }
+  ];
+
+  const COSMETIC = [
+    { code:"D6T-3JR-CKX", name:"Prismatic Expanse (Shader)" },
+    { code:"TK7-D3P-FDF", name:"Rainbow Connection (Exotic Emote)" },
+    { code:"R9J-79M-J6C", name:"End of the Rainbow (Transmat Effect)" }
+  ];
+
+  function renderGroup(elId, list){
+    document.getElementById(elId).innerHTML = list.map(item =>
+      '<a class="code-link" href="' + REDEEM_BASE + encodeURIComponent(item.code) + '" target="_blank" rel="noopener">' +
+        '<span class="code-token">' + item.code + '</span>' +
+        '<span class="code-name">' + item.name + '</span>' +
+      '</a>'
+    ).join("");
+  }
+
+  renderGroup("group-monument", MONUMENT);
+  renderGroup("group-emblems", EMBLEMS);
+  renderGroup("group-cosmetic", COSMETIC);
+})();
+</script>
+
+</body>
+</html>

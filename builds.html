@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suggested Builds — Rally Flag</title>
+<meta name="description" content="Full loadouts — exotic armor, exotic weapon, armor set, and artifact — built around a single synergy, with the perks explained.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  /* ---------- Controls ---------- */
+  .controls{ max-width:1000px; margin:40px auto 0; padding:0 24px; }
+
+  .search-row{ display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+  .search-box{ flex:1; position:relative; }
+  .search-box input{
+    width:100%; background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--text); font-family:'Inter', sans-serif; font-size:14px;
+    padding:14px 16px; border-radius:2px; outline:none;
+    transition: border-color 0.2s ease;
+  }
+  .search-box input:focus{ border-color:var(--accent); }
+  .search-box input::placeholder{ color:var(--text-dimmer); }
+  .build-count{
+    font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .build-count strong{ color:var(--accent-bright); }
+  .expand-all-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+  }
+  .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
+
+  .filter-row{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
+    padding:12px 0; border-top:1px solid var(--panel-border);
+  }
+  .filter-row:last-child{ border-bottom:1px solid var(--panel-border); }
+  .filter-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
+  }
+  .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
+    color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
+    padding:7px 14px; border-radius:999px; cursor:pointer;
+    transition: all 0.15s ease; user-select:none;
+  }
+  .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
+  .chip.on{
+    color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright);
+    font-weight:600;
+  }
+  .clear-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
+    background:none; border:none; cursor:pointer; text-decoration:underline;
+    text-underline-offset:2px; margin-left:auto;
+  }
+  .clear-btn:hover{ color:var(--accent-bright); }
+
+  /* ---------- Grid ---------- */
+  .grid-section{ max-width:1000px; margin:36px auto 0; padding:0 24px 90px; }
+  .build-grid{ display:flex; flex-direction:column; gap:20px; }
+  .build-card{ padding:26px; }
+
+  .build-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    flex-wrap:wrap; margin-bottom:8px; cursor:pointer; user-select:none;
+  }
+  .build-head-left{ display:flex; align-items:flex-start; gap:10px; min-width:0; }
+  .build-caret{
+    flex-shrink:0; width:18px; height:18px; margin-top:2px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); transition: transform 0.18s ease;
+  }
+  .build-caret svg{ width:11px; height:11px; }
+  .build-card.expanded .build-caret{ transform:rotate(90deg); }
+  .build-title{ font-family:'Oswald', sans-serif; font-weight:700; font-size:21px; color:var(--text); }
+  .build-badges{ display:flex; gap:6px; flex-shrink:0; }
+  .class-badge{
+    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:600;
+    color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
+    padding:4px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .subclass-badge{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:600;
+    color:#0b0700; border:1px solid transparent; padding:4px 10px 4px 8px; border-radius:999px;
+    text-transform:uppercase; letter-spacing:0.04em;
+  }
+  .subclass-badge img{ width:12px; height:12px; object-fit:contain; }
+  .subclass-solar{ background:#ff8f3f; }
+  .subclass-void{ background:#b56bff; }
+  .subclass-arc{ background:#3fd6ff; }
+  .subclass-stasis{ background:#7fb9ff; }
+  .subclass-strand{ background:#3ddc84; }
+  .subclass-prismatic{ background:#ff6fd5; }
+
+  .build-tagline{ font-size:13.5px; color:var(--text-dim); line-height:1.5; }
+  .build-card.expanded .build-tagline{ margin-bottom:20px; }
+  .build-body{ display:none; }
+  .build-card.expanded .build-body{ display:block; }
+
+  .loadout-label, .section-label{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:10px;
+  }
+  .loadout-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+    gap:10px; margin-bottom:20px;
+  }
+  .loadout-piece{
+    display:flex; gap:10px; align-items:center; padding:10px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:2px;
+    text-decoration:none; transition: border-color 0.15s ease;
+  }
+  a.loadout-piece:hover{ border-color:var(--accent); }
+  .loadout-icon{
+    position:relative; flex-shrink:0; width:42px; height:42px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-dim); border:1px solid var(--panel-border);
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:14px;
+    color:var(--accent-bright); overflow:hidden;
+  }
+  .loadout-icon img{ width:100%; height:100%; object-fit:cover; }
+  .loadout-icon .loadout-icon-watermark{
+    position:absolute; bottom:1px; right:1px; width:14px; height:14px;
+    object-fit:contain; pointer-events:none;
+  }
+  .loadout-body{ min-width:0; }
+  .loadout-role{ font-size:9.5px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.08em; }
+  .loadout-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .loadout-sub{ font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  .loop-list{ margin:0 0 20px; padding:0; list-style:none; counter-reset:loop; }
+  .loop-item{ display:flex; gap:10px; margin-bottom:10px; counter-increment:loop; }
+  .loop-item::before{
+    content:counter(loop); flex-shrink:0; width:20px; height:20px; border-radius:50%;
+    background:var(--accent-dim); color:var(--accent-bright); border:1px solid var(--panel-border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:10px; font-weight:700; margin-top:1px;
+  }
+  .loop-text{ font-size:13px; color:var(--text-dim); line-height:1.55; }
+
+  .why-block{
+    padding-top:16px; border-top:1px solid var(--panel-border); margin-bottom:16px;
+  }
+  .why-text{ font-size:13px; color:var(--text-dim); line-height:1.6; }
+
+  .perks-row{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+  .perk-tag{
+    font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
+    background:var(--accent-dim); border:1px solid var(--panel-border);
+    padding:3px 9px; border-radius:999px;
+  }
+
+  .tags-row{ display:flex; flex-wrap:wrap; gap:6px; padding-top:14px; border-top:1px solid var(--panel-border); }
+  .build-tag{
+    font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border);
+    padding:3px 9px; border-radius:999px;
+  }
+
+  .no-results{
+    text-align:center; padding:60px 20px; color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace; font-size:14px;
+  }
+
+  @media (max-width:640px){
+    .search-row{ flex-direction:column; align-items:stretch; }
+    .build-count{ text-align:center; }
+    .filter-label{ min-width:100%; margin-bottom:2px; }
+  }
+</style>
+</head>
+<body data-nav-group="builds">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 Database</div>
+  <h1 class="title">Suggested Builds</h1>
+  <p class="subtitle">Full loadouts pulled together from our own armor set, artifact, and weapon data plus outside research — exotic armor, exotic weapon, armor set, and artifact, all built around one synergy.</p>
+</div>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search builds…" autocomplete="off">
+    </div>
+    <div class="build-count"><strong id="count-num">0</strong> builds</div>
+    <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
+  </div>
+
+  <div class="filter-row">
+    <div class="filter-label">Class</div>
+    <div class="chip-group" id="class-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Subclass</div>
+    <div class="chip-group" id="subclass-chips"></div>
+    <button class="clear-btn" id="clear-btn">Clear filters</button>
+  </div>
+</div>
+
+<div class="grid-section">
+  <div class="build-grid" id="build-grid"></div>
+</div>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+  <p>Exotic armor and weapon details, armor set bonuses, and artifact perks sourced from public game data. Data © Bungie.</p>
+</footer>
+
+<script src="assets/nav.js"></script>
+<script src="assets/builds-data.js"></script>
+<script src="assets/api-keys.js"></script>
+<script>
+(function(){
+  const BUILDS = window.BuildsData.BUILDS;
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const BUNGIE_ROOT = "https://www.bungie.net";
+
+  // Same real subclass icons used on the Artifacts and Armor Sets pages —
+  // static Bungie CDN paths, no API key needed.
+  const ELEMENT_ICON_PATHS = {
+    solar:     "/common/destiny2_content/icons/8d9818f39c419bbe081d78397362406d.png",
+    void:      "/common/destiny2_content/icons/6c9ea5cd14b20cd2af43522151a9ebbf.png",
+    arc:       "/common/destiny2_content/icons/e0a4d33058adbb90c0499cf84444b4b0.png",
+    stasis:    "/common/destiny2_content/icons/5724cfee09280d8d4f725e34281cec8b.png",
+    strand:    "/common/destiny2_content/icons/e2f88241a0deb487b306679155c5cfeb.png",
+    prismatic: "/common/destiny2_content/icons/8f8283c4f518dbd2239ba1f60b91d14f.png"
+  };
+
+  function monogram(name){
+    const words = name.replace(/[^A-Za-z0-9 ]/g, " ").trim().split(/\s+/);
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+
+  // Fetch a single Destiny item's definition by its exact hash — same
+  // reliable single-item endpoint used on the God Rolls and Armor Sets pages.
+  const itemCache = {};
+  async function fetchItemByHash(hash){
+    if (itemCache[hash] !== undefined) return itemCache[hash];
+    const url = BUNGIE_ROOT + "/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/";
+    const res = await fetch(url, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    if (!res.ok) throw new Error("Item fetch failed for hash " + hash + ": " + res.status);
+    const data = await res.json();
+    const def = data?.Response;
+    if (!def) throw new Error("No definition returned for hash " + hash);
+    const result = {
+      name: def.displayProperties?.name || null,
+      icon: def.displayProperties?.icon ? BUNGIE_ROOT + def.displayProperties.icon : null,
+      watermark: def.iconWatermark ? BUNGIE_ROOT + def.iconWatermark : null
+    };
+    itemCache[hash] = result;
+    return result;
+  }
+
+  async function hydrateBuildIcons(build){
+    if (build.exoticArmor?.itemHash){
+      try {
+        const item = await fetchItemByHash(build.exoticArmor.itemHash);
+        const el = document.getElementById("armor-icon-" + build.slug);
+        if (el && item.icon) el.innerHTML = '<img src="' + item.icon + '" alt="' + build.exoticArmor.name + '">';
+      } catch (err){
+        console.warn("Exotic armor icon fetch failed for " + build.title + ":", err.message);
+      }
+    }
+    if (build.exoticWeapon?.itemHash){
+      try {
+        const item = await fetchItemByHash(build.exoticWeapon.itemHash);
+        const el = document.getElementById("weapon-icon-" + build.slug);
+        if (el && item.icon){
+          el.innerHTML = '<img src="' + item.icon + '" alt="' + build.exoticWeapon.name + '">' +
+            (item.watermark ? '<img class="loadout-icon-watermark" src="' + item.watermark + '" alt="Season">' : '');
+        }
+      } catch (err){
+        console.warn("Exotic weapon icon fetch failed for " + build.title + ":", err.message);
+      }
+    }
+  }
+
+  let hydrationInProgress = false;
+  const hydrationQueue = [];
+  const hydratedSlugs = new Set();
+  async function processHydrationQueue(){
+    if (hydrationInProgress) return;
+    hydrationInProgress = true;
+    try {
+      // Sequential, not concurrent — concurrent Bungie API requests cause
+      // 500s, learned the hard way on God Rolls.
+      while (hydrationQueue.length){
+        const build = hydrationQueue.shift();
+        await hydrateBuildIcons(build);
+      }
+    } finally {
+      hydrationInProgress = false;
+    }
+  }
+  function queueHydration(build){
+    if (hydratedSlugs.has(build.slug)) return;
+    hydratedSlugs.add(build.slug);
+    hydrationQueue.push(build);
+    processHydrationQueue();
+  }
+
+  // ---------- Expand/collapse state ----------
+  // Cards start collapsed by default; expanded state is tracked by slug so
+  // it survives re-renders triggered by search/filter changes.
+  const expandedSlugs = new Set();
+
+  function setCardExpanded(card, build, expanded){
+    if (expanded) card.classList.add("expanded"); else card.classList.remove("expanded");
+    const head = card.querySelector(".build-head");
+    if (head) head.setAttribute("aria-expanded", expanded ? "true" : "false");
+    if (expanded){
+      expandedSlugs.add(build.slug);
+      queueHydration(build);
+    } else {
+      expandedSlugs.delete(build.slug);
+    }
+  }
+
+  // ---------- Filter state ----------
+  const state = { search:"", classes:new Set(), subclasses:new Set() };
+
+  const ALL_CLASSES = [...new Set(BUILDS.map(b => b.class))].sort();
+  const ALL_SUBCLASSES = [...new Set(BUILDS.map(b => b.subclass))].sort();
+
+  function buildChips(container, values, set){
+    container.innerHTML = "";
+    values.forEach(v => {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.textContent = v;
+      chip.addEventListener("click", () => {
+        if (set.has(v)) set.delete(v); else set.add(v);
+        chip.classList.toggle("on");
+        render();
+      });
+      container.appendChild(chip);
+    });
+  }
+  buildChips(document.getElementById("class-chips"), ALL_CLASSES, state.classes);
+  buildChips(document.getElementById("subclass-chips"), ALL_SUBCLASSES, state.subclasses);
+
+  document.getElementById("search-input").addEventListener("input", e => {
+    state.search = e.target.value.trim().toLowerCase();
+    render();
+  });
+
+  document.getElementById("clear-btn").addEventListener("click", () => {
+    state.search = "";
+    state.classes.clear();
+    state.subclasses.clear();
+    document.getElementById("search-input").value = "";
+    document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+    render();
+  });
+
+  function matchesFilters(build){
+    if (state.classes.size && !state.classes.has(build.class)) return false;
+    if (state.subclasses.size && !state.subclasses.has(build.subclass)) return false;
+    if (state.search){
+      const hay = (
+        build.title + " " + build.tagline + " " + build.class + " " + build.subclass + " " +
+        build.exoticArmor.name + " " + build.exoticWeapon.name + " " + build.armorSet.name + " " +
+        build.artifact.name + " " + (build.tags || []).join(" ")
+      ).toLowerCase();
+      if (!hay.includes(state.search)) return false;
+    }
+    return true;
+  }
+
+  function subclassBadge(subclass){
+    const key = subclass.toLowerCase();
+    const iconUrl = ELEMENT_ICON_PATHS[key] ? BUNGIE_ROOT + ELEMENT_ICON_PATHS[key] : null;
+    const icon = iconUrl ? '<img src="' + iconUrl + '" alt="">' : "";
+    return '<span class="subclass-badge subclass-' + key + '">' + icon + subclass + '</span>';
+  }
+
+  function loadoutPieceHtml(opts){
+    // opts: { href, iconId, monogramText, role, name, sub }
+    const tag = opts.href ? "a" : "div";
+    const hrefAttr = opts.href ? ' href="' + opts.href + '"' : "";
+    return (
+      '<' + tag + ' class="loadout-piece"' + hrefAttr + '>' +
+        '<div class="loadout-icon" id="' + opts.iconId + '">' + opts.monogramText + '</div>' +
+        '<div class="loadout-body">' +
+          '<div class="loadout-role">' + opts.role + '</div>' +
+          '<div class="loadout-name">' + opts.name + '</div>' +
+          (opts.sub ? '<div class="loadout-sub">' + opts.sub + '</div>' : "") +
+        '</div>' +
+      '</' + tag + '>'
+    );
+  }
+
+  function render(){
+    const grid = document.getElementById("build-grid");
+    grid.innerHTML = "";
+    const visible = BUILDS.filter(matchesFilters);
+    document.getElementById("count-num").textContent = visible.length;
+
+    if (!visible.length){
+      const empty = document.createElement("div");
+      empty.className = "no-results";
+      empty.textContent = "No builds match those filters.";
+      grid.appendChild(empty);
+      updateExpandAllLabel();
+      return;
+    }
+
+    visible.forEach(build => {
+      const card = document.createElement("div");
+      card.className = "build-card panel-card";
+      card.id = "build-" + build.slug;
+
+      const loadoutHtml =
+        loadoutPieceHtml({
+          iconId: "armor-icon-" + build.slug, monogramText: monogram(build.exoticArmor.name),
+          role: "Exotic \u00b7 " + build.exoticArmor.slot, name: build.exoticArmor.name
+        }) +
+        loadoutPieceHtml({
+          iconId: "weapon-icon-" + build.slug, monogramText: monogram(build.exoticWeapon.name),
+          role: "Exotic \u00b7 " + build.exoticWeapon.weaponType, name: build.exoticWeapon.name
+        }) +
+        loadoutPieceHtml({
+          href: "armor-set-bonuses.html?highlight=" + build.armorSet.slug + "#set-" + build.armorSet.slug,
+          iconId: "armorset-icon-" + build.slug, monogramText: monogram(build.armorSet.name),
+          role: "Armor Set", name: build.armorSet.name, sub: "View bonuses \u2192"
+        }) +
+        loadoutPieceHtml({
+          href: "artifacts.html#artifact-" + build.artifact.slug,
+          iconId: "artifact-icon-" + build.slug, monogramText: monogram(build.artifact.name),
+          role: "Artifact", name: build.artifact.name, sub: "View perks \u2192"
+        });
+
+      const loopHtml = (build.loop || []).map(step => '<li class="loop-item"><div class="loop-text">' + step + '</div></li>').join("");
+      const perksHtml = (build.recommendedArtifactPerks || []).map(p => '<span class="perk-tag">' + p + '</span>').join("");
+      const tagsHtml = (build.tags || []).map(t => '<span class="build-tag">' + t + '</span>').join("");
+
+      card.innerHTML =
+        '<div class="build-head" role="button" tabindex="0" aria-expanded="false">' +
+          '<div class="build-head-left">' +
+            '<span class="build-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
+            '<div class="build-title">' + build.title + '</div>' +
+          '</div>' +
+          '<div class="build-badges"><span class="class-badge">' + build.class + '</span>' + subclassBadge(build.subclass) + '</div>' +
+        '</div>' +
+        '<div class="build-tagline">' + build.tagline + '</div>' +
+        '<div class="build-body">' +
+          '<div class="loadout-label">Loadout</div>' +
+          '<div class="loadout-grid">' + loadoutHtml + '</div>' +
+          '<div class="section-label">The Loop</div>' +
+          '<ol class="loop-list">' + loopHtml + '</ol>' +
+          '<div class="why-block">' +
+            '<div class="section-label">Why It Works</div>' +
+            '<div class="why-text">' + build.whyItWorks + '</div>' +
+          '</div>' +
+          (perksHtml ? '<div class="section-label">Artifact Perks To Slot</div><div class="perks-row">' + perksHtml + '</div>' : "") +
+          (tagsHtml ? '<div class="tags-row">' + tagsHtml + '</div>' : "") +
+        '</div>';
+
+      const headEl = card.querySelector(".build-head");
+      const toggle = () => setCardExpanded(card, build, !card.classList.contains("expanded"));
+      headEl.addEventListener("click", toggle);
+      headEl.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
+      });
+      if (expandedSlugs.has(build.slug)) setCardExpanded(card, build, true);
+
+      grid.appendChild(card);
+    });
+
+    updateExpandAllLabel();
+  }
+
+  function updateExpandAllLabel(){
+    const cards = [...document.querySelectorAll(".build-card")];
+    const btn = document.getElementById("expand-all-btn");
+    if (!cards.length){ btn.textContent = "Expand all"; return; }
+    const allExpanded = cards.every(c => c.classList.contains("expanded"));
+    btn.textContent = allExpanded ? "Collapse all" : "Expand all";
+  }
+
+  document.getElementById("expand-all-btn").addEventListener("click", () => {
+    const cards = [...document.querySelectorAll(".build-card")];
+    const anyCollapsed = cards.some(c => !c.classList.contains("expanded"));
+    cards.forEach(cardEl => {
+      const slug = cardEl.id.replace(/^build-/, "");
+      const build = BUILDS.find(b => b.slug === slug);
+      if (build) setCardExpanded(cardEl, build, anyCollapsed);
+    });
+    updateExpandAllLabel();
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
