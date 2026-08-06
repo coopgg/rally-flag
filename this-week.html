@@ -70,6 +70,23 @@
   .milestone-dates{
     font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--text-dimmer);
     margin-top:8px; text-transform:uppercase; letter-spacing:0.04em;
+  }  .tw-countdown-wrap{
+    text-align:center; padding:30px 20px;
+  }
+  .tw-countdown-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; margin-bottom:14px;
+  }
+  .tw-countdown-digits{
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:34px;
+    color:var(--accent-bright); letter-spacing:0.02em;
+  }
+  .tw-countdown-arrival{
+    font-size:13px; color:var(--text-dim); margin-top:12px;
+  }
+  .tw-countdown-note{
+    font-size:11px; color:var(--text-dimmer); margin-top:6px; max-width:420px;
+    margin-left:auto; margin-right:auto; line-height:1.5;
   }
 </style>
 </head>
@@ -181,8 +198,54 @@
   function formatDate(iso){
     if (!iso) return "";
     const d = new Date(iso);
-    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " "
+    return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) + " at "
          + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
+
+  // Xur's real refresh timestamp we captured live was Friday 09:00 UTC.
+  // Used only as a fallback estimate if Bungie's response doesn't include
+  // a vendor entry at all while he's inactive (see loadXur below) — if
+  // this ever drifts from his actual arrival, it needs correcting here.
+  function estimateNextXurArrival(){
+    const now = new Date();
+    const target = new Date(now);
+    target.setUTCHours(9, 0, 0, 0);
+    let daysUntilFriday = (5 - target.getUTCDay() + 7) % 7; // 5 = Friday
+    if (daysUntilFriday === 0 && target.getTime() <= now.getTime()) daysUntilFriday = 7;
+    target.setUTCDate(target.getUTCDate() + daysUntilFriday);
+    return target.toISOString();
+  }
+
+  let countdownTimer = null;
+  function renderCountdown(container, arrivalIso, isEstimate){
+    if (countdownTimer) clearInterval(countdownTimer);
+
+    container.innerHTML =
+      '<div class="tw-countdown-wrap">' +
+        '<div class="tw-countdown-label">Not at the Tower \u2014 next arrival in</div>' +
+        '<div class="tw-countdown-digits" id="xur-countdown-digits">\u2014</div>' +
+        '<div class="tw-countdown-arrival">Arrives ' + formatDate(arrivalIso) + '</div>' +
+        (isEstimate ? '<div class="tw-countdown-note">Bungie didn\u2019t give us a live refresh time this pull, so this is an estimate based on his usual Friday reset \u2014 not a guaranteed figure.</div>' : '') +
+      '</div>';
+
+    const digitsEl = document.getElementById("xur-countdown-digits");
+    const target = new Date(arrivalIso).getTime();
+
+    function tick(){
+      const diff = target - Date.now();
+      if (diff <= 0){
+        digitsEl.textContent = "Any moment now";
+        clearInterval(countdownTimer);
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      digitsEl.textContent = (d > 0 ? d + "d " : "") + h + "h " + m + "m " + s + "s";
+    }
+    tick();
+    countdownTimer = setInterval(tick, 1000);
   }
 
   // ---------------- Xur ----------------
@@ -193,8 +256,16 @@
       const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
       const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[XUR_VENDOR_HASH];
 
-      if (!vendorEntry){
-        contentEl.innerHTML = '<div class="tw-status">Not currently at the Tower \u2014 he shows up Friday reset through Tuesday reset.</div>';
+      // Whether he's actively selling — separate from whether Bungie gave
+      // us a vendor entry at all (it may still hand back a stub entry with
+      // just a refresh date while he's inactive).
+      const saleItemsCheck = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[XUR_VENDOR_HASH] && vendorsResp.sales.data[XUR_VENDOR_HASH].saleItems) || {};
+      const isActive = vendorEntry && vendorEntry.enabled !== false && Object.keys(saleItemsCheck).length > 0;
+
+      if (!isActive){
+        const isEstimate = !(vendorEntry && vendorEntry.nextRefreshDate);
+        const arrivalIso = isEstimate ? estimateNextXurArrival() : vendorEntry.nextRefreshDate;
+        renderCountdown(contentEl, arrivalIso, isEstimate);
         return;
       }
 
@@ -202,7 +273,7 @@
         refreshEl.textContent = "Refreshes " + formatDate(vendorEntry.nextRefreshDate);
       }
 
-      const saleItems = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[XUR_VENDOR_HASH] && vendorsResp.sales.data[XUR_VENDOR_HASH].saleItems) || {};
+      const saleItems = saleItemsCheck;
       const categoriesRaw = (vendorsResp.categories && vendorsResp.categories.data && vendorsResp.categories.data[XUR_VENDOR_HASH] && vendorsResp.categories.data[XUR_VENDOR_HASH].categories) || [];
 
       const saleList = Object.values(saleItems);
