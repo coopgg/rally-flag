@@ -1,0 +1,109 @@
+<svg viewBox="0 0 980 700" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#dce9f2"/>
+    <stop offset="55%" stop-color="#a9c3d6"/>
+    <stop offset="100%" stop-color="#5b7d95"/>
+  </linearGradient>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="#ffffff"/>
+  </marker>
+</defs>
+
+<rect width="980" height="700" fill="url(#bg)"/>
+<g stroke="#ffffff" stroke-width="1" opacity="0.12">
+  <line x1="0" y1="700" x2="500" y2="0"/>
+  <line x1="150" y1="700" x2="650" y2="0"/>
+  <line x1="350" y1="700" x2="850" y2="0"/>
+  <line x1="550" y1="700" x2="980" y2="80"/>
+  <line x1="750" y1="700" x2="980" y2="330"/>
+</g>
+
+<!-- title block -->
+<text x="912" y="48" font-family="Arial, sans-serif" font-weight="700" font-size="26" fill="#ffffff" text-anchor="end">OPENING THE VAULT</text>
+<line x1="700" y1="62" x2="912" y2="62" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+<text x="912" y="82" font-family="Arial, sans-serif" font-size="14" fill="#eaf3fa" text-anchor="end" font-style="italic">Waking Ruins &#183; Formation 1</text>
+
+<!-- room outline (simplified crescent with three plate bumps) -->
+<path d="M 60 640
+         L 60 260
+         Q 60 200 120 200
+         L 220 200
+         Q 260 130 330 130
+         L 420 130
+         Q 440 90 480 90
+         L 560 90
+         Q 600 130 640 130
+         L 700 130
+         Q 760 130 780 200
+         L 850 200
+         Q 900 200 900 260
+         L 900 640
+         Z"
+      fill="#ffffff" fill-opacity="0.05" stroke="#ffffff" stroke-width="2.5"/>
+
+<!-- vault door -->
+<rect x="440" y="86" width="100" height="10" rx="2" fill="#8fc7e8" stroke="#ffffff" stroke-width="1"/>
+
+<!-- Conflux / plate icons -->
+<g font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">
+  <g>
+    <circle cx="490" cy="185" r="26" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="490" cy="185" r="16" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <text x="490" y="228">MIDDLE PLATE</text>
+  </g>
+  <g>
+    <circle cx="205" cy="430" r="26" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="205" cy="430" r="16" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <text x="205" y="473">LEFT PLATE</text>
+  </g>
+  <g>
+    <circle cx="775" cy="430" r="26" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <circle cx="775" cy="430" r="16" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <text x="775" y="473">RIGHT PLATE</text>
+  </g>
+</g>
+
+<!-- Vex spawn markers (matches legend icon: short blue bar) -->
+<g>
+  <rect x="55" y="600" width="26" height="7" rx="2" fill="#8fc7e8" stroke="#ffffff" stroke-width="1"/>
+  <rect x="885" y="600" width="26" height="7" rx="2" fill="#8fc7e8" stroke="#ffffff" stroke-width="1"/>
+  <rect x="115" y="205" width="7" height="26" rx="2" fill="#8fc7e8" stroke="#ffffff" stroke-width="1"/>
+</g>
+
+<!-- Guardian dots + movement arrows -->
+<g>
+  <!-- middle plate: two guardians converging from left and right -->
+  <circle cx="330" cy="200" r="15" fill="#f2c94c" stroke="#c99a1e" stroke-width="1.5"/>
+  <path d="M 345 205 Q 400 220 460 195" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <circle cx="650" cy="200" r="15" fill="#f2c94c" stroke="#c99a1e" stroke-width="1.5"/>
+  <path d="M 635 205 Q 580 220 520 195" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+
+  <!-- left plate: one guardian dropping in from the upper-left Vex spawn, one rising from the bottom Vex spawn -->
+  <circle cx="118" cy="235" r="15" fill="#f2c94c" stroke="#c99a1e" stroke-width="1.5"/>
+  <path d="M 118 250 L 118 380" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <circle cx="68" cy="570" r="15" fill="#f2c94c" stroke="#c99a1e" stroke-width="1.5"/>
+  <path d="M 68 555 L 68 460" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+
+  <!-- right plate: one guardian dropping down from the right-side Vex spawn, one rising from the bottom Vex spawn -->
+  <circle cx="838" cy="255" r="15" fill="#f2c94c" stroke="#c99a1e" stroke-width="1.5"/>
+  <path d="M 830 268 Q 800 320 790 380" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <circle cx="898" cy="570" r="15" fill="#f2c94c" stroke="#c99a1e" stroke-width="1.5"/>
+  <path d="M 898 555 L 898 460" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+</g>
+
+<!-- legend box -->
+<g transform="translate(700,555)">
+  <rect width="278" height="130" fill="#3b5568" fill-opacity="0.55" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="26" cy="27" r="11" fill="none" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="26" cy="27" r="6" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <text x="48" y="32" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">CONFLUX / PLATE</text>
+
+  <rect x="15" y="60" width="22" height="6" rx="2" fill="#8fc7e8" stroke="#ffffff" stroke-width="1"/>
+  <text x="48" y="70" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">VEX SPAWN</text>
+
+  <circle cx="26" cy="102" r="10" fill="#f2c94c" stroke="#c99a1e" stroke-width="1.5"/>
+  <text x="48" y="107" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">GUARDIAN</text>
+</g>
+
+</svg>
