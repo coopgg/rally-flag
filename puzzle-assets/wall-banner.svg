@@ -1,0 +1,50 @@
+<svg viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="wallGlow" cx="50%" cy="25%" r="85%">
+    <stop offset="0%" stop-color="#1a2a2e"/>
+    <stop offset="60%" stop-color="#0f1a1c"/>
+    <stop offset="100%" stop-color="#080f10"/>
+  </radialGradient>
+  <linearGradient id="stoneFill" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#223338"/>
+    <stop offset="100%" stop-color="#141f22"/>
+  </linearGradient>
+  <radialGradient id="recessGlow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#8fd8c9" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#8fd8c9" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+
+<rect width="800" height="700" fill="url(#wallGlow)"/>
+
+<!-- faint radiating linework -->
+<g stroke="#8fd8c9" stroke-width="0.6" opacity="0.14" fill="none">
+  <circle cx="400" cy="90" r="220"/>
+  <circle cx="400" cy="90" r="300"/>
+  <line x1="400" y1="-210" x2="400" y2="700"/>
+  <line x1="90" y1="90" x2="710" y2="90"/>
+  <line x1="160" y1="-150" x2="640" y2="330"/>
+  <line x1="640" y1="-150" x2="160" y2="330"/>
+</g>
+
+<!-- arched stone alcove -->
+<path d="M 100 700
+         L 100 260
+         Q 100 60 400 50
+         Q 700 60 700 260
+         L 700 700"
+      fill="url(#stoneFill)" stroke="#3a5a58" stroke-width="2"/>
+<path d="M 122 700
+         L 122 262
+         Q 122 82 400 72
+         Q 678 82 678 262
+         L 678 700"
+      fill="none" stroke="#8fd8c9" stroke-width="1" opacity="0.35"/>
+
+<!-- 20 empty recesses, 5 columns x 4 rows -->
+<g><circle cx="180" cy="260" r="32" fill="url(#recessGlow)"/><circle cx="180" cy="260" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="180" cy="260" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="290" cy="260" r="32" fill="url(#recessGlow)"/><circle cx="290" cy="260" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="290" cy="260" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="400" cy="260" r="32" fill="url(#recessGlow)"/><circle cx="400" cy="260" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="400" cy="260" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="510" cy="260" r="32" fill="url(#recessGlow)"/><circle cx="510" cy="260" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="510" cy="260" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="620" cy="260" r="32" fill="url(#recessGlow)"/><circle cx="620" cy="260" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="620" cy="260" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/>
+<circle cx="180" cy="370" r="32" fill="url(#recessGlow)"/><circle cx="180" cy="370" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="180" cy="370" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="290" cy="370" r="32" fill="url(#recessGlow)"/><circle cx="290" cy="370" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="290" cy="370" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="400" cy="370" r="32" fill="url(#recessGlow)"/><circle cx="400" cy="370" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="400" cy="370" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="510" cy="370" r="32" fill="url(#recessGlow)"/><circle cx="510" cy="370" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="510" cy="370" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="620" cy="370" r="32" fill="url(#recessGlow)"/><circle cx="620" cy="370" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="620" cy="370" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/>
+<circle cx="180" cy="480" r="32" fill="url(#recessGlow)"/><circle cx="180" cy="480" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="180" cy="480" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="290" cy="480" r="32" fill="url(#recessGlow)"/><circle cx="290" cy="480" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="290" cy="480" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="400" cy="480" r="32" fill="url(#recessGlow)"/><circle cx="400" cy="480" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="400" cy="480" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="510" cy="480" r="32" fill="url(#recessGlow)"/><circle cx="510" cy="480" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="510" cy="480" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="620" cy="480" r="32" fill="url(#recessGlow)"/><circle cx="620" cy="480" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="620" cy="480" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/>
+<circle cx="180" cy="590" r="32" fill="url(#recessGlow)"/><circle cx="180" cy="590" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="180" cy="590" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="290" cy="590" r="32" fill="url(#recessGlow)"/><circle cx="290" cy="590" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="290" cy="590" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="400" cy="590" r="32" fill="url(#recessGlow)"/><circle cx="400" cy="590" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="400" cy="590" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="510" cy="590" r="32" fill="url(#recessGlow)"/><circle cx="510" cy="590" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="510" cy="590" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/><circle cx="620" cy="590" r="32" fill="url(#recessGlow)"/><circle cx="620" cy="590" r="26" fill="#0c1618" stroke="#4a6b68" stroke-width="2"/><circle cx="620" cy="590" r="26" fill="none" stroke="#8fd8c9" stroke-width="0.7" opacity="0.3" stroke-dasharray="3 3.5"/></g>
+
+</svg>
