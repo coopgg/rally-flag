@@ -1,0 +1,16 @@
+/* ============================================================
+   Shared API keys — the ONE place credentials live on this site.
+   Pages that need an API key read it from window.RallyFlagAPI
+   instead of holding their own copy. This file should basically
+   never need to be touched again once your keys are in place —
+   when Claude rebuilds a page's logic, this file is untouched,
+   so keys never get reset back to a placeholder by accident.
+
+   Include this script BEFORE any other script that reads from
+   window.RallyFlagAPI (e.g. before god-rolls.html's inline script).
+   ============================================================ */
+window.RallyFlagAPI = {
+  BUNGIE_API_KEY: "6299b9c9d3124d83ac607b10dd582eb7"
+  // Add future API keys here as new ones come up, e.g.:
+  // SOME_OTHER_API_KEY: "PASTE_HERE"
+};
