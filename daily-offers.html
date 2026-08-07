@@ -305,10 +305,42 @@
       // entry is or isn't coming through. Open the browser console (F12)
       // to see exactly what hashes the API actually returned.
       console.log(
-        "[DailyOffers debug] vendors.data keys present:",
+        "[DailyOffers debug] full request — vendors.data keys present:",
         vendorsResp.vendors && vendorsResp.vendors.data ? Object.keys(vendorsResp.vendors.data) : "(vendors.data missing entirely)",
         "\nfull vendorsResp:", vendorsResp
       );
+
+      // Second, separate diagnostic: request ONLY the bare Vendors
+      // component (no VendorSales/VendorCategories) to isolate whether
+      // it's specifically the sale-item data that's uncomputable, or
+      // whether the vendor is excluded even at this minimal level.
+      try {
+        const bareResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors");
+        console.log(
+          "[DailyOffers debug] Vendors-only request — vendors.data keys present:",
+          bareResp.vendors && bareResp.vendors.data ? Object.keys(bareResp.vendors.data) : "(vendors.data missing entirely)",
+          "\nfull bareResp:", bareResp
+        );
+      } catch (err){
+        console.log("[DailyOffers debug] Vendors-only request threw:", err.message);
+      }
+
+      // Third diagnostic: fetch each vendor's own definition directly,
+      // regardless of whether they showed up in the live pull. Ada-1's
+      // definition showed enabled:false/visible:false in a cached
+      // snapshot found earlier — this checks whether that's still true,
+      // which would point to "not currently an active vendor at all"
+      // as a separate explanation from "her items are character-locked."
+      try {
+        const tessDef = await fetchVendorDef(TESS_VENDOR_HASH);
+        const adaDef = await fetchVendorDef(ADA_VENDOR_HASH);
+        console.log(
+          "[DailyOffers debug] Tess Everis definition — enabled:", tessDef.enabled, "visible:", tessDef.visible,
+          "\n[DailyOffers debug] Ada-1 definition — enabled:", adaDef.enabled, "visible:", adaDef.visible
+        );
+      } catch (err){
+        console.log("[DailyOffers debug] Vendor definition fetch threw:", err.message);
+      }
 
       await loadVendorShop(vendorsResp, TESS_VENDOR_HASH, "tess-content", "Tess Everis");
       await loadVendorShop(vendorsResp, ADA_VENDOR_HASH, "ada-content", "Ada-1");
