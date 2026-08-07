@@ -5,7 +5,7 @@
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>This Week — Rally Flag</title>
-<meta name="description" content="What's active right now — Xûr's current wares and this week's rotating activities, pulled live from Bungie.">
+<meta name="description" content="This week's featured raid and dungeon, and Xûr's current wares.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -66,30 +66,30 @@
     display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
     gap:12px;
   }
-  .featured-card{
-    padding:16px 18px; text-decoration:none; display:block;
-    transition: border-color 0.15s ease, background 0.15s ease;
-  }
-  .featured-card:hover{ border-color:var(--accent); background:var(--accent-dim); }
+  .featured-card{ padding:16px 18px; }
   .featured-kind{
     font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
     color:var(--accent); text-transform:uppercase; margin-bottom:6px;
   }
   .featured-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:16px; color:var(--text); }
-  .featured-link{ font-size:11.5px; color:var(--accent-bright); margin-top:8px; }
-
-  /* --- Milestones --- */
-  .milestone-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
-    gap:10px;
+  .featured-set-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; margin-top:14px; margin-bottom:8px;
   }
-  .milestone-card{ padding:12px 14px; }
-  .milestone-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:13.5px; color:var(--text); }
-  .milestone-activity{ font-size:11.5px; color:var(--accent-bright); margin-top:2px; }
-  .milestone-dates{
-    font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--text-dimmer);
-    margin-top:7px; text-transform:uppercase; letter-spacing:0.04em;
-  }  .tw-countdown-wrap{
+  .set-links{ display:flex; flex-wrap:wrap; gap:8px; }
+  .set-link{
+    font-size:12.5px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
+    text-decoration:none; background:var(--accent-dim); border:1px solid var(--panel-border);
+    padding:8px 14px; border-radius:999px; transition: border-color 0.2s ease;
+  }
+  .set-link:hover, .set-link:focus-visible{ border-color:var(--accent-bright); }
+  .featured-link{
+    display:block; font-size:11.5px; color:var(--accent-bright); margin-top:14px;
+    text-decoration:none;
+  }
+  .featured-link:hover{ text-decoration:underline; }
+
+  .tw-countdown-wrap{
     text-align:center; padding:30px 20px;
   }
   .tw-countdown-label{
@@ -116,7 +116,7 @@
 <div class="hero">
   <div class="eyebrow">Destiny 2 Database</div>
   <h1 class="title">This Week</h1>
-  <p class="subtitle">Live from Bungie's own API — Xûr's current wares and this week's rotating activities.</p>
+  <p class="subtitle">This week's featured raid and dungeon, and Xûr's current wares.</p>
 </div>
 
 <section>
@@ -131,11 +131,6 @@
     <div class="tw-refresh-note" id="xur-refresh-note"></div>
   </div>
   <div id="xur-content"><div class="tw-status">Loading\u2026</div></div>
-
-  <div class="tw-section-head">
-    <div class="tw-section-title">Active This Week</div>
-  </div>
-  <div id="milestone-content"><div class="tw-status">Loading\u2026</div></div>
 </section>
 
 <footer>
@@ -146,6 +141,7 @@
 <script src="assets/nav.js"></script>
 <script src="assets/raids-data.js"></script>
 <script src="assets/dungeons-data.js"></script>
+<script src="assets/sets-data.js"></script>
 <script src="assets/api-keys.js"></script>
 <script>
 (function(){
@@ -205,34 +201,6 @@
     const def = await apiGet("/Platform/Destiny2/Manifest/DestinyVendorDefinition/" + hash + "/");
     vendorDefCache[hash] = def;
     return def;
-  }
-
-  const milestoneDefCache = {};
-  async function fetchMilestoneDef(hash){
-    if (milestoneDefCache[hash] !== undefined) return milestoneDefCache[hash];
-    try {
-      const def = await apiGet("/Platform/Destiny2/Manifest/DestinyMilestoneDefinition/" + hash + "/");
-      milestoneDefCache[hash] = def;
-      return def;
-    } catch (err){
-      console.warn("Milestone def fetch failed for hash " + hash + ":", err.message);
-      milestoneDefCache[hash] = null;
-      return null;
-    }
-  }
-
-  const activityDefCache = {};
-  async function fetchActivityDef(hash){
-    if (activityDefCache[hash] !== undefined) return activityDefCache[hash];
-    try {
-      const def = await apiGet("/Platform/Destiny2/Manifest/DestinyActivityDefinition/" + hash + "/");
-      activityDefCache[hash] = def;
-      return def;
-    } catch (err){
-      console.warn("Activity def fetch failed for hash " + hash + ":", err.message);
-      activityDefCache[hash] = null;
-      return null;
-    }
   }
 
   function formatDate(iso){
@@ -308,9 +276,19 @@
     const raids = (window.RaidsData ? window.RaidsData.RAIDS : []).filter(r => FEATURED_THIS_WEEK.raids.includes(r.slug));
     const dungeons = (window.DungeonsData ? window.DungeonsData.DUNGEONS : []).filter(d => FEATURED_THIS_WEEK.dungeons.includes(d.slug));
 
+    const setsBySlug = {};
+    (window.ArmorSetsData ? window.ArmorSetsData.SETS : []).forEach(s => setsBySlug[s.slug] = s);
+
+    // Same armor-set cross-link pattern already used on raid-guide.html /
+    // dungeon-guide.html (armorSlugs -> sets-data.js). Weapons aren't
+    // included here — there's no comprehensive per-activity weapon loot
+    // table in the site's data yet (god-rolls-data.js is only the curated
+    // "weapons we actually run" list, not a full drop table), so adding
+    // that would mean guessing loot tables from memory rather than using
+    // real data.
     const cards = [];
-    raids.forEach(r => cards.push({ kind: "Raid", name: r.name, href: "raid-guide.html?slug=" + r.slug }));
-    dungeons.forEach(d => cards.push({ kind: "Dungeon", name: d.name, href: "dungeon-guide.html?slug=" + d.slug }));
+    raids.forEach(r => cards.push({ kind: "Raid", name: r.name, href: "raid-guide.html?slug=" + r.slug, armorSlugs: r.armorSlugs || [] }));
+    dungeons.forEach(d => cards.push({ kind: "Dungeon", name: d.name, href: "dungeon-guide.html?slug=" + d.slug, armorSlugs: d.armorSlugs || [] }));
 
     if (!cards.length){
       contentEl.innerHTML = '<div class="tw-status">FEATURED_THIS_WEEK slugs didn\u2019t match anything in raids-data.js/dungeons-data.js \u2014 check for a typo.</div>';
@@ -318,13 +296,19 @@
     }
 
     contentEl.innerHTML = '<div class="featured-grid">' +
-      cards.map(c =>
-        '<a class="featured-card panel-card" href="' + c.href + '">' +
+      cards.map(c => {
+        const armorLinksHtml = c.armorSlugs.map(slug => {
+          const set = setsBySlug[slug];
+          const label = set ? set.name : slug;
+          return '<a class="set-link" href="armor-set-bonuses.html?highlight=' + slug + '">' + label + ' \u2192</a>';
+        }).join("");
+        return '<div class="featured-card panel-card">' +
           '<div class="featured-kind">' + c.kind + '</div>' +
           '<div class="featured-name">' + c.name + '</div>' +
-          '<div class="featured-link">View the guide \u2192</div>' +
-        '</a>'
-      ).join("") +
+          (armorLinksHtml ? '<div class="featured-set-label">Armor Set</div><div class="set-links">' + armorLinksHtml + '</div>' : '') +
+          '<a class="featured-link" href="' + c.href + '">View the guide \u2192</a>' +
+        '</div>';
+      }).join("") +
     '</div>';
   }
 
@@ -438,55 +422,8 @@
     }
   }
 
-  // ---------------- Milestones ----------------
-  async function loadMilestones(){
-    const contentEl = document.getElementById("milestone-content");
-    try {
-      const milestones = await apiGet("/Platform/Destiny2/Milestones/");
-      const entries = Object.values(milestones || {});
-
-      if (!entries.length){
-        contentEl.innerHTML = '<div class="tw-status">Nothing came back \u2014 try refreshing.</div>';
-        return;
-      }
-
-      contentEl.innerHTML = "";
-      const grid = document.createElement("div");
-      grid.className = "milestone-grid";
-      contentEl.appendChild(grid);
-
-      for (const m of entries){
-        const def = await fetchMilestoneDef(m.milestoneHash);
-        if (!def || !def.displayProperties || !def.displayProperties.name) continue; // skip unnamed/internal milestones
-
-        let activityName = "";
-        if (m.activities && m.activities.length){
-          const actDef = await fetchActivityDef(m.activities[0].activityHash);
-          if (actDef && actDef.displayProperties && actDef.displayProperties.name){
-            activityName = actDef.displayProperties.name;
-          }
-        }
-
-        const card = document.createElement("div");
-        card.className = "milestone-card panel-card";
-        card.innerHTML =
-          '<div class="milestone-name">' + def.displayProperties.name + '</div>' +
-          (activityName ? '<div class="milestone-activity">' + activityName + '</div>' : '') +
-          (m.startDate && m.endDate ? '<div class="milestone-dates">' + formatDate(m.startDate) + ' \u2192 ' + formatDate(m.endDate) + '</div>' : '');
-        grid.appendChild(card);
-      }
-
-      if (!grid.children.length){
-        contentEl.innerHTML = '<div class="tw-status">Nothing with a public display name came back this week.</div>';
-      }
-    } catch (err){
-      contentEl.innerHTML = '<div class="tw-status tw-error">Couldn\u2019t load this week\u2019s activities: ' + err.message + '</div>';
-    }
-  }
-
   renderFeatured();
   loadXur();
-  loadMilestones();
 })();
 </script>
 
