@@ -5,7 +5,7 @@
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Offers — Rally Flag</title>
-<meta name="description" content="What's in the rotating cosmetic shops right now — Tess Everis's daily offers and Ada-1's weekly shaders, pulled live from Bungie.">
+<meta name="description" content="What's in the rotating cosmetic shops right now — Tess Everis's daily offers and Ada-1's weekly shaders.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
 </div>
 
 <div class="ev-disclosure panel-card">
-  Vendor inventory has a known history of drifting out of sync with the live API (other tools have hit the same issue, not just us). If something here doesn't match what you see in-game, it's most likely a Bungie-side data gap, not a bug on our end.
+  Bungie's own public API can't reliably serve these two vendors' data (verified this ourselves — full write-up in the code comments), so this pulls from <a href="https://shoppation.com/" target="_blank" rel="noopener">shoppation.com</a>'s public feed instead. If something here doesn't match what you see in-game, it's most likely their feed lagging behind a refresh, not a bug on our end.
 </div>
 
 <section>
@@ -106,68 +106,41 @@
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
-  <p>Pulled live from Bungie's public API on page load.</p>
+  <p>Item data sourced from shoppation.com's public feed, itself pulled from Bungie's API. Icons and item data © Bungie.</p>
 </footer>
 
 <script src="assets/nav.js"></script>
-<script src="assets/api-keys.js"></script>
 <script>
 (function(){
-  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
-  const BUNGIE_ROOT = "https://www.bungie.net";
-  // Both cross-verified against independent community item databases
-  // (light.gg / DestinyTracker) — not guessed. Ada-1's own vendor
-  // definition reports resetIntervalMinutes: 10080 (exactly 7 days),
-  // confirming weekly; Tess's daily cadence lines up with the standard
-  // 17:00 UTC daily reset observed directly in a live capture.
-  const TESS_VENDOR_HASH = "3361454721";
-  const ADA_VENDOR_HASH = "2917531897";
+  // ---------------------------------------------------------------
+  // Bungie's public GetPublicVendors endpoint cannot serve Tess Everis
+  // or Ada-1 reliably — confirmed via a three-way live diagnostic:
+  //   1. Full request (Vendors+VendorCategories+VendorSales): both
+  //      vendors entirely absent from the response.
+  //   2. Bare Vendors-only request: still absent — rules out "it's just
+  //      the sale items that are uncomputable."
+  //   3. Each vendor's own definition, fetched directly: Tess came back
+  //      enabled:true/visible:true (she's genuinely active — the public
+  //      endpoint still can't serve her), while Ada-1 came back
+  //      enabled:false/visible:false (she's simply not an active vendor
+  //      most of the time, a separate and unrelated explanation).
+  // This matches Bungie's own documented caveat: if any portion of a
+  // vendor's inventory can't be computed as common-to-everyone, the
+  // *entire* vendor gets dropped from the public endpoint.
+  //
+  // Pulling from shoppation.com's feed instead — their own item entries
+  // carry per-character IDs, meaning they're using a real authenticated
+  // Bungie login (OAuth) rather than the public endpoint, which is the
+  // only way to get this data at all right now. Rally Flag doesn't have
+  // its own OAuth login built (that's a bigger future step), so this
+  // leans on their feed in the meantime.
+  // ---------------------------------------------------------------
+  const SHOPPATION_FEED_URL = "https://assets.shoppation.com/shops/latest.json";
   const DAILY_RESET_UTC_HOUR = 17;
   const WEEKLY_RESET_DAY = 2; // Tuesday
 
-  async function apiGet(path){
-    const res = await fetch(BUNGIE_ROOT + path, { headers: { "X-API-Key": BUNGIE_API_KEY } });
-    const data = await res.json();
-    if (!res.ok || data.ErrorCode !== 1){
-      const msg = (data && data.Message) || ("HTTP " + res.status);
-      throw new Error(msg);
-    }
-    return data.Response;
-  }
-
-  // Manifest lookups are cached and always sequential (never Promise.all) —
-  // concurrent manifest requests have caused rate-limit errors on this site
-  // before.
-  const itemDefCache = {};
-  async function fetchItemDef(hash){
-    if (itemDefCache[hash] !== undefined) return itemDefCache[hash];
-    try {
-      const def = await apiGet("/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/");
-      const result = {
-        name: (def.displayProperties && def.displayProperties.name) || ("Unknown (" + hash + ")"),
-        icon: (def.displayProperties && def.displayProperties.icon) ? BUNGIE_ROOT + def.displayProperties.icon : null,
-        typeName: def.itemTypeDisplayName || ""
-      };
-      itemDefCache[hash] = result;
-      return result;
-    } catch (err){
-      console.warn("Item def fetch failed for hash " + hash + ":", err.message);
-      const fallback = { name: "Unknown (" + hash + ")", icon: null, typeName: "" };
-      itemDefCache[hash] = fallback;
-      return fallback;
-    }
-  }
-
-  const vendorDefCache = {};
-  async function fetchVendorDef(hash){
-    if (vendorDefCache[hash] !== undefined) return vendorDefCache[hash];
-    const def = await apiGet("/Platform/Destiny2/Manifest/DestinyVendorDefinition/" + hash + "/");
-    vendorDefCache[hash] = def;
-    return def;
-  }
-
   // ---------------- Countdowns (pure calendar math, independent of the
-  // live vendor fetch, so they tick even if inventory data fails to load) ----------------
+  // feed fetch, so they tick even if the feed fails to load) ----------------
   function nextDailyReset(now){
     now = now || new Date();
     const target = new Date(now);
@@ -204,152 +177,79 @@
     setInterval(tick, 1000);
   }
 
-  // ---------------- Generic vendor shop loader (used for both Tess and Ada-1) ----------------
-  async function loadVendorShop(vendorsResp, vendorHash, contentElId, whoLabel){
-    const contentEl = document.getElementById(contentElId);
-    try {
-      const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[vendorHash];
-
-      if (!vendorEntry){
-        contentEl.innerHTML = '<div class="ev-status">Bungie’s public API didn’t return ' + whoLabel + ' at all this pull. This can happen if the current inventory is entirely character-specific (the public endpoint can’t compute that) — not necessarily that the shop is empty in-game.</div>';
-        return;
-      }
-
-      const saleItems = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[vendorHash] && vendorsResp.sales.data[vendorHash].saleItems) || {};
-      const categoriesRaw = (vendorsResp.categories && vendorsResp.categories.data && vendorsResp.categories.data[vendorHash] && vendorsResp.categories.data[vendorHash].categories) || [];
-
-      const saleList = Object.values(saleItems);
-      if (!saleList.length){
-        contentEl.innerHTML = '<div class="ev-status">No sale data came back for ' + whoLabel + ' — try refreshing in a bit.</div>';
-        return;
-      }
-
-      // Real category names come from the vendor's own definition, not guessed.
-      let categoryNames = {};
-      try {
-        const vendorDef = await fetchVendorDef(vendorHash);
-        (vendorDef.displayCategories || []).forEach((cat, i) => {
-          categoryNames[i] = (cat.displayProperties && cat.displayProperties.name) || ("Category " + i);
-        });
-      } catch (err){
-        console.warn("Vendor def fetch failed:", err.message);
-      }
-
-      const bySaleIndex = {};
-      saleList.forEach(item => { bySaleIndex[item.vendorItemIndex] = item; });
-
-      contentEl.innerHTML = "";
-      for (const cat of categoriesRaw){
-        const itemsInCat = (cat.itemIndexes || []).map(i => bySaleIndex[i]).filter(Boolean);
-        if (!itemsInCat.length) continue;
-
-        const catWrap = document.createElement("div");
-        catWrap.className = "ev-category";
-        const label = document.createElement("div");
-        label.className = "ev-category-label";
-        label.textContent = categoryNames[cat.displayCategoryIndex] || ("Category " + cat.displayCategoryIndex);
-        catWrap.appendChild(label);
-
-        const grid = document.createElement("div");
-        grid.className = "ev-grid";
-        catWrap.appendChild(grid);
-        contentEl.appendChild(catWrap);
-
-        // Sequential, one item (and its cost currency) at a time.
-        for (const saleItem of itemsInCat){
-          const itemDef = await fetchItemDef(saleItem.itemHash);
-          let costHtml = "";
-          if (saleItem.costs && saleItem.costs.length){
-            const cost = saleItem.costs[0];
-            const costDef = await fetchItemDef(cost.itemHash);
-            costHtml = '<div class="ev-cost">' +
-              (costDef.icon ? '<img src="' + costDef.icon + '" alt="">' : '') +
-              cost.quantity + ' ' + costDef.name +
-            '</div>';
-          }
-          const card = document.createElement("div");
-          card.className = "ev-card panel-card";
-          card.innerHTML =
-            '<div class="ev-icon">' + (itemDef.icon ? '<img src="' + itemDef.icon + '" alt="">' : '') + '</div>' +
-            '<div class="ev-info">' +
-              '<div class="ev-name">' + itemDef.name + (saleItem.quantity > 1 ? ' ×' + saleItem.quantity : '') + '</div>' +
-              '<div class="ev-type">' + itemDef.typeName + '</div>' +
-              costHtml +
-            '</div>';
-          grid.appendChild(card);
-        }
-      }
-
-      if (!contentEl.children.length){
-        contentEl.innerHTML = '<div class="ev-status">Data came back for ' + whoLabel + ', but nothing resolved into a displayable category — check the console for details.</div>';
-      }
-    } catch (err){
-      contentEl.innerHTML = '<div class="ev-status ev-error">Couldn’t load ' + whoLabel + '’s shop: ' + err.message + '</div>';
+  // ---------------- Render a group of already-resolved shoppation items ----------------
+  function renderItemGroup(contentEl, items, whoLabel){
+    if (!items.length){
+      contentEl.innerHTML = '<div class="ev-status">No ' + whoLabel + ' items in the feed right now — try refreshing in a bit.</div>';
+      return;
     }
+
+    // Group by the feed's own "section" field (e.g. "Bright Dust Offers",
+    // "Silver Offers", "Ada-1 Shaders") — these are shoppation's own
+    // category labels, already human-readable, no guessing needed.
+    const bySection = {};
+    items.forEach(item => {
+      const key = item.section || item.category || "Offers";
+      (bySection[key] = bySection[key] || []).push(item);
+    });
+
+    contentEl.innerHTML = "";
+    Object.keys(bySection).forEach(sectionName => {
+      const catWrap = document.createElement("div");
+      catWrap.className = "ev-category";
+      const label = document.createElement("div");
+      label.className = "ev-category-label";
+      label.textContent = sectionName;
+      catWrap.appendChild(label);
+
+      const grid = document.createElement("div");
+      grid.className = "ev-grid";
+      catWrap.appendChild(grid);
+      contentEl.appendChild(catWrap);
+
+      bySection[sectionName].forEach(item => {
+        const icon = item.icon || item.image || "";
+        const card = document.createElement("div");
+        card.className = "ev-card panel-card";
+        card.innerHTML =
+          '<div class="ev-icon">' + (icon ? '<img src="' + icon + '" alt="">' : '') + '</div>' +
+          '<div class="ev-info">' +
+            '<div class="ev-name">' + item.name + '</div>' +
+            '<div class="ev-type">' + (item.rarity || "") + '</div>' +
+            (item.price ? '<div class="ev-cost">' + item.price + '</div>' : '') +
+          '</div>';
+        grid.appendChild(card);
+      });
+    });
   }
 
   startCountdown("tess-countdown", nextDailyReset());
   startCountdown("ada-countdown", nextWeeklyReset());
 
-  // One shared fetch for both vendors — previously this fired two
-  // concurrent identical requests to the same endpoint (one per vendor),
-  // which the site has an established rule against (concurrent Bungie
-  // API calls have caused rate-limit issues before). Fetching once and
-  // reusing the result also means both sections load from the exact
-  // same snapshot instead of two separate (and possibly inconsistent) pulls.
-  (async function(){
-    try {
-      const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
+  const tessContentEl = document.getElementById("tess-content");
+  const adaContentEl = document.getElementById("ada-content");
 
-      // Temporary diagnostic — remove once we've confirmed why a vendor
-      // entry is or isn't coming through. Open the browser console (F12)
-      // to see exactly what hashes the API actually returned.
-      console.log(
-        "[DailyOffers debug] full request — vendors.data keys present:",
-        vendorsResp.vendors && vendorsResp.vendors.data ? Object.keys(vendorsResp.vendors.data) : "(vendors.data missing entirely)",
-        "\nfull vendorsResp:", vendorsResp
-      );
-
-      // Second, separate diagnostic: request ONLY the bare Vendors
-      // component (no VendorSales/VendorCategories) to isolate whether
-      // it's specifically the sale-item data that's uncomputable, or
-      // whether the vendor is excluded even at this minimal level.
-      try {
-        const bareResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors");
-        console.log(
-          "[DailyOffers debug] Vendors-only request — vendors.data keys present:",
-          bareResp.vendors && bareResp.vendors.data ? Object.keys(bareResp.vendors.data) : "(vendors.data missing entirely)",
-          "\nfull bareResp:", bareResp
-        );
-      } catch (err){
-        console.log("[DailyOffers debug] Vendors-only request threw:", err.message);
+  fetch(SHOPPATION_FEED_URL)
+    .then(res => {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(data => {
+      const shop = (data.shops || []).find(s => s.id === "destiny2");
+      if (!shop){
+        throw new Error("No destiny2 entry in the feed");
       }
-
-      // Third diagnostic: fetch each vendor's own definition directly,
-      // regardless of whether they showed up in the live pull. Ada-1's
-      // definition showed enabled:false/visible:false in a cached
-      // snapshot found earlier — this checks whether that's still true,
-      // which would point to "not currently an active vendor at all"
-      // as a separate explanation from "her items are character-locked."
-      try {
-        const tessDef = await fetchVendorDef(TESS_VENDOR_HASH);
-        const adaDef = await fetchVendorDef(ADA_VENDOR_HASH);
-        console.log(
-          "[DailyOffers debug] Tess Everis definition — enabled:", tessDef.enabled, "visible:", tessDef.visible,
-          "\n[DailyOffers debug] Ada-1 definition — enabled:", adaDef.enabled, "visible:", adaDef.visible
-        );
-      } catch (err){
-        console.log("[DailyOffers debug] Vendor definition fetch threw:", err.message);
-      }
-
-      await loadVendorShop(vendorsResp, TESS_VENDOR_HASH, "tess-content", "Tess Everis");
-      await loadVendorShop(vendorsResp, ADA_VENDOR_HASH, "ada-content", "Ada-1");
-    } catch (err){
-      const msg = '<div class="ev-status ev-error">Couldn’t reach Bungie’s API: ' + err.message + '</div>';
-      document.getElementById("tess-content").innerHTML = msg;
-      document.getElementById("ada-content").innerHTML = msg;
-    }
-  })();
+      const items = shop.items || [];
+      const tessItems = items.filter(i => i.vendor === "Tess Everis");
+      const adaItems = items.filter(i => i.vendor === "Ada-1");
+      renderItemGroup(tessContentEl, tessItems, "Tess Everis");
+      renderItemGroup(adaContentEl, adaItems, "Ada-1");
+    })
+    .catch(err => {
+      const msg = '<div class="ev-status ev-error">Couldn’t load the shoppation.com feed: ' + err.message + '</div>';
+      tessContentEl.innerHTML = msg;
+      adaContentEl.innerHTML = msg;
+    });
 })();
 </script>
 
