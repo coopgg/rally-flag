@@ -205,10 +205,9 @@
   }
 
   // ---------------- Generic vendor shop loader (used for both Tess and Ada-1) ----------------
-  async function loadVendorShop(vendorHash, contentElId, whoLabel){
+  async function loadVendorShop(vendorsResp, vendorHash, contentElId, whoLabel){
     const contentEl = document.getElementById(contentElId);
     try {
-      const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
       const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[vendorHash];
 
       if (!vendorEntry){
@@ -291,8 +290,34 @@
 
   startCountdown("tess-countdown", nextDailyReset());
   startCountdown("ada-countdown", nextWeeklyReset());
-  loadVendorShop(TESS_VENDOR_HASH, "tess-content", "Tess Everis");
-  loadVendorShop(ADA_VENDOR_HASH, "ada-content", "Ada-1");
+
+  // One shared fetch for both vendors — previously this fired two
+  // concurrent identical requests to the same endpoint (one per vendor),
+  // which the site has an established rule against (concurrent Bungie
+  // API calls have caused rate-limit issues before). Fetching once and
+  // reusing the result also means both sections load from the exact
+  // same snapshot instead of two separate (and possibly inconsistent) pulls.
+  (async function(){
+    try {
+      const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
+
+      // Temporary diagnostic — remove once we've confirmed why a vendor
+      // entry is or isn't coming through. Open the browser console (F12)
+      // to see exactly what hashes the API actually returned.
+      console.log(
+        "[DailyOffers debug] vendors.data keys present:",
+        vendorsResp.vendors && vendorsResp.vendors.data ? Object.keys(vendorsResp.vendors.data) : "(vendors.data missing entirely)",
+        "\nfull vendorsResp:", vendorsResp
+      );
+
+      await loadVendorShop(vendorsResp, TESS_VENDOR_HASH, "tess-content", "Tess Everis");
+      await loadVendorShop(vendorsResp, ADA_VENDOR_HASH, "ada-content", "Ada-1");
+    } catch (err){
+      const msg = '<div class="ev-status ev-error">Couldn’t reach Bungie’s API: ' + err.message + '</div>';
+      document.getElementById("tess-content").innerHTML = msg;
+      document.getElementById("ada-content").innerHTML = msg;
+    }
+  })();
 })();
 </script>
 
