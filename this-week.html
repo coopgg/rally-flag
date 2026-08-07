@@ -321,20 +321,33 @@
       const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[XUR_VENDOR_HASH];
 
       // Whether he's actively selling. GetPublicVendors is a Bungie-flagged
-      // "Preview" endpoint and has been observed returning stale/cached
-      // inventory with enabled:true even when he's not actually spawned —
-      // so the API's own answer isn't trusted alone. It has to also fall
-      // inside his real schedule (Fri 09:00 UTC \u2192 Tue 17:00 UTC) before
-      // we'll call him active. Disagreement between the two defaults to
-      // "not active" \u2014 showing nothing is better than showing wrong info.
+      // "Preview" endpoint and has been observed two different ways: fully
+      // absent when inactive (confirmed earlier), and separately, serving
+      // stale cached data (enabled:true, populated inventory) that hasn't
+      // caught up to the current cycle even though he's genuinely not
+      // active. The second case slips past both the enabled flag and the
+      // calendar schedule check, so there's a third check: a genuinely
+      // live nextRefreshDate should never be more than ~5 days out (his
+      // real active window only ever spans ~4.3 days) \u2014 if it's further
+      // out than that, it's stale data pointing at a future cycle, not
+      // evidence he's active right now. Track that separately so the
+      // countdown target below can also avoid trusting a stale date.
       const saleItemsCheck = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[XUR_VENDOR_HASH] && vendorsResp.sales.data[XUR_VENDOR_HASH].saleItems) || {};
-      const apiSaysActive = vendorEntry && vendorEntry.enabled !== false && Object.keys(saleItemsCheck).length > 0;
+      let apiSaysActive = vendorEntry && vendorEntry.enabled !== false && Object.keys(saleItemsCheck).length > 0;
+      let refreshDateIsStale = false;
+      if (vendorEntry && vendorEntry.nextRefreshDate){
+        const daysUntilRefresh = (new Date(vendorEntry.nextRefreshDate).getTime() - Date.now()) / 86400000;
+        if (daysUntilRefresh > 5){
+          apiSaysActive = false;
+          refreshDateIsStale = true;
+        }
+      }
       const isActive = apiSaysActive && isWithinXurSchedule();
 
       if (!isActive){
-        const isEstimate = !(vendorEntry && vendorEntry.nextRefreshDate);
-        const arrivalIso = isEstimate ? estimateNextXurArrival() : vendorEntry.nextRefreshDate;
-        renderCountdown(contentEl, arrivalIso, isEstimate);
+        const hasUsableDate = vendorEntry && vendorEntry.nextRefreshDate && !refreshDateIsStale;
+        const arrivalIso = hasUsableDate ? vendorEntry.nextRefreshDate : estimateNextXurArrival();
+        renderCountdown(contentEl, arrivalIso, !hasUsableDate);
         return;
       }
 
