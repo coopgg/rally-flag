@@ -61,15 +61,34 @@
   }
   .xur-cost img{ width:14px; height:14px; object-fit:contain; }
 
+  /* --- Featured This Week --- */
+  .featured-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:12px;
+  }
+  .featured-card{
+    padding:16px 18px; text-decoration:none; display:block;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .featured-card:hover{ border-color:var(--accent); background:var(--accent-dim); }
+  .featured-kind{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:6px;
+  }
+  .featured-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:16px; color:var(--text); }
+  .featured-link{ font-size:11.5px; color:var(--accent-bright); margin-top:8px; }
+
   /* --- Milestones --- */
-  .milestone-grid{ display:flex; flex-direction:column; gap:10px; }
-  .milestone-card{ padding:16px 18px; }
-  .milestone-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:15px; color:var(--text); }
-  .milestone-activity{ font-size:12.5px; color:var(--accent-bright); margin-top:2px; }
-  .milestone-desc{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-top:6px; }
+  .milestone-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+    gap:10px;
+  }
+  .milestone-card{ padding:12px 14px; }
+  .milestone-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:13.5px; color:var(--text); }
+  .milestone-activity{ font-size:11.5px; color:var(--accent-bright); margin-top:2px; }
   .milestone-dates{
-    font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--text-dimmer);
-    margin-top:8px; text-transform:uppercase; letter-spacing:0.04em;
+    font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--text-dimmer);
+    margin-top:7px; text-transform:uppercase; letter-spacing:0.04em;
   }  .tw-countdown-wrap{
     text-align:center; padding:30px 20px;
   }
@@ -102,6 +121,12 @@
 
 <section>
   <div class="tw-section-head">
+    <div class="tw-section-title">Featured This Week</div>
+    <div class="tw-refresh-note">Resets Tuesdays — update FEATURED_THIS_WEEK below when it flips</div>
+  </div>
+  <div id="featured-content"></div>
+
+  <div class="tw-section-head">
     <div class="tw-section-title">Xûr — At the Tower</div>
     <div class="tw-refresh-note" id="xur-refresh-note"></div>
   </div>
@@ -119,9 +144,24 @@
 </footer>
 
 <script src="assets/nav.js"></script>
+<script src="assets/raids-data.js"></script>
+<script src="assets/dungeons-data.js"></script>
 <script src="assets/api-keys.js"></script>
 <script>
 (function(){
+  // ---------------------------------------------------------------
+  // Bungie's public API doesn't give a clean, reliable signal for
+  // which raids/dungeons are "featured" this week (checked the raw
+  // milestone data — it's not consistent enough to auto-detect
+  // safely). Same pattern as Distortions' rotation-data.js: this is
+  // a small manually-maintained list. Update the slugs below each
+  // Tuesday reset to match Bungie's actual rotator.
+  // ---------------------------------------------------------------
+  const FEATURED_THIS_WEEK = {
+    raids: ["vault-of-glass", "salvations-edge"],
+    dungeons: ["vespers-host", "prophecy"]
+  };
+
   const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
   const BUNGIE_ROOT = "https://www.bungie.net";
   const XUR_VENDOR_HASH = "2190858386";
@@ -248,6 +288,32 @@
     countdownTimer = setInterval(tick, 1000);
   }
 
+  // ---------------- Featured This Week (manual data, instant render) ----------------
+  function renderFeatured(){
+    const contentEl = document.getElementById("featured-content");
+    const raids = (window.RaidsData ? window.RaidsData.RAIDS : []).filter(r => FEATURED_THIS_WEEK.raids.includes(r.slug));
+    const dungeons = (window.DungeonsData ? window.DungeonsData.DUNGEONS : []).filter(d => FEATURED_THIS_WEEK.dungeons.includes(d.slug));
+
+    const cards = [];
+    raids.forEach(r => cards.push({ kind: "Raid", name: r.name, href: "raid-guide.html?slug=" + r.slug }));
+    dungeons.forEach(d => cards.push({ kind: "Dungeon", name: d.name, href: "dungeon-guide.html?slug=" + d.slug }));
+
+    if (!cards.length){
+      contentEl.innerHTML = '<div class="tw-status">FEATURED_THIS_WEEK slugs didn\u2019t match anything in raids-data.js/dungeons-data.js \u2014 check for a typo.</div>';
+      return;
+    }
+
+    contentEl.innerHTML = '<div class="featured-grid">' +
+      cards.map(c =>
+        '<a class="featured-card panel-card" href="' + c.href + '">' +
+          '<div class="featured-kind">' + c.kind + '</div>' +
+          '<div class="featured-name">' + c.name + '</div>' +
+          '<div class="featured-link">View the guide \u2192</div>' +
+        '</a>'
+      ).join("") +
+    '</div>';
+  }
+
   // ---------------- Xur ----------------
   async function loadXur(){
     const contentEl = document.getElementById("xur-content");
@@ -299,6 +365,12 @@
 
       contentEl.innerHTML = "";
       for (const cat of categoriesRaw){
+        const catName = categoryNames[cat.displayCategoryIndex] || "";
+        // Only the rotating exotic offers change week to week — the other
+        // categories (rank rewards, engram bundles, the info tile) are the
+        // same every week regardless of what's featured, so skip them.
+        if (catName.trim().toLowerCase() !== "multivarious strange offers") continue;
+
         const itemsInCat = (cat.itemIndexes || []).map(i => bySaleIndex[i]).filter(Boolean);
         if (!itemsInCat.length) continue;
 
@@ -306,7 +378,7 @@
         catWrap.className = "xur-category";
         const label = document.createElement("div");
         label.className = "xur-category-label";
-        label.textContent = categoryNames[cat.displayCategoryIndex] || ("Category " + cat.displayCategoryIndex);
+        label.textContent = catName || ("Category " + cat.displayCategoryIndex);
         catWrap.appendChild(label);
 
         const grid = document.createElement("div");
@@ -340,7 +412,7 @@
       }
 
       if (!contentEl.children.length){
-        contentEl.innerHTML = '<div class="tw-status">He\u2019s here, but nothing resolved into a displayable category \u2014 check the console for details.</div>';
+        contentEl.innerHTML = '<div class="tw-status">Couldn\u2019t find a "Multivarious Strange Offers" category this pull \u2014 Bungie may have renamed it, or he\u2019s not selling anything in it right now.</div>';
       }
     } catch (err){
       contentEl.innerHTML = '<div class="tw-status tw-error">Couldn\u2019t load Xur\u2019s inventory: ' + err.message + '</div>';
@@ -381,7 +453,6 @@
         card.innerHTML =
           '<div class="milestone-name">' + def.displayProperties.name + '</div>' +
           (activityName ? '<div class="milestone-activity">' + activityName + '</div>' : '') +
-          (def.displayProperties.description ? '<div class="milestone-desc">' + def.displayProperties.description + '</div>' : '') +
           (m.startDate && m.endDate ? '<div class="milestone-dates">' + formatDate(m.startDate) + ' \u2192 ' + formatDate(m.endDate) + '</div>' : '');
         grid.appendChild(card);
       }
@@ -394,6 +465,7 @@
     }
   }
 
+  renderFeatured();
   loadXur();
   loadMilestones();
 })();
