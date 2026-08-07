@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eververse — Rally Flag</title>
-<meta name="description" content="What's in Tess Everis's rotating storefront right now, pulled live from Bungie.">
+<title>Daily Offers — Rally Flag</title>
+<meta name="description" content="What's in the rotating cosmetic shops right now — Tess Everis's daily offers and Ada-1's weekly shaders, pulled live from Bungie.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,14 +15,18 @@
 
   .ev-section-head{
     display:flex; align-items:baseline; justify-content:space-between; gap:12px;
-    margin:44px 0 16px;
+    margin:44px 0 4px; flex-wrap:wrap;
   }
   .ev-section-head:first-child{ margin-top:8px; }
   .ev-section-title{
     font-family:'Oswald', sans-serif; font-weight:700; font-size:20px; color:var(--text);
   }
-  .ev-refresh-note{
-    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer);
+  .ev-section-sub{
+    font-size:12.5px; color:var(--text-dim); margin:2px 0 16px;
+  }
+  .ev-countdown{
+    font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--accent-bright);
+    font-weight:700;
   }
 
   .ev-status{
@@ -72,20 +76,32 @@
 
 <div class="hero">
   <div class="eyebrow">Destiny 2 Database</div>
-  <h1 class="title">Eververse</h1>
-  <p class="subtitle">What's actually in Tess Everis's storefront right now, pulled live from Bungie \u2014 grouped exactly the way she groups it in-game.</p>
+  <h1 class="title">Daily Offers</h1>
+  <p class="subtitle">What's in the rotating cosmetic shops right now, pulled live from Bungie.</p>
 </div>
 
 <div class="ev-disclosure panel-card">
-  Tess Everis's inventory has a known history of drifting out of sync with the live API (other tools have hit the same issue, not just us). If something here doesn't match what you see in-game, it's most likely a Bungie-side data gap, not a bug on our end.
+  Vendor inventory has a known history of drifting out of sync with the live API (other tools have hit the same issue, not just us). If something here doesn't match what you see in-game, it's most likely a Bungie-side data gap, not a bug on our end.
 </div>
 
 <section>
   <div class="ev-section-head">
-    <div class="ev-section-title">Storefront</div>
-    <div class="ev-refresh-note" id="ev-refresh-note"></div>
+    <div>
+      <div class="ev-section-title">Daily — Tess Everis</div>
+      <div class="ev-section-sub">Bright Dust &amp; Silver offers, refreshes every day</div>
+    </div>
+    <div class="ev-countdown" id="tess-countdown">—</div>
   </div>
-  <div id="ev-content"><div class="ev-status">Loading\u2026</div></div>
+  <div id="tess-content"><div class="ev-status">Loading…</div></div>
+
+  <div class="ev-section-head">
+    <div>
+      <div class="ev-section-title">Weekly — Ada-1</div>
+      <div class="ev-section-sub">Shader rotation, refreshes with the weekly reset (Tuesdays)</div>
+    </div>
+    <div class="ev-countdown" id="ada-countdown">—</div>
+  </div>
+  <div id="ada-content"><div class="ev-status">Loading…</div></div>
 </section>
 
 <footer>
@@ -99,10 +115,15 @@
 (function(){
   const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
   const BUNGIE_ROOT = "https://www.bungie.net";
-  // Cross-verified against two independent community item databases
-  // (light.gg and DestinyTracker both list this hash for Tess Everis) —
-  // not guessed.
+  // Both cross-verified against independent community item databases
+  // (light.gg / DestinyTracker) — not guessed. Ada-1's own vendor
+  // definition reports resetIntervalMinutes: 10080 (exactly 7 days),
+  // confirming weekly; Tess's daily cadence lines up with the standard
+  // 17:00 UTC daily reset observed directly in a live capture.
   const TESS_VENDOR_HASH = "3361454721";
+  const ADA_VENDOR_HASH = "2917531897";
+  const DAILY_RESET_UTC_HOUR = 17;
+  const WEEKLY_RESET_DAY = 2; // Tuesday
 
   async function apiGet(path){
     const res = await fetch(BUNGIE_ROOT + path, { headers: { "X-API-Key": BUNGIE_API_KEY } });
@@ -145,45 +166,69 @@
     return def;
   }
 
-  function formatDate(iso){
-    if (!iso) return "";
-    const d = new Date(iso);
-    return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) + " at "
-         + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  // ---------------- Countdowns (pure calendar math, independent of the
+  // live vendor fetch, so they tick even if inventory data fails to load) ----------------
+  function nextDailyReset(now){
+    now = now || new Date();
+    const target = new Date(now);
+    target.setUTCHours(DAILY_RESET_UTC_HOUR, 0, 0, 0);
+    if (target.getTime() <= now.getTime()) target.setUTCDate(target.getUTCDate() + 1);
+    return target;
   }
 
-  async function loadEververse(){
-    const contentEl = document.getElementById("ev-content");
-    const refreshEl = document.getElementById("ev-refresh-note");
+  function nextWeeklyReset(now){
+    now = now || new Date();
+    const target = new Date(now);
+    target.setUTCHours(DAILY_RESET_UTC_HOUR, 0, 0, 0);
+    let daysUntil = (WEEKLY_RESET_DAY - target.getUTCDay() + 7) % 7;
+    if (daysUntil === 0 && target.getTime() <= now.getTime()) daysUntil = 7;
+    target.setUTCDate(target.getUTCDate() + daysUntil);
+    return target;
+  }
+
+  function startCountdown(elId, targetDate){
+    const el = document.getElementById(elId);
+    function tick(){
+      const diff = targetDate.getTime() - Date.now();
+      if (diff <= 0){
+        el.textContent = "Refreshing now…";
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      el.textContent = (d > 0 ? d + "d " : "") + h + "h " + m + "m " + s + "s";
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  // ---------------- Generic vendor shop loader (used for both Tess and Ada-1) ----------------
+  async function loadVendorShop(vendorHash, contentElId, whoLabel){
+    const contentEl = document.getElementById(contentElId);
     try {
       const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
-      const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[TESS_VENDOR_HASH];
+      const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[vendorHash];
 
       if (!vendorEntry){
-        contentEl.innerHTML = '<div class="ev-status">Bungie\u2019s public API didn\u2019t return Tess Everis at all this pull. This can happen if her current inventory is entirely character-specific (the public endpoint can\u2019t compute that) \u2014 not necessarily that her shop is empty in-game.</div>';
+        contentEl.innerHTML = '<div class="ev-status">Bungie’s public API didn’t return ' + whoLabel + ' at all this pull. This can happen if the current inventory is entirely character-specific (the public endpoint can’t compute that) — not necessarily that the shop is empty in-game.</div>';
         return;
       }
 
-      if (vendorEntry.nextRefreshDate){
-        refreshEl.textContent = "Refreshes " + formatDate(vendorEntry.nextRefreshDate);
-      }
-
-      const saleItems = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[TESS_VENDOR_HASH] && vendorsResp.sales.data[TESS_VENDOR_HASH].saleItems) || {};
-      const categoriesRaw = (vendorsResp.categories && vendorsResp.categories.data && vendorsResp.categories.data[TESS_VENDOR_HASH] && vendorsResp.categories.data[TESS_VENDOR_HASH].categories) || [];
+      const saleItems = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[vendorHash] && vendorsResp.sales.data[vendorHash].saleItems) || {};
+      const categoriesRaw = (vendorsResp.categories && vendorsResp.categories.data && vendorsResp.categories.data[vendorHash] && vendorsResp.categories.data[vendorHash].categories) || [];
 
       const saleList = Object.values(saleItems);
       if (!saleList.length){
-        contentEl.innerHTML = '<div class="ev-status">She\u2019s there, but no sale data came back \u2014 try refreshing in a bit.</div>';
+        contentEl.innerHTML = '<div class="ev-status">No sale data came back for ' + whoLabel + ' — try refreshing in a bit.</div>';
         return;
       }
 
-      // Real category names come from her own vendor definition, not
-      // guessed — we don't know yet whether these map cleanly to a
-      // "daily" vs "weekly" split, so every category she actually has
-      // gets shown under its real name.
+      // Real category names come from the vendor's own definition, not guessed.
       let categoryNames = {};
       try {
-        const vendorDef = await fetchVendorDef(TESS_VENDOR_HASH);
+        const vendorDef = await fetchVendorDef(vendorHash);
         (vendorDef.displayCategories || []).forEach((cat, i) => {
           categoryNames[i] = (cat.displayProperties && cat.displayProperties.name) || ("Category " + i);
         });
@@ -228,7 +273,7 @@
           card.innerHTML =
             '<div class="ev-icon">' + (itemDef.icon ? '<img src="' + itemDef.icon + '" alt="">' : '') + '</div>' +
             '<div class="ev-info">' +
-              '<div class="ev-name">' + itemDef.name + (saleItem.quantity > 1 ? ' \u00d7' + saleItem.quantity : '') + '</div>' +
+              '<div class="ev-name">' + itemDef.name + (saleItem.quantity > 1 ? ' ×' + saleItem.quantity : '') + '</div>' +
               '<div class="ev-type">' + itemDef.typeName + '</div>' +
               costHtml +
             '</div>';
@@ -237,14 +282,17 @@
       }
 
       if (!contentEl.children.length){
-        contentEl.innerHTML = '<div class="ev-status">She\u2019s here, but nothing resolved into a displayable category \u2014 check the console for details.</div>';
+        contentEl.innerHTML = '<div class="ev-status">Data came back for ' + whoLabel + ', but nothing resolved into a displayable category — check the console for details.</div>';
       }
     } catch (err){
-      contentEl.innerHTML = '<div class="ev-status ev-error">Couldn\u2019t load the Eververse storefront: ' + err.message + '</div>';
+      contentEl.innerHTML = '<div class="ev-status ev-error">Couldn’t load ' + whoLabel + '’s shop: ' + err.message + '</div>';
     }
   }
 
-  loadEververse();
+  startCountdown("tess-countdown", nextDailyReset());
+  startCountdown("ada-countdown", nextWeeklyReset());
+  loadVendorShop(TESS_VENDOR_HASH, "tess-content", "Tess Everis");
+  loadVendorShop(ADA_VENDOR_HASH, "ada-content", "Ada-1");
 })();
 </script>
 
