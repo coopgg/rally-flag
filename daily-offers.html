@@ -81,32 +81,30 @@
 </div>
 
 <div class="ev-disclosure panel-card">
-  Bungie's own public API can't reliably serve these two vendors' data (verified this ourselves — full write-up in the code comments), so this pulls from <a href="https://shoppation.com/" target="_blank" rel="noopener">shoppation.com</a>'s public feed instead. If something here doesn't match what you see in-game, it's most likely their feed lagging behind a refresh, not a bug on our end.
+  Bungie's own public API can't reliably serve Tess Everis's data (verified this ourselves — full write-up in the code comments), so this pulls from <a href="https://eververse.report/" target="_blank" rel="noopener">eververse.report</a>'s public feed instead. If something here doesn't match what you see in-game, it's most likely their feed lagging behind a refresh, not a bug on our end.
 </div>
 
 <section>
   <div class="ev-section-head">
     <div>
       <div class="ev-section-title">Daily — Tess Everis</div>
-      <div class="ev-section-sub">Bright Dust &amp; Silver offers, refreshes every day</div>
+      <div class="ev-section-sub">Bright Dust offers, refreshes every day</div>
     </div>
     <div class="ev-countdown" id="tess-countdown">—</div>
   </div>
   <div id="tess-content"><div class="ev-status">Loading…</div></div>
 
-  <div class="ev-section-head">
-    <div>
-      <div class="ev-section-title">Weekly — Ada-1</div>
-      <div class="ev-section-sub">Shader rotation, refreshes with the weekly reset (Tuesdays)</div>
-    </div>
-    <div class="ev-countdown" id="ada-countdown">—</div>
-  </div>
-  <div id="ada-content"><div class="ev-status">Loading…</div></div>
+  <!-- Ada-1 is temporarily hidden — no working live source has turned up
+       for her yet (Bungie's public API can't serve her, no CORS-friendly
+       third-party feed found so far). Re-enable once one exists: the
+       nextWeeklyReset()/startCountdown() calls and the ada-content fetch
+       logic were removed along with the HTML, not just hidden with CSS,
+       so bringing this back means restoring both, not just this markup. -->
 </section>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
-  <p>Item data sourced from shoppation.com's public feed, itself pulled from Bungie's API. Icons and item data © Bungie.</p>
+  <p>Item data sourced from eververse.report's public feed, itself pulled from Bungie's API. Icons and item data © Bungie.</p>
 </footer>
 
 <script src="assets/nav.js"></script>
@@ -128,14 +126,22 @@
   // vendor's inventory can't be computed as common-to-everyone, the
   // *entire* vendor gets dropped from the public endpoint.
   //
-  // Pulling from shoppation.com's feed instead — their own item entries
-  // carry per-character IDs, meaning they're using a real authenticated
-  // Bungie login (OAuth) rather than the public endpoint, which is the
-  // only way to get this data at all right now. Rally Flag doesn't have
-  // its own OAuth login built (that's a bigger future step), so this
-  // leans on their feed in the meantime.
+  // First attempt: shoppation.com's feed (their per-item characterId
+  // fields show they're using a real authenticated Bungie login rather
+  // than the public endpoint). Blocked by CORS — confirmed directly via
+  // browser error: "No 'Access-Control-Allow-Origin' header is present."
+  // Their server doesn't allow cross-origin requests, which no client-side
+  // trick can work around.
+  //
+  // Now using eververse.report's feed instead — confirmed via DevTools
+  // that Access-Control-Allow-Origin IS present on their response, so
+  // this one actually works cross-origin. Their feed only covers Tess
+  // Everis (Bright Dust offers) — no Ada-1 data found in it, so Ada-1
+  // still has no live source. Rally Flag doesn't have its own OAuth
+  // login built (a bigger future step, currently on hold), so this
+  // leans on eververse.report for Tess in the meantime.
   // ---------------------------------------------------------------
-  const SHOPPATION_FEED_URL = "https://assets.shoppation.com/shops/latest.json";
+  const EVERVERSE_REPORT_URL = "https://api.eververse.report/api/eververse/current";
   const DAILY_RESET_UTC_HOUR = 17;
   const WEEKLY_RESET_DAY = 2; // Tuesday
 
@@ -177,78 +183,49 @@
     setInterval(tick, 1000);
   }
 
-  // ---------------- Render a group of already-resolved shoppation items ----------------
-  function renderItemGroup(contentEl, items, whoLabel){
-    if (!items.length){
-      contentEl.innerHTML = '<div class="ev-status">No ' + whoLabel + ' items in the feed right now — try refreshing in a bit.</div>';
-      return;
-    }
+  startCountdown("tess-countdown", nextDailyReset());
 
-    // Group by the feed's own "section" field (e.g. "Bright Dust Offers",
-    // "Silver Offers", "Ada-1 Shaders") — these are shoppation's own
-    // category labels, already human-readable, no guessing needed.
-    const bySection = {};
-    items.forEach(item => {
-      const key = item.section || item.category || "Offers";
-      (bySection[key] = bySection[key] || []).push(item);
-    });
+  // Ada-1 startCountdown("ada-countdown", nextWeeklyReset()) call and the
+  // ada-content placeholder message were removed along with the HTML —
+  // nextWeeklyReset()/WEEKLY_RESET_DAY above are left defined, unused, so
+  // this is a quick restore once a working source exists.
 
-    contentEl.innerHTML = "";
-    Object.keys(bySection).forEach(sectionName => {
-      const catWrap = document.createElement("div");
-      catWrap.className = "ev-category";
-      const label = document.createElement("div");
-      label.className = "ev-category-label";
-      label.textContent = sectionName;
-      catWrap.appendChild(label);
+  // ---------------- Tess Everis, via eververse.report ----------------
+  const tessContentEl = document.getElementById("tess-content");
+
+  fetch(EVERVERSE_REPORT_URL)
+    .then(res => {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(data => {
+      const sales = data.sales || [];
+      if (!sales.length){
+        tessContentEl.innerHTML = '<div class="ev-status">No items came back \u2014 try refreshing in a bit.</div>';
+        return;
+      }
 
       const grid = document.createElement("div");
       grid.className = "ev-grid";
-      catWrap.appendChild(grid);
-      contentEl.appendChild(catWrap);
+      tessContentEl.innerHTML = "";
+      tessContentEl.appendChild(grid);
 
-      bySection[sectionName].forEach(item => {
-        const icon = item.icon || item.image || "";
+      sales.forEach(item => {
+        const icon = item.iconUrl || "";
         const card = document.createElement("div");
         card.className = "ev-card panel-card";
         card.innerHTML =
           '<div class="ev-icon">' + (icon ? '<img src="' + icon + '" alt="">' : '') + '</div>' +
           '<div class="ev-info">' +
             '<div class="ev-name">' + item.name + '</div>' +
-            '<div class="ev-type">' + (item.rarity || "") + '</div>' +
-            (item.price ? '<div class="ev-cost">' + item.price + '</div>' : '') +
+            '<div class="ev-type">' + (item.itemType || "") + '</div>' +
+            (item.costQuantity ? '<div class="ev-cost">' + item.costQuantity.toLocaleString() + ' ' + (item.costLabel || "") + '</div>' : '') +
           '</div>';
         grid.appendChild(card);
       });
-    });
-  }
-
-  startCountdown("tess-countdown", nextDailyReset());
-  startCountdown("ada-countdown", nextWeeklyReset());
-
-  const tessContentEl = document.getElementById("tess-content");
-  const adaContentEl = document.getElementById("ada-content");
-
-  fetch(SHOPPATION_FEED_URL)
-    .then(res => {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
-    })
-    .then(data => {
-      const shop = (data.shops || []).find(s => s.id === "destiny2");
-      if (!shop){
-        throw new Error("No destiny2 entry in the feed");
-      }
-      const items = shop.items || [];
-      const tessItems = items.filter(i => i.vendor === "Tess Everis");
-      const adaItems = items.filter(i => i.vendor === "Ada-1");
-      renderItemGroup(tessContentEl, tessItems, "Tess Everis");
-      renderItemGroup(adaContentEl, adaItems, "Ada-1");
     })
     .catch(err => {
-      const msg = '<div class="ev-status ev-error">Couldn’t load the shoppation.com feed: ' + err.message + '</div>';
-      tessContentEl.innerHTML = msg;
-      adaContentEl.innerHTML = msg;
+      tessContentEl.innerHTML = '<div class="ev-status ev-error">Couldn\u2019t load the eververse.report feed: ' + err.message + '</div>';
     });
 })();
 </script>
