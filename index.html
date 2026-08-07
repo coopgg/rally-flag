@@ -5,7 +5,7 @@
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rally Flag — Destiny 2 Database</title>
-<meta name="description" content="A Destiny 2 companion site: live Distortion tracking, armor set bonuses, guides, and god rolls.">
+<meta name="description" content="A companion site for Destiny 2 — live Distortion tracking, the full armor set bonus database, guides, and god rolls, all in one place.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -14,42 +14,28 @@
   .hero{ margin-top:56px; }
   h1.title{ font-size:clamp(40px, 7vw, 66px); }
 
-  .link-grid{
-    max-width:1000px; margin:56px auto 0; padding:0 24px 90px;
-    display:grid; grid-template-columns:repeat(2, 1fr); gap:16px;
-  }
-  @media (max-width:640px){ .link-grid{ grid-template-columns:1fr; } }
+  section{ max-width:820px; margin:0 auto; padding:0 24px 90px; }
 
-  .link-card{
-    position:relative; display:block; text-decoration:none;
-    padding:28px 26px; overflow:hidden;
-    transition: border-color 0.2s ease, background 0.2s ease;
+  .info-block{ margin-top:52px; }
+  .info-block:first-child{ margin-top:56px; }
+  .info-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:14px;
+    padding-bottom:10px; border-bottom:1px solid var(--panel-border);
   }
-  .link-card:hover, .link-card:focus-visible{
-    border-color: var(--accent);
-    background: var(--accent-dim);
-  }
-  .link-card:hover .link-arrow, .link-card:focus-visible .link-arrow{ transform: translateX(4px); }
+  .info-body{ font-size:14.5px; color:var(--text-dim); line-height:1.7; }
+  .info-body p{ margin:0 0 14px; }
+  .info-body p:last-child{ margin-bottom:0; }
+  .info-body strong{ color:var(--text); }
 
-  .link-eyebrow{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.14em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+  .faq-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; }
+  @media (max-width:640px){ .faq-grid{ grid-template-columns:1fr; } }
+  .faq-card{ padding:22px; }
+  .faq-q{
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--accent-bright);
+    margin-bottom:9px; text-transform:uppercase; letter-spacing:0.02em;
   }
-  .link-title{
-    font-family:'Oswald', sans-serif; font-weight:700; font-size:24px;
-    color:var(--text); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;
-  }
-  .link-arrow{ color:var(--accent-bright); font-size:20px; transition: transform 0.2s ease; }
-  .link-desc{ font-size:13.5px; color:var(--text-dim); line-height:1.5; }
-
-  .link-card.soon{ opacity:0.6; cursor:default; }
-  .link-card.soon:hover{ border-color:var(--panel-border); background:var(--panel); }
-  .link-card.soon .link-arrow{ display:none; }
-  .soon-tag{
-    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.08em;
-    color:var(--text-dimmer); text-transform:uppercase;
-    border:1px solid var(--panel-border); border-radius:999px; padding:3px 9px;
-  }
+  .faq-a{ font-size:13.5px; color:var(--text-dim); line-height:1.6; }
 </style>
 </head>
 <body data-nav-group="">
@@ -62,41 +48,59 @@
   <p class="subtitle">A companion site for Destiny 2 — live Distortion tracking, the full armor set bonus database, guides, and god rolls, all in one place.</p>
 </div>
 
-<div class="link-grid">
-  <a href="distortions.html" class="link-card panel-card">
-    <div class="link-eyebrow">Live · Updates Hourly</div>
-    <div class="link-title">Distortions <span class="link-arrow">→</span></div>
-    <div class="link-desc">What's distorted right now, what's up next, the full rotation schedule, and answers to common questions.</div>
-  </a>
+<section>
 
-  <a href="armor-set-bonuses.html" class="link-card panel-card">
-    <div class="link-eyebrow">56 Sets</div>
-    <div class="link-title">Armor Sets <span class="link-arrow">→</span></div>
-    <div class="link-desc">Every 2-piece and 4-piece armor set bonus, searchable and filterable by source and weapon pairing.</div>
-  </a>
+  <div class="info-block">
+    <div class="info-label">Overview</div>
+    <div class="info-body">
+      <p>Rally Flag pulls together everything we keep looking up while playing and streaming Destiny 2, so it lives in one place instead of a dozen scattered tabs.</p>
+      <p>Use the menu at the top to get to any of it: raid and dungeon guides, armor set bonuses, artifact perks, weapon god rolls, puzzle solvers, live Distortion tracking, redemption codes, and what's active this week.</p>
+    </div>
+  </div>
 
-  <a href="guides.html" class="link-card panel-card">
-    <div class="link-eyebrow">11 Raids · 10 Dungeons</div>
-    <div class="link-title">Guides <span class="link-arrow">→</span></div>
-    <div class="link-desc">Step-by-step encounter walkthroughs for every raid and dungeon in the game.</div>
-  </a>
+  <div class="info-block">
+    <div class="info-label">About Us</div>
+    <div class="info-body">
+      <p>We're a small stream team that got tired of digging through the same handful of sites every raid night, so we started building the tool we actually wanted.</p>
+      <p>Everything here comes from our own playtime and our own runs — the rolls we chase, the builds we actually use, the puzzle solutions we've verified ourselves. When we're not sure about a mechanic, we don't guess. We test it, or we leave it out until we can.</p>
+    </div>
+  </div>
 
-  <a href="artifacts.html" class="link-card panel-card">
-    <div class="link-eyebrow">7 Artifacts</div>
-    <div class="link-title">Artifacts <span class="link-arrow">→</span></div>
-    <div class="link-desc">What each seasonal artifact's mods actually do.</div>
-  </a>
+  <div class="info-block">
+    <div class="info-label">Site FAQ</div>
+    <div class="faq-grid">
+      <div class="faq-card panel-card">
+        <div class="faq-q">Is this official?</div>
+        <div class="faq-a">No. Rally Flag is an unofficial fan project. We're not affiliated with or endorsed by Bungie.</div>
+      </div>
+      <div class="faq-card panel-card">
+        <div class="faq-q">Where does the data come from?</div>
+        <div class="faq-a">A mix of our own in-game verification and trusted community sources like light.gg and GameRant, plus Bungie's own public API for anything live \u2014 god rolls, Xur, and weekly milestones pull real-time data straight from Bungie.</div>
+      </div>
+      <div class="faq-card panel-card">
+        <div class="faq-q">How current is it?</div>
+        <div class="faq-a">We update it as the game changes \u2014 new seasons, new artifacts, balance passes. If something's out of date, it means we haven't caught up to it yet, not that it's been abandoned.</div>
+      </div>
+      <div class="faq-card panel-card">
+        <div class="faq-q">Something looks wrong \u2014 what do I do?</div>
+        <div class="faq-a">Let us know. We'd rather fix a mistake than leave it up, and we don't publish anything we haven't been able to verify.</div>
+      </div>
+      <div class="faq-card panel-card">
+        <div class="faq-q">Is it free?</div>
+        <div class="faq-a">Yes. No accounts, no paywalls, no ads.</div>
+      </div>
+      <div class="faq-card panel-card">
+        <div class="faq-q">Does it work on mobile?</div>
+        <div class="faq-a">Yes \u2014 the whole site is built to work on phones and tablets, not just desktop.</div>
+      </div>
+    </div>
+  </div>
 
-  <a href="god-rolls.html" class="link-card panel-card">
-    <div class="link-eyebrow">Live Bungie Data</div>
-    <div class="link-title">God Rolls <span class="link-arrow">→</span></div>
-    <div class="link-desc">The rolls we actually run, from our own playtime.</div>
-  </a>
-</div>
+</section>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
-  <p>Destiny data and set bonus text sourced from public game data. Data and icons © Bungie.</p>
+  <p>Destiny data and set bonus text sourced from public game data. Data and icons \u00a9 Bungie.</p>
 </footer>
 
 <script src="assets/nav.js"></script>

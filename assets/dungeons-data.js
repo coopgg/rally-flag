@@ -304,6 +304,51 @@ window.DungeonsData = (function(){
           ],
           wipe:"If the boss isn't actually inside the reactor room when the purge finishes, its shield won't drop and you'll need to reset the whole sequence — always confirm it followed you in before sealing that door." }
       ] },
+    { name:"Ghosts of the Deep", slug:"ghosts-of-the-deep", armorSlugs:["taken-king"],
+      summary:"Ghosts of the Deep leans on one repeating idea: track down a Hive rune symbol, defeat a Lightbearer to claim a Vestige of Light buff, then imbue the correct matching statue before the buff's timer runs out. Every encounter builds on that same rune-and-imbue loop.",
+      encounters:[
+        { name:"Hive Ritual Disrupted",
+          objective:"Track a trail of Hive runes to find and defeat a Lightbearer, then imbue the matching statue with the buff it drops — four times total.",
+          roles:"No fixed roles — move together and share lookout duty for the rune symbol.",
+          steps:[
+            "Defeat the enemies by the door to spawn a tougher enemy, then follow the trail it leaves toward a Hive rune in the sky — remember the symbol.",
+            "Clear the enemies at that location to reveal the next point in the trail, and repeat until you reach a Lightbearer.",
+            "Defeat the Lightbearer, then immediately defeat its Ghost — whoever gets that kill receives the Vestige of Light buff.",
+            "Return to the starting door and defeat the Wizard guarding it.",
+            "Reveal the illusion on the ground to grant the team a short window of Deepsight.",
+            "While that's active, the Vestige of Light holder interacts with the statue matching the symbol you tracked earlier.",
+            "Repeat this whole sequence four times to open the door."
+          ],
+          wipe:"Imbuing the wrong statue kills whoever's holding the buff and resets that attempt — don't rush the interaction if you're not sure you remembered the symbol correctly." },
+        { name:"Ecthar, the Shield of Savathûn",
+          objective:"Track three underwater runes while dodging the boss, then collect the Vestige of Light from three Lightbearers to imbue three statues and trigger a damage phase.",
+          roles:"One or more players go underwater to find runes and lead the boss away; the rest hold the main room and clear adds.",
+          steps:[
+            "Defeat the enemies praying near the fountain to spawn the boss, along with the enemy that unlocks a Deepsight window.",
+            "Use Deepsight to note three lit Hive rune symbols on the walls.",
+            "Send at least one player underwater — this pulls the boss along with them — to find and touch all three matching runes.",
+            "While that's happening, the rest of the team clears the adds spawning in the main room.",
+            "Back on the surface, defeat the Lightbearer Wizards that appear, then defeat each one's Ghost to claim the Vestige of Light buff.",
+            "Carry that buff to one of the three statues and imbue it — repeat for all three.",
+            "Once the third statue is imbued, defeat the Knight that spawns and step into the pool it leaves to break the boss's shield and begin the damage phase.",
+            "Damage the boss until it goes immune, then repeat the whole cycle."
+          ],
+          wipe:"There's no instant wipe here, but losing track of the underwater player or letting adds overwhelm the surface team can stall progress badly — a Well of Radiance or similar support makes a real difference in this room." },
+        { name:"Simmumah ur-Nokru, Lucent Necromancer",
+          objective:"Reveal three linked locations, lure a specific enemy to each while standing in them to unlock Hive runes, then imbue all three using Vestiges collected from side chambers before starting a damage phase.",
+          roles:"No fixed roles — coordinate on which location each player is luring the enemy to, and who's collecting Vestiges.",
+          steps:[
+            "Crush the Ghost near the boss to start the encounter, then reveal the illusion to gain Deepsight and spot three connected locations.",
+            "Stand at one location so it glows, then defeat Vorlog, Risen in Heresy while standing inside that glow to reveal a Hive rune there.",
+            "Repeat for the other two locations — the heart location must always be done last in this part of the sequence.",
+            "Enter one of the water chambers to find a Lightbearer, defeat it and its Ghost to claim a Vestige buff, and note the Hive rune symbol in that room.",
+            "Return to the main area, use Deepsight again, and imbue the matching location with the Vestige before its 60-second timer runs out.",
+            "Repeat this chamber-and-imbue process for all three locations, then begin the damage phase.",
+            "Stand inside one of the three locations to drop the boss's shield, then unload damage until it goes immune.",
+            "Repeat the whole rune-and-damage cycle — the required locations shift each round, so re-check with Deepsight every time."
+          ],
+          wipe:"Letting a Vestige of Light buff's 60-second timer expire before you imbue the correct location kills whoever's holding it — always confirm the symbol match through Deepsight before committing to the run back." }
+      ] },
     { name:"Warlord's Ruin", slug:"warlords-ruin", armorSlugs:["dark-age"],
       summary:"Warlord's Ruin repeats one core idea across all three boss fights: stand near Taken totems to turn them into Stasis totems, which builds toward a damage phase timer called Naeem's Wish Empowerment. Once you understand that loop, each boss just adds one new wrinkle on top of it.",
       encounters:[
@@ -353,51 +398,6 @@ window.DungeonsData = (function(){
             "After using all three islands, repeat the loop until the boss reaches its last stretch of health, then finish it off in an untimed final stand."
           ],
           wipe:"Letting the Hex of Vengeful Corruption debuff run out on you is a personal death sentence, not a team wipe — pass it off to a Hex-Drinker quickly and don't let one melee you back to reclaim it." }
-      ] },
-    { name:"Ghosts of the Deep", slug:"ghosts-of-the-deep", armorSlugs:["taken-king"],
-      summary:"Ghosts of the Deep leans on one repeating idea: track down a Hive rune symbol, defeat a Lightbearer to claim a Vestige of Light buff, then imbue the correct matching statue before the buff's timer runs out. Every encounter builds on that same rune-and-imbue loop.",
-      encounters:[
-        { name:"Hive Ritual Disrupted",
-          objective:"Track a trail of Hive runes to find and defeat a Lightbearer, then imbue the matching statue with the buff it drops — four times total.",
-          roles:"No fixed roles — move together and share lookout duty for the rune symbol.",
-          steps:[
-            "Defeat the enemies by the door to spawn a tougher enemy, then follow the trail it leaves toward a Hive rune in the sky — remember the symbol.",
-            "Clear the enemies at that location to reveal the next point in the trail, and repeat until you reach a Lightbearer.",
-            "Defeat the Lightbearer, then immediately defeat its Ghost — whoever gets that kill receives the Vestige of Light buff.",
-            "Return to the starting door and defeat the Wizard guarding it.",
-            "Reveal the illusion on the ground to grant the team a short window of Deepsight.",
-            "While that's active, the Vestige of Light holder interacts with the statue matching the symbol you tracked earlier.",
-            "Repeat this whole sequence four times to open the door."
-          ],
-          wipe:"Imbuing the wrong statue kills whoever's holding the buff and resets that attempt — don't rush the interaction if you're not sure you remembered the symbol correctly." },
-        { name:"Ecthar, the Shield of Savathûn",
-          objective:"Track three underwater runes while dodging the boss, then collect the Vestige of Light from three Lightbearers to imbue three statues and trigger a damage phase.",
-          roles:"One or more players go underwater to find runes and lead the boss away; the rest hold the main room and clear adds.",
-          steps:[
-            "Defeat the enemies praying near the fountain to spawn the boss, along with the enemy that unlocks a Deepsight window.",
-            "Use Deepsight to note three lit Hive rune symbols on the walls.",
-            "Send at least one player underwater — this pulls the boss along with them — to find and touch all three matching runes.",
-            "While that's happening, the rest of the team clears the adds spawning in the main room.",
-            "Back on the surface, defeat the Lightbearer Wizards that appear, then defeat each one's Ghost to claim the Vestige of Light buff.",
-            "Carry that buff to one of the three statues and imbue it — repeat for all three.",
-            "Once the third statue is imbued, defeat the Knight that spawns and step into the pool it leaves to break the boss's shield and begin the damage phase.",
-            "Damage the boss until it goes immune, then repeat the whole cycle."
-          ],
-          wipe:"There's no instant wipe here, but losing track of the underwater player or letting adds overwhelm the surface team can stall progress badly — a Well of Radiance or similar support makes a real difference in this room." },
-        { name:"Simmumah ur-Nokru, Lucent Necromancer",
-          objective:"Reveal three linked locations, lure a specific enemy to each while standing in them to unlock Hive runes, then imbue all three using Vestiges collected from side chambers before starting a damage phase.",
-          roles:"No fixed roles — coordinate on which location each player is luring the enemy to, and who's collecting Vestiges.",
-          steps:[
-            "Crush the Ghost near the boss to start the encounter, then reveal the illusion to gain Deepsight and spot three connected locations.",
-            "Stand at one location so it glows, then defeat Vorlog, Risen in Heresy while standing inside that glow to reveal a Hive rune there.",
-            "Repeat for the other two locations — the heart location must always be done last in this part of the sequence.",
-            "Enter one of the water chambers to find a Lightbearer, defeat it and its Ghost to claim a Vestige buff, and note the Hive rune symbol in that room.",
-            "Return to the main area, use Deepsight again, and imbue the matching location with the Vestige before its 60-second timer runs out.",
-            "Repeat this chamber-and-imbue process for all three locations, then begin the damage phase.",
-            "Stand inside one of the three locations to drop the boss's shield, then unload damage until it goes immune.",
-            "Repeat the whole rune-and-damage cycle — the required locations shift each round, so re-check with Deepsight every time."
-          ],
-          wipe:"Letting a Vestige of Light buff's 60-second timer expire before you imbue the correct location kills whoever's holding it — always confirm the symbol match through Deepsight before committing to the run back." }
       ] },
     { name:"Vesper's Host", slug:"vespers-host", armorSlugs:["spacewalk"],
       summary:"Vesper's Host reuses the Scanner and Operator buffs from Deep Stone Crypt and adds a new one, Suppressor, layered with a nuke-carrying mechanic. If you already know Scanner-finds-it, Operator-shoots-it, you're most of the way to understanding this dungeon.",
@@ -495,6 +495,73 @@ window.DungeonsData = (function(){
             "Repeat identifying the Lie and relighting the correct symbols until the boss is dead."
           ],
           wipe:"Lighting up a Truth symbol undoes your progress on that round rather than wiping the team outright — it costs time, not lives, so it's worth double-checking the correct set before committing to a full relight." }
+      ] },
+    { name:"Equilibrium", slug:"equilibrium", armorSlugs:["sage-protector"],
+      summary:"Equilibrium is Renegades' launch dungeon, and it's built almost entirely around one mechanic — Gathering Shadow — that keeps getting more demanding as you go. You'll spend the whole run picking up Darkness pools to build a stacking buff, then spending that buff on doors, shields, and eventually the final boss's own throne world. Learn the buff economy in the first encounter and the rest of the dungeon is the same idea with more steps bolted on.",
+      encounters:[
+        { name:"Barant Imperium Forces",
+          objective:"Break the shields on six Nameless Apprentices using a Darkness-fueled grenade, while managing a fireteam-killing debuff in the tunnels where you earn it.",
+          roles:"A couple of players ride Sparrows through the side tunnels collecting Gathering Shadow while everyone else holds the main arena and manages Apprentices.",
+          steps:[
+            "Lure an Apprentice to one of the three Cabal devices near the arena's red barriers, then activate the pylon at either end of that device.",
+            "Get close enough that the Apprentice starts charging Darkness energy — if they unleash their attack while the pylon is up, it charges the device and drops that barrier.",
+            "Send a player (or two) into the tunnels beyond on a Sparrow to collect Gathering Shadow pools. The Creeping Shadow debuff will kill you if you linger too long between pickups, so keep moving and grabbing pools to reset it.",
+            "Once you've collected enough to reach Shadow Novice, your grenade swaps into a special Shadow attack — and Shadow Novice also cancels the Creeping Shadow debuff outright.",
+            "When an Apprentice throws out its Darkness attack, use the Shadow grenade on it to strip the shield, then finish it off.",
+            "Every Apprentice kill drops a Cabal pod carrying more adds and a yellow-bar Behemoth walker — get out from under the pod itself, since it kills on landing.",
+            "Repeat until all six Apprentices and every Behemoth are dead to spawn the loot chest."
+          ],
+          wipe:"No hard wipe — the danger is a drop pod landing on someone, or losing whoever's in the tunnels to the Creeping Shadow debuff if they run dry on Gathering Shadow pickups." },
+        { name:"Search for Imperial Intelligence",
+          objective:"A platforming section through the Harvester jump ship's hangar and maintenance tunnels to reach the first boss arena.",
+          roles:"No fixed roles — move as a group, since at least one door needs the full fireteam standing at it to open.",
+          steps:[
+            "Climb from the red-lit hangar onto the hanging platform above it, then across to a smaller platform with a breakable grate — shoot it out to drop down.",
+            "Wait at the door ahead until all three lights above it turn green, which only happens once the whole fireteam has arrived.",
+            "Work through the hallways beyond, shooting fuses to open barriers and drop into the marked maintenance shaft when you reach it.",
+            "Continue through to the breakable grates near a small barricade — that leads into the first boss arena.",
+            "Don't shoot out the window you'll pass — it vents you into space."
+          ],
+          wipe:"No wipe mechanic — this is pure traversal, though a badly timed jump or an explosive trapped hatch can still kill you outright." },
+        { name:"Harrow, Dredgen-Apprentice",
+          objective:"Break a dual-blade-wielding Gladiator's shield using the Shadow buff twice over, then chase him down after he tries to flee partway through his health bar.",
+          roles:"Everyone clears adds and hunts Lackeys together; whoever reaches Shadow Apprentice handles closing the Darkness panels and triggering the shield-break mechanisms.",
+          steps:[
+            "Shoot the fuse in the Rally Flag room to drop into the arena and start the fight.",
+            "Clear the first wave of enemies, then wait for more to open side doors leading into the surrounding hallways.",
+            "Hunt down Lackey enemies in those side rooms — they drop the Darkness energy needed to reach Shadow Novice, then Shadow Apprentice (roughly double the Shadow of Novice).",
+            "With Shadow Apprentice, use your special grenade on the correct Darkness-covered panel in each of the three side rooms — three panels closed per room, confirmed by the door lights turning green.",
+            "Back in the main arena, drop Harrow's shield one of two ways: lure him onto the red bay doors and shoot the nearby fuse to open a floor hole he falls into, or light up the four corner pylons via the Darkness devices and bait one of his own attacks into hitting a pylon.",
+            "Once his shield drops, you have about 30 seconds to deal damage before he goes immune again — and the pylons/fuses don't reset, so you likely only get three total damage phases.",
+            "At the health split, his shield resets and he cuts through the back wall to flee — chase him down the hallway immediately, since his shield falters again there and gives you a short window to finish him."
+          ],
+          wipe:"No instant wipe, but running out of intact pylons/fuses before he's dead means starting the encounter over, and hesitating when he breaches the back wall can let him escape the damage window entirely." },
+        { name:"Board the Malphas Contemptus and Infiltrate the Command Ship",
+          objective:"A second platforming stretch across the Harvester's hull and into the Malphas Contemptus, ending at the final boss's door.",
+          roles:"No fixed roles — move together, and have someone hold at least the Shadow Apprentice buff to open the panel that reveals the path forward.",
+          steps:[
+            "Use Shadow Apprentice on one of the Darkness panels near where you fought Harrow to reveal a switch, then flip it to open the bay door.",
+            "Jump down onto the Malphas Contemptus as it pulls in below, then work through the red-lit switches, blast doors, and platforms along its underside.",
+            "Find the correct grate among several identical-looking ones at the bottom of a shaft (most are dead ends), then continue up through the ship's interior.",
+            "Rebuild Shadow Apprentice to reach a high pipe across a large chamber — there are multiple ways up if you've got strand grapple, an Eager Edge sword, or similar mobility tools.",
+            "Clear the two Praetorians guarding the hallway just past the pipe to reach the final boss door."
+          ],
+          wipe:"No wipe mechanic — again, pure traversal, but the timing window on the Darkness panel near the high pipe is tight enough to cost you a lot of backtracking if you miss it." },
+        { name:"Dredgen Sere",
+          objective:"Cycle between building Gathering Shadow to Shadow Master, clearing a Taken mirror of the arena, and destroying five Taken orbs in both planes to earn a damage phase on the final boss.",
+          roles:"Split attention between building Shadow, hunting Nameless Apprentices to open orbs, and Compelling the five Blistered Shadows once teleported into the Taken realm.",
+          steps:[
+            "Approach or shoot Dredgen Sere or his kneeling Apprentices to start the encounter — don't stand too close, since his opening slam can kill you outright.",
+            "A 45-second Lure of the Dark timer begins immediately. Use it to build Gathering Shadow toward Shadow Master and kill Apprentices to start destroying the five Taken orbs in the arena's center.",
+            "When the timer hits zero, your fireteam is pulled into a Taken mirror of the arena containing five Blistered Shadows (shades of Sere) and more Gathering Shadow pools.",
+            "With Shadow Master, Compel each Blistered Shadow in turn — every successful Compel grants a Lure of the Dark stack and lets you shoot one of the Taken orbs. Killing two of the Blistered Shadows instead lowers how many stacks you need and boosts the damage window.",
+            "Hit one of the Darkness-corrupted devices to spawn phantasmal platforms leading up to the fifth Blistered Shadow, which hides above the main arena.",
+            "With full Lure of the Dark stacks, you're returned to the real arena — kill Apprentices to destroy the remaining Taken orbs there. All five orbs need to go down in both planes, and the very last one should be destroyed somewhere you can actually reach Sere, or you'll waste time getting into position.",
+            "During the damage phase, shoot Sere's glowing hands while he's channeling lightning to interrupt and stun him.",
+            "If he survives the damage phase, retreat to the arena's edges immediately — the center floods with lethal Arc energy. Stop the pylons feeding it by hitting a nearby Darkness panel with your special grenade while holding at least Shadow Novice.",
+            "Repeat the whole Lure of the Dark and orb-destruction cycle until Sere finally collapses."
+          ],
+          wipe:"Standing in the center once the Arc energy floods in after a damage phase kills you outright, and destroying the final orb somewhere you can't immediately follow up on costs you a full damage window rather than the run itself." }
       ] }
   ];
 

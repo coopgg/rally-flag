@@ -134,10 +134,14 @@
   .artifact-pair-tag{
     font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
     color:#0b0700; background:var(--accent-bright); border:1px solid transparent;
-    padding:3px 9px; border-radius:999px; text-decoration:none; display:inline-block;
+    padding:3px 9px 3px 3px; border-radius:999px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:6px;
     transition: filter 0.15s ease;
   }
   .artifact-pair-tag:hover{ filter:brightness(1.12); }
+  .artifact-pair-tag img{
+    width:18px; height:18px; border-radius:50%; object-fit:cover; flex-shrink:0;
+  }
 
   .no-results{
     text-align:center; padding:60px 20px; color:var(--text-dim);
@@ -449,7 +453,7 @@
       const artifactMatches = matchingArtifacts(set);
       const artifactPairsHtml = artifactMatches.length
         ? '<div class="artifact-pairs-row"><span class="pairs-label">Pairs well with</span>' +
-          artifactMatches.map(a => '<a class="artifact-pair-tag" href="artifacts.html#artifact-' + a.slug + '">' + a.name + '</a>').join("") + '</div>'
+          artifactMatches.map(a => '<a class="artifact-pair-tag" href="artifacts.html#artifact-' + a.slug + '">' + (a.iconUrl ? '<img src="' + a.iconUrl + '" alt="">' : '') + a.name + '</a>').join("") + '</div>'
         : "";
 
       card.innerHTML =

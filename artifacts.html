@@ -17,17 +17,90 @@
   }
   .disclosure strong{ color:var(--accent-bright); }
 
-  section{ max-width:1100px; margin:32px auto 0; padding:0 24px 90px; }
+  .controls{ max-width:1100px; margin:32px auto 0; padding:0 24px; }
+  .search-row{ display:flex; align-items:center; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
+  .search-box{ flex:1; min-width:220px; position:relative; }
+  .search-box input{
+    width:100%; background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--text); font-family:'Inter', sans-serif; font-size:14px;
+    padding:14px 16px; border-radius:2px; outline:none;
+    transition: border-color 0.2s ease;
+  }
+  .search-box input:focus{ border-color:var(--accent); }
+  .search-box input::placeholder{ color:var(--text-dimmer); }
+  .artifact-count{
+    font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .artifact-count strong{ color:var(--accent-bright); }
+  .expand-all-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+  }
+  .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
+
+  .filter-row{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
+    padding:12px 0; border-top:1px solid var(--panel-border);
+  }
+  .filter-row:last-child{ border-bottom:1px solid var(--panel-border); margin-bottom:24px; }
+  .filter-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
+  }
+  .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
+    color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
+    padding:7px 14px; border-radius:999px; cursor:pointer;
+    transition: all 0.15s ease; user-select:none;
+  }
+  .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
+  .chip.on{
+    color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright);
+    font-weight:600;
+  }
+  .clear-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
+    background:none; border:none; cursor:pointer; text-decoration:underline;
+    text-underline-offset:2px; margin-left:auto;
+  }
+  .clear-btn:hover{ color:var(--accent-bright); }
+
+  .no-results{
+    text-align:center; padding:60px 20px; color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace; font-size:14px;
+  }
+
+  section{ max-width:1100px; margin:0 auto; padding:0 24px 90px; }
   .artifact-grid{
     display:grid; grid-template-columns:repeat(auto-fill, minmax(420px, 1fr));
     gap:16px;
   }
   .artifact-card{ padding:24px; }
-  .artifact-head{ margin-bottom:6px; }
+  .artifact-head{
+    margin-bottom:6px; display:flex; align-items:flex-start; justify-content:space-between;
+    gap:12px; cursor:pointer; user-select:none;
+  }
+  .artifact-head-left{ display:flex; align-items:flex-start; gap:10px; min-width:0; }
+  .artifact-icon{
+    width:38px; height:38px; flex-shrink:0; border-radius:4px; overflow:hidden;
+    background:var(--accent-dim); border:1px solid var(--panel-border); margin-top:1px;
+  }
+  .artifact-icon img{ width:100%; height:100%; object-fit:cover; }
+  .artifact-caret{
+    flex-shrink:0; width:18px; height:18px; margin-top:3px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); transition: transform 0.18s ease;
+  }
+  .artifact-caret svg{ width:11px; height:11px; }
+  .artifact-card.expanded .artifact-caret{ transform:rotate(90deg); }
   .artifact-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:19px; color:var(--text); }
   .artifact-season{ font-size:11.5px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); margin-top:2px; }
 
-  .tag-row{ display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 16px; }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0; }
+  .artifact-card.expanded .tag-row{ margin-bottom:16px; }
   .tag{
     font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
     padding:3px 9px; border-radius:999px; color:var(--text-dim);
@@ -49,6 +122,9 @@
      matching colored pill and never need this. */
   .tag-weapon .tag-icon{ filter:invert(1); }
   [data-mode="light"] .tag-weapon .tag-icon{ filter:none; }
+
+  .artifact-body{ display:none; }
+  .artifact-card.expanded .artifact-body{ display:block; }
 
   .tier-block{ margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border); }
   .tier-block:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
@@ -75,6 +151,26 @@
 
 <div class="disclosure panel-card">
   Every mod fills a specific tier of slots: <strong>Tier 1</strong> perks can go in any of your 7 slots, <strong>Tier 2</strong> perks are restricted to the last 5 slots, and <strong>Tier 3</strong> perks are capped at 2 slots total.
+</div>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search artifacts or perks…" autocomplete="off">
+    </div>
+    <div class="artifact-count"><strong id="count-num">0</strong> artifacts</div>
+    <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
+  </div>
+
+  <div class="filter-row">
+    <div class="filter-label">Element</div>
+    <div class="chip-group" id="element-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Weapon</div>
+    <div class="chip-group" id="weapon-chips"></div>
+    <button class="clear-btn" id="clear-btn">Clear filters</button>
+  </div>
 </div>
 
 <section>
@@ -162,25 +258,126 @@
     );
   }
 
-  window.ArtifactsData.ARTIFACTS.forEach(artifact => {
-    const card = document.createElement("div");
-    card.className = "artifact-card panel-card";
-    card.id = "artifact-" + artifact.slug;
+  window.ArtifactsData.ARTIFACTS.forEach(a => { a.weaponTagsHtml = weaponTagsHtml(a.weapons || []); });
 
-    const weaponTags = weaponTagsHtml(artifact.weapons || []);
+  // ---------- Filter state ----------
+  const state = { search:"", elements:new Set(), weapons:new Set() };
+  const expandedSlugs = new Set();
 
-    card.innerHTML =
-      '<div class="artifact-head">' +
-        '<div class="artifact-name">' + artifact.name + '</div>' +
-        '<div class="artifact-season">' + artifact.season + '</div>' +
-      '</div>' +
-      '<div class="tag-row">' + tagsHtml(artifact.elements || []) + weaponTags + '</div>' +
-      tierHtml(artifact.perks, 1, "\u2014 fills any slot") +
-      tierHtml(artifact.perks, 2, "\u2014 last 5 slots only") +
-      tierHtml(artifact.perks, 3, "\u2014 max 2 slots");
+  const ALL_ELEMENTS = [...new Set(window.ArtifactsData.ARTIFACTS.flatMap(a => a.elements || []))];
+  const ALL_WEAPONS = [...new Set(window.ArtifactsData.ARTIFACTS.flatMap(a => a.weapons || []))].sort();
 
-    grid.appendChild(card);
+  function buildChips(container, values, set){
+    container.innerHTML = "";
+    values.forEach(v => {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.textContent = v;
+      chip.addEventListener("click", () => {
+        if (set.has(v)) set.delete(v); else set.add(v);
+        chip.classList.toggle("on");
+        render();
+      });
+      container.appendChild(chip);
+    });
+  }
+  buildChips(document.getElementById("element-chips"), ALL_ELEMENTS, state.elements);
+  buildChips(document.getElementById("weapon-chips"), ALL_WEAPONS, state.weapons);
+
+  document.getElementById("search-input").addEventListener("input", e => {
+    state.search = e.target.value.trim().toLowerCase();
+    render();
   });
+
+  document.getElementById("clear-btn").addEventListener("click", () => {
+    state.search = "";
+    state.elements.clear();
+    state.weapons.clear();
+    document.getElementById("search-input").value = "";
+    document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+    render();
+  });
+
+  function matches(artifact){
+    if (state.elements.size && !(artifact.elements || []).some(e => state.elements.has(e))) return false;
+    if (state.weapons.size && !(artifact.weapons || []).some(w => state.weapons.has(w))) return false;
+    if (state.search){
+      const perkText = artifact.perks.map(p => p.name + " " + p.desc).join(" ");
+      const hay = (artifact.name + " " + artifact.season + " " + perkText).toLowerCase();
+      if (!hay.includes(state.search)) return false;
+    }
+    return true;
+  }
+
+  function setCardExpanded(card, expanded){
+    card.classList.toggle("expanded", expanded);
+    if (expanded) expandedSlugs.add(card.dataset.slug); else expandedSlugs.delete(card.dataset.slug);
+  }
+
+  function updateExpandAllLabel(){
+    const cards = [...document.querySelectorAll(".artifact-card")];
+    const btn = document.getElementById("expand-all-btn");
+    if (!cards.length){ btn.textContent = "Expand all"; return; }
+    const allExpanded = cards.every(c => c.classList.contains("expanded"));
+    btn.textContent = allExpanded ? "Collapse all" : "Expand all";
+  }
+
+  document.getElementById("expand-all-btn").addEventListener("click", () => {
+    const cards = [...document.querySelectorAll(".artifact-card")];
+    const anyCollapsed = cards.some(c => !c.classList.contains("expanded"));
+    cards.forEach(card => setCardExpanded(card, anyCollapsed));
+    updateExpandAllLabel();
+  });
+
+  function render(){
+    grid.innerHTML = "";
+    const visible = window.ArtifactsData.ARTIFACTS.filter(matches);
+    document.getElementById("count-num").textContent = visible.length;
+
+    if (!visible.length){
+      const empty = document.createElement("div");
+      empty.className = "no-results";
+      empty.textContent = "No artifacts match those filters.";
+      grid.appendChild(empty);
+      updateExpandAllLabel();
+      return;
+    }
+
+    visible.forEach(artifact => {
+      const card = document.createElement("div");
+      card.className = "artifact-card panel-card";
+      card.id = "artifact-" + artifact.slug;
+      card.dataset.slug = artifact.slug;
+
+      card.innerHTML =
+        '<div class="artifact-head">' +
+          '<div class="artifact-head-left">' +
+            '<span class="artifact-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
+            (artifact.iconUrl ? '<div class="artifact-icon"><img src="' + artifact.iconUrl + '" alt=""></div>' : '') +
+            '<div><div class="artifact-name">' + artifact.name + '</div><div class="artifact-season">' + artifact.season + '</div></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tag-row">' + tagsHtml(artifact.elements || []) + artifact.weaponTagsHtml + '</div>' +
+        '<div class="artifact-body">' +
+          tierHtml(artifact.perks, 1, "\u2014 fills any slot") +
+          tierHtml(artifact.perks, 2, "\u2014 last 5 slots only") +
+          tierHtml(artifact.perks, 3, "\u2014 max 2 slots") +
+        '</div>';
+
+      const head = card.querySelector(".artifact-head");
+      head.addEventListener("click", () => {
+        setCardExpanded(card, !card.classList.contains("expanded"));
+        updateExpandAllLabel();
+      });
+      if (expandedSlugs.has(artifact.slug)) setCardExpanded(card, true);
+
+      grid.appendChild(card);
+    });
+
+    updateExpandAllLabel();
+  }
+
+  render();
 })();
 </script>
 </body>

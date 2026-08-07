@@ -220,10 +220,12 @@
 
 <script src="assets/nav.js"></script>
 <script src="assets/builds-data.js"></script>
+<script src="assets/artifacts-data.js"></script>
 <script src="assets/api-keys.js"></script>
 <script>
 (function(){
   const BUILDS = window.BuildsData.BUILDS;
+  const ARTIFACTS = window.ArtifactsData.ARTIFACTS;
   const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
   const BUNGIE_ROOT = "https://www.bungie.net";
 
@@ -388,12 +390,13 @@
   }
 
   function loadoutPieceHtml(opts){
-    // opts: { href, iconId, monogramText, role, name, sub }
+    // opts: { href, iconId, monogramText, iconUrl, role, name, sub }
     const tag = opts.href ? "a" : "div";
     const hrefAttr = opts.href ? ' href="' + opts.href + '"' : "";
+    const iconInner = opts.iconUrl ? '<img src="' + opts.iconUrl + '" alt="">' : opts.monogramText;
     return (
       '<' + tag + ' class="loadout-piece"' + hrefAttr + '>' +
-        '<div class="loadout-icon" id="' + opts.iconId + '">' + opts.monogramText + '</div>' +
+        '<div class="loadout-icon" id="' + opts.iconId + '">' + iconInner + '</div>' +
         '<div class="loadout-body">' +
           '<div class="loadout-role">' + opts.role + '</div>' +
           '<div class="loadout-name">' + opts.name + '</div>' +
@@ -440,6 +443,7 @@
         loadoutPieceHtml({
           href: "artifacts.html#artifact-" + build.artifact.slug,
           iconId: "artifact-icon-" + build.slug, monogramText: monogram(build.artifact.name),
+          iconUrl: (ARTIFACTS.find(a => a.slug === build.artifact.slug) || {}).iconUrl,
           role: "Artifact", name: build.artifact.name, sub: "View perks \u2192"
         });
 

@@ -9,7 +9,7 @@
    ============================================================ */
 window.ArtifactsData = (function(){
   const ARTIFACTS = [
-    { name:"NPA Repulsion Regulator", slug:"npa-repulsion-regulator",
+    { name:"NPA Repulsion Regulator", slug:"npa-repulsion-regulator", iconUrl:"https://www.bungie.net/common/destiny2_content/icons/d710c0340c78b1eecd6821bd5dd104ce.jpg",
       season:"Season of the Deep", elements:["Arc","Void","Strand"], weapons:["Glaives","Auto Rifles"],
       perks:[
         { name:"Improved Unraveling", column:1, desc:"Increases the amount of damage dealt by unraveling a target." },
@@ -34,7 +34,7 @@ window.ArtifactsData = (function(){
         { name:"Passive Aggressive Guard", column:3, desc:"Receive less damage from combatants who are close to you while you are wielding a Glaive." },
         { name:"Void Weapon Channeling", column:3, desc:"You gain a temporary bonus to Void weapon damage after you defeat a target with a Void weapon while at least one of your Void abilities is fully charged. This damage bonus increases based on the number of fully charged Void abilities you have." }
       ] },
-    { name:"Queensfoil Censer", slug:"queensfoil-censer",
+    { name:"Queensfoil Censer", slug:"queensfoil-censer", iconUrl:"https://www.bungie.net/common/destiny2_content/icons/95227d27dee5447e7c59b8f9f482bd63.jpg",
       season:"Season of the Wish", elements:["Solar","Stasis","Strand"], weapons:["Rocket Launchers","Grenade Launchers"],
       perks:[
         { name:"Fever and Chill", column:1, desc:"Rapid precision hits with Solar weapons grant Radiant. Rapid precision hits with Stasis weapons grant Frost Armor." },
@@ -59,7 +59,7 @@ window.ArtifactsData = (function(){
         { name:"Frigid Glare", column:3, desc:"While Frost Armor is active, Stasis precision final blows cause combatants to release a freezing burst." },
         { name:"To Shreds", column:3, desc:"Dealing sustained damage to severed targets unravels them. Defeating a severed target creates a hotspot of Strand energy, granting Woven Mail to nearby allies for a short duration." }
       ] },
-    { name:"Hunter's Journal", slug:"hunters-journal",
+    { name:"Hunter's Journal", slug:"hunters-journal", iconUrl:"https://www.bungie.net/common/destiny2_content/icons/564591352b31aab76307d09689d8c6f3.jpg",
       season:"Episode: Echoes", elements:["Prismatic","Solar","Arc","Void"], weapons:["Swords","Sniper Rifles","Auto Rifles"],
       perks:[
         { name:"Elemental Siphon", column:1, desc:"Rapid final blows with a Kinetic weapon or a weapon matching your equipped Super create an elemental pickup that matches your equipped Super." },
@@ -84,7 +84,7 @@ window.ArtifactsData = (function(){
         { name:"Sniper's Meditation", column:3, desc:"Sniper Rifle hits grant stacking Sniper Rifle damage, stability, and reload bonuses for a short time. Heavy ammo Sniper Rifle hits count as more than one." },
         { name:"Shock and Awe", column:3, desc:"When you have an Arc or Prismatic subclass equipped, Arc final blows while you are amplified summon a burst of lightning that damages and jolts targets." }
       ] },
-    { name:"Slayer Baron Apothecary Satchel", slug:"slayer-baron-apothecary-satchel",
+    { name:"Slayer Baron Apothecary Satchel", slug:"slayer-baron-apothecary-satchel", iconUrl:"https://www.bungie.net/common/destiny2_content/icons/fe806a8c8e4ef23813ec195d74bb74f7.jpg",
       season:"Episode: Revenant", elements:["Stasis","Void","Arc"], weapons:["Grenade Launchers","Shotguns"],
       perks:[
         { name:"Wind Chill", column:1, desc:"Rapid Stasis weapon hits grant you a stack of Frost Armor; hits against slowed or frozen targets also create a Stasis Shard." },
@@ -109,7 +109,7 @@ window.ArtifactsData = (function(){
         { name:"Arc Compounding", column:3, desc:"Arc sources deal increased damage to Blind targets." },
         { name:"Old God's Rite", column:3, desc:"After picking up a Void Breach, dealing damage with a Void weapon creates a rain of seeking projectiles." }
       ] },
-    { name:"Tablet of Ruin", slug:"tablet-of-ruin",
+    { name:"Tablet of Ruin", slug:"tablet-of-ruin", iconUrl:"https://www.bungie.net/common/destiny2_content/icons/e95e1ed79044d40ba6f32092cc2a3179.jpg",
       season:"Episode: Heresy", elements:["Arc","Strand","Void","Prismatic"], weapons:["Fusion Rifles","Glaives","Trace Rifles"],
       perks:[
         { name:"Hold the Line", column:1, desc:"While surrounded, Machine Guns and Glaives gain increased reload speed and stability; final blows heal you." },
@@ -134,7 +134,7 @@ window.ArtifactsData = (function(){
         { name:"Limit Break", column:3, desc:"Casting a Super while you are critically wounded or have an elemental buff matching your Super elements grants a period of increased Super damage." },
         { name:"To Shreds", column:3, desc:"Dealing sustained damage to severed targets unravels them. Defeating a severed target creates a hotspot of Strand energy, granting Woven Mail to nearby allies for a short duration." }
       ] },
-    { name:"Implement of Curiosity", slug:"implement-of-curiosity",
+    { name:"Implement of Curiosity", slug:"implement-of-curiosity", iconUrl:"https://www.bungie.net/common/destiny2_content/icons/51d5606acfeda827603f33b4c562270f.jpg",
       season:"Reclamation", elements:["Solar","Stasis","Strand","Kinetic"], weapons:["Bows","Swords","Micro-Missiles"],
       perks:[
         { name:"Fever and Chill", column:1, desc:"Rapid precision hits with Solar weapons grant Radiant. Rapid precision hits with Stasis weapons grant Frost Armor." },
@@ -159,7 +159,7 @@ window.ArtifactsData = (function(){
         { name:"Iron Lord's Vigor", column:3, desc:"While wielding a Sword, you take decreased damage; rapid final blows grant ammo to the wielder." },
         { name:"Argent Quiver", column:3, desc:"Reloading a Bow consumes one stack of Armor Charge, granting increased damage and reload speed for your next 3 shots or until you stow your Bow." }
       ] },
-    { name:"Encrypted Data Disk", slug:"encrypted-data-disk",
+    { name:"Encrypted Data Disk", slug:"encrypted-data-disk", iconUrl:"https://www.bungie.net/common/destiny2_content/icons/d567549c87bb8fb18c1972027341a5f4.jpg",
       season:"Renegades", elements:["Kinetic","Void","Arc"], weapons:["Swords","Sniper Rifles","Machine Guns"],
       perks:[
         { name:"Press the Advantage", column:1, desc:"Breaking a combatant's shield grants increased weapon stability, handling, and reload speed. Swords gain increased guard resistance." },
