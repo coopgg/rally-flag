@@ -210,31 +210,31 @@
          + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
   }
 
-  // Xur's real refresh timestamp we captured live was Friday 09:00 UTC.
-  // Used only as a fallback estimate if Bungie's response doesn't include
-  // a vendor entry at all while he's inactive (see loadXur below) — if
-  // this ever drifts from his actual arrival, it needs correcting here.
+  // Xur's real schedule, confirmed directly: active from Friday's daily
+  // reset (1 PM Eastern) through Tuesday's weekly reset (1 PM Eastern).
+  // Both are 17:00 UTC in August (EDT, UTC-4) — same hour, different days.
+  // (Earlier version of this code assumed 09:00 UTC arrival based on a
+  // single misread API capture — that was wrong. This is ground truth.)
+  const XUR_RESET_UTC_HOUR = 17;
+
   function estimateNextXurArrival(){
     const now = new Date();
     const target = new Date(now);
-    target.setUTCHours(9, 0, 0, 0);
+    target.setUTCHours(XUR_RESET_UTC_HOUR, 0, 0, 0);
     let daysUntilFriday = (5 - target.getUTCDay() + 7) % 7; // 5 = Friday
     if (daysUntilFriday === 0 && target.getTime() <= now.getTime()) daysUntilFriday = 7;
     target.setUTCDate(target.getUTCDate() + daysUntilFriday);
     return target.toISOString();
   }
 
-  // Real, directly-observed timestamps from live testing: he arrives Friday
-  // 09:00 UTC, and the weekly reset (his departure) is Tuesday 17:00 UTC —
-  // both confirmed against actual captured API data, not assumed.
   function isWithinXurSchedule(now){
     now = now || new Date();
     const day = now.getUTCDay(); // 0=Sun..5=Fri..6=Sat
     const hour = now.getUTCHours();
-    // Friday from 09:00 UTC onward, all of Sat/Sun/Mon, and Tuesday before 17:00 UTC.
-    if (day === 5) return hour >= 9;
+    // Friday from 17:00 UTC onward, all of Sat/Sun/Mon, and Tuesday before 17:00 UTC.
+    if (day === 5) return hour >= XUR_RESET_UTC_HOUR;
     if (day === 6 || day === 0 || day === 1) return true;
-    if (day === 2) return hour < 17;
+    if (day === 2) return hour < XUR_RESET_UTC_HOUR;
     return false;
   }
 
@@ -320,34 +320,23 @@
       const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
       const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[XUR_VENDOR_HASH];
 
-      // Whether he's actively selling. GetPublicVendors is a Bungie-flagged
-      // "Preview" endpoint and has been observed two different ways: fully
-      // absent when inactive (confirmed earlier), and separately, serving
-      // stale cached data (enabled:true, populated inventory) that hasn't
-      // caught up to the current cycle even though he's genuinely not
-      // active. The second case slips past both the enabled flag and the
-      // calendar schedule check, so there's a third check: a genuinely
-      // live nextRefreshDate should never be more than ~5 days out (his
-      // real active window only ever spans ~4.3 days) \u2014 if it's further
-      // out than that, it's stale data pointing at a future cycle, not
-      // evidence he's active right now. Track that separately so the
-      // countdown target below can also avoid trusting a stale date.
+      // Whether he's actively selling. His real schedule (Fri 17:00 UTC ->
+      // Tue 17:00 UTC, confirmed directly) is the decisive signal here \u2014
+      // NOT any interpretation of nextRefreshDate. An earlier version of
+      // this code tried to cross-check nextRefreshDate for "staleness,"
+      // but that field's behavior turned out to be unreliable/misunderstood
+      // and it produced a false negative (flagged genuinely-live data as
+      // fake). Removed rather than patched again. The API's enabled flag
+      // and populated inventory are still checked as a basic sanity gate,
+      // but the calendar schedule is what actually decides active/inactive.
       const saleItemsCheck = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[XUR_VENDOR_HASH] && vendorsResp.sales.data[XUR_VENDOR_HASH].saleItems) || {};
-      let apiSaysActive = vendorEntry && vendorEntry.enabled !== false && Object.keys(saleItemsCheck).length > 0;
-      let refreshDateIsStale = false;
-      if (vendorEntry && vendorEntry.nextRefreshDate){
-        const daysUntilRefresh = (new Date(vendorEntry.nextRefreshDate).getTime() - Date.now()) / 86400000;
-        if (daysUntilRefresh > 5){
-          apiSaysActive = false;
-          refreshDateIsStale = true;
-        }
-      }
+      const apiSaysActive = vendorEntry && vendorEntry.enabled !== false && Object.keys(saleItemsCheck).length > 0;
       const isActive = apiSaysActive && isWithinXurSchedule();
 
       if (!isActive){
-        const hasUsableDate = vendorEntry && vendorEntry.nextRefreshDate && !refreshDateIsStale;
-        const arrivalIso = hasUsableDate ? vendorEntry.nextRefreshDate : estimateNextXurArrival();
-        renderCountdown(contentEl, arrivalIso, !hasUsableDate);
+        const isEstimate = !(vendorEntry && vendorEntry.nextRefreshDate);
+        const arrivalIso = isEstimate ? estimateNextXurArrival() : vendorEntry.nextRefreshDate;
+        renderCountdown(contentEl, arrivalIso, isEstimate);
         return;
       }
 
