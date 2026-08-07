@@ -256,13 +256,27 @@
     return target.toISOString();
   }
 
+  // Real, directly-observed timestamps from live testing: he arrives Friday
+  // 09:00 UTC, and the weekly reset (his departure) is Tuesday 17:00 UTC —
+  // both confirmed against actual captured API data, not assumed.
+  function isWithinXurSchedule(now){
+    now = now || new Date();
+    const day = now.getUTCDay(); // 0=Sun..5=Fri..6=Sat
+    const hour = now.getUTCHours();
+    // Friday from 09:00 UTC onward, all of Sat/Sun/Mon, and Tuesday before 17:00 UTC.
+    if (day === 5) return hour >= 9;
+    if (day === 6 || day === 0 || day === 1) return true;
+    if (day === 2) return hour < 17;
+    return false;
+  }
+
   let countdownTimer = null;
   function renderCountdown(container, arrivalIso, isEstimate){
     if (countdownTimer) clearInterval(countdownTimer);
 
     container.innerHTML =
       '<div class="tw-countdown-wrap">' +
-        '<div class="tw-countdown-label">Not at the Tower \u2014 next arrival in</div>' +
+        '<div class="tw-countdown-label">X\u00fbr has left the Tower \u2014 he\u2019ll return in</div>' +
         '<div class="tw-countdown-digits" id="xur-countdown-digits">\u2014</div>' +
         '<div class="tw-countdown-arrival">Arrives ' + formatDate(arrivalIso) + '</div>' +
         (isEstimate ? '<div class="tw-countdown-note">Bungie didn\u2019t give us a live refresh time this pull, so this is an estimate based on his usual Friday reset \u2014 not a guaranteed figure.</div>' : '') +
@@ -322,11 +336,16 @@
       const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
       const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[XUR_VENDOR_HASH];
 
-      // Whether he's actively selling — separate from whether Bungie gave
-      // us a vendor entry at all (it may still hand back a stub entry with
-      // just a refresh date while he's inactive).
+      // Whether he's actively selling. GetPublicVendors is a Bungie-flagged
+      // "Preview" endpoint and has been observed returning stale/cached
+      // inventory with enabled:true even when he's not actually spawned —
+      // so the API's own answer isn't trusted alone. It has to also fall
+      // inside his real schedule (Fri 09:00 UTC \u2192 Tue 17:00 UTC) before
+      // we'll call him active. Disagreement between the two defaults to
+      // "not active" \u2014 showing nothing is better than showing wrong info.
       const saleItemsCheck = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[XUR_VENDOR_HASH] && vendorsResp.sales.data[XUR_VENDOR_HASH].saleItems) || {};
-      const isActive = vendorEntry && vendorEntry.enabled !== false && Object.keys(saleItemsCheck).length > 0;
+      const apiSaysActive = vendorEntry && vendorEntry.enabled !== false && Object.keys(saleItemsCheck).length > 0;
+      const isActive = apiSaysActive && isWithinXurSchedule();
 
       if (!isActive){
         const isEstimate = !(vendorEntry && vendorEntry.nextRefreshDate);
