@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Xur Full Inventory Debug — Rally Flag (throwaway, not linked in nav)</title>
+<style>
+  body{ background:#0b0700; color:#e8e2d4; font-family:'JetBrains Mono', monospace; font-size:12px; padding:24px; }
+  h1{ font-size:16px; color:#f0a830; }
+  .note{ color:#999; margin-bottom:20px; max-width:700px; line-height:1.5; }
+  .status{ padding:6px 10px; border-radius:3px; display:inline-block; margin-bottom:14px; font-size:11px; }
+  .status.ok{ background:#1a3a1a; color:#7fd97f; }
+  .status.err{ background:#3a1a1a; color:#ff8080; }
+  .category{ margin-bottom:30px; border:1px solid #333; border-radius:4px; padding:16px; }
+  .category-name{ font-size:14px; color:#f0a830; font-weight:bold; margin-bottom:4px; }
+  .category-count{ color:#999; font-size:11px; margin-bottom:12px; }
+  .item-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px; }
+  .item{ display:flex; gap:10px; padding:8px; background:#1a1508; border:1px solid #333; border-radius:3px; }
+  .item img{ width:40px; height:40px; object-fit:cover; border-radius:3px; flex-shrink:0; background:#000; }
+  .item-name{ color:#e8e2d4; font-weight:bold; }
+  .item-type{ color:#999; font-size:10.5px; }
+  .item-class{ color:#7fd9d9; font-size:10.5px; }
+  .item-hash{ color:#666; font-size:9.5px; }
+</style>
+</head>
+<body>
+
+<h1>Xur — Full Unfiltered Inventory Debug</h1>
+<p class="note">Shows every category Bungie's API actually returns for Xur this pull, with real category names and every item resolved (name/type/class), nothing filtered out. Point of this page is to see the whole picture before deciding what goes on this-week.html. Delete once done.</p>
+
+<div id="status" class="status">Loading…</div>
+<div id="output"></div>
+
+<script src="assets/api-keys.js"></script>
+<script>
+(function(){
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const BUNGIE_ROOT = "https://www.bungie.net";
+  const XUR_VENDOR_HASH = "2190858386";
+
+  async function apiGet(path){
+    const res = await fetch(BUNGIE_ROOT + path, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    const data = await res.json();
+    if (!res.ok || data.ErrorCode !== 1){
+      const msg = (data && data.Message) || ("HTTP " + res.status);
+      throw new Error(msg);
+    }
+    return data.Response;
+  }
+
+  const itemDefCache = {};
+  async function fetchItemDef(hash){
+    if (itemDefCache[hash] !== undefined) return itemDefCache[hash];
+    try {
+      const def = await apiGet("/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/");
+      const result = {
+        name: (def.displayProperties && def.displayProperties.name) || ("Unknown (" + hash + ")"),
+        icon: (def.displayProperties && def.displayProperties.icon) ? BUNGIE_ROOT + def.displayProperties.icon : null,
+        typeName: def.itemTypeDisplayName || "",
+        classType: typeof def.classType === "number" ? def.classType : 3
+      };
+      itemDefCache[hash] = result;
+      return result;
+    } catch (err){
+      const fallback = { name: "Unknown (" + hash + ")", icon: null, typeName: "", classType: 3 };
+      itemDefCache[hash] = fallback;
+      return fallback;
+    }
+  }
+
+  const CLASS_LABELS = { 0: "Titan", 1: "Hunter", 2: "Warlock", 3: "Any/None" };
+
+  async function run(){
+    const statusEl = document.getElementById("status");
+    const outputEl = document.getElementById("output");
+    try {
+      const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
+      const vendorEntry = vendorsResp.vendors && vendorsResp.vendors.data && vendorsResp.vendors.data[XUR_VENDOR_HASH];
+
+      if (!vendorEntry){
+        statusEl.className = "status err";
+        statusEl.textContent = "Xur vendor entry not present this pull — he may not be active right now.";
+        return;
+      }
+
+      const saleItems = (vendorsResp.sales && vendorsResp.sales.data && vendorsResp.sales.data[XUR_VENDOR_HASH] && vendorsResp.sales.data[XUR_VENDOR_HASH].saleItems) || {};
+      const categoriesRaw = (vendorsResp.categories && vendorsResp.categories.data && vendorsResp.categories.data[XUR_VENDOR_HASH] && vendorsResp.categories.data[XUR_VENDOR_HASH].categories) || [];
+      const saleList = Object.values(saleItems);
+
+      if (!saleList.length){
+        statusEl.className = "status err";
+        statusEl.textContent = "Vendor entry present, but no sale items came back.";
+        return;
+      }
+
+      const vendorDef = await apiGet("/Platform/Destiny2/Manifest/DestinyVendorDefinition/" + XUR_VENDOR_HASH + "/");
+      const categoryNames = {};
+      (vendorDef.displayCategories || []).forEach((cat, i) => {
+        categoryNames[i] = (cat.displayProperties && cat.displayProperties.name) || ("Category " + i);
+      });
+
+      const bySaleIndex = {};
+      saleList.forEach(item => { bySaleIndex[item.vendorItemIndex] = item; });
+
+      statusEl.className = "status ok";
+      statusEl.textContent = "OK — " + categoriesRaw.length + " categories, " + saleList.length + " total sale items";
+
+      outputEl.innerHTML = "";
+      for (const cat of categoriesRaw){
+        const catName = categoryNames[cat.displayCategoryIndex] || ("Category " + cat.displayCategoryIndex);
+        const itemsInCat = (cat.itemIndexes || []).map(i => bySaleIndex[i]).filter(Boolean);
+
+        const catWrap = document.createElement("div");
+        catWrap.className = "category";
+        const nameEl = document.createElement("div");
+        nameEl.className = "category-name";
+        nameEl.textContent = catName;
+        catWrap.appendChild(nameEl);
+        const countEl = document.createElement("div");
+        countEl.className = "category-count";
+        countEl.textContent = itemsInCat.length + " item(s)";
+        catWrap.appendChild(countEl);
+
+        const grid = document.createElement("div");
+        grid.className = "item-grid";
+        catWrap.appendChild(grid);
+        outputEl.appendChild(catWrap);
+
+        for (const saleItem of itemsInCat){
+          const itemDef = await fetchItemDef(saleItem.itemHash);
+          const itemEl = document.createElement("div");
+          itemEl.className = "item";
+          itemEl.innerHTML =
+            (itemDef.icon ? '<img src="' + itemDef.icon + '" alt="">' : '<div style="width:40px;height:40px;background:#000;border-radius:3px;flex-shrink:0;"></div>') +
+            '<div>' +
+              '<div class="item-name">' + itemDef.name + '</div>' +
+              '<div class="item-type">' + itemDef.typeName + '</div>' +
+              '<div class="item-class">' + CLASS_LABELS[itemDef.classType] + '</div>' +
+              '<div class="item-hash">hash: ' + saleItem.itemHash + '</div>' +
+            '</div>';
+          grid.appendChild(itemEl);
+        }
+      }
+    } catch (err){
+      statusEl.className = "status err";
+      statusEl.textContent = "Error: " + err.message;
+    }
+  }
+
+  run();
+})();
+</script>
+
+</body>
+</html>
