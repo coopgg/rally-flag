@@ -37,13 +37,17 @@
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
     color:var(--accent); text-transform:uppercase; margin-bottom:10px;
   }
+  .xur-class-label{
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:13px;
+    color:var(--text-dim); margin:14px 0 8px;
+  }
+  .xur-class-label:first-of-type{ margin-top:2px; }
   .xur-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
     gap:12px;
   }
-  .xur-card{
-    display:flex; gap:12px; padding:12px; align-items:center;
-  }
+  .xur-card{ padding:14px; }
+  .xur-card-top{ display:flex; gap:12px; align-items:center; }
   .xur-icon{
     width:52px; height:52px; border-radius:4px; overflow:hidden; flex-shrink:0;
     background:rgba(0,0,0,0.4);
@@ -60,6 +64,26 @@
     font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--accent-bright);
   }
   .xur-cost img{ width:14px; height:14px; object-fit:contain; }
+
+  .xur-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .xur-tag{
+    font-family:'JetBrains Mono', monospace; font-size:9.5px; letter-spacing:0.04em;
+    text-transform:uppercase; padding:4px 9px; border-radius:999px;
+    border:1px solid var(--panel-border); color:var(--text-dim);
+  }
+  .xur-tag-archetype{ color:var(--accent-bright); border-color:var(--accent); }
+  .xur-tag-affinity-void{ color:#b48cff; border-color:#6b4fa8; }
+  .xur-tag-affinity-solar{ color:#ff9b5c; border-color:#a85f2f; }
+  .xur-tag-affinity-arc{ color:#7fdcff; border-color:#3f8ba8; }
+  .xur-tag-affinity-stasis{ color:#8cc7ff; border-color:#4f76a8; }
+  .xur-tag-affinity-strand{ color:#7fff9b; border-color:#3fa85f; }
+
+  .xur-build-note{
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--panel-border);
+    font-size:11.5px; color:var(--text-dim);
+  }
+  .xur-build-note a{ color:var(--accent-bright); text-decoration:none; }
+  .xur-build-note a:hover{ text-decoration:underline; }
 
   /* --- Featured This Week --- */
   .featured-grid{
@@ -142,6 +166,7 @@
 <script src="assets/raids-data.js"></script>
 <script src="assets/dungeons-data.js"></script>
 <script src="assets/sets-data.js"></script>
+<script src="assets/builds-data.js"></script>
 <script src="assets/api-keys.js"></script>
 <script>
 (function(){
@@ -182,17 +207,131 @@
       const def = await apiGet("/Platform/Destiny2/Manifest/DestinyInventoryItemDefinition/" + hash + "/");
       const result = {
         name: (def.displayProperties && def.displayProperties.name) || ("Unknown (" + hash + ")"),
+        description: (def.displayProperties && def.displayProperties.description) || "",
         icon: (def.displayProperties && def.displayProperties.icon) ? BUNGIE_ROOT + def.displayProperties.icon : null,
-        typeName: def.itemTypeDisplayName || ""
+        typeName: def.itemTypeDisplayName || "",
+        // 0=Titan, 1=Hunter, 2=Warlock, 3=Any — documented Bungie API field,
+        // used to group Xur's class items instead of guessing from the name.
+        classType: typeof def.classType === "number" ? def.classType : 3,
+        itemCategoryHashes: def.itemCategoryHashes || [],
+        // Raw stat hash->value map. Only armor has the six confirmed
+        // archetype stat hashes populated; weapons have different stats
+        // entirely, which is how we tell them apart without guessing an
+        // itemType enum.
+        stats: (def.stats && def.stats.stats) || {},
+        // Same pattern god-rolls.html already uses for weapon damage type —
+        // resolved via a second manifest lookup by hash, not a hardcoded
+        // enum, so no guessing at Bungie's internal numbering.
+        damageTypeHash: (def.damageTypeHashes && def.damageTypeHashes.length) ? def.damageTypeHashes[0] : null,
+        // First socket's default plug is where an exotic armor's intrinsic
+        // perk usually lives. Unverified against a live pull as of writing —
+        // flagged clearly wherever this gets used.
+        firstSocketPlugHash: (def.sockets && def.sockets.socketEntries && def.sockets.socketEntries.length && def.sockets.socketEntries[0].singleInitialItemHash) || null
       };
       itemDefCache[hash] = result;
       return result;
     } catch (err){
       console.warn("Item def fetch failed for hash " + hash + ":", err.message);
-      const fallback = { name: "Unknown (" + hash + ")", icon: null, typeName: "" };
+      const fallback = { name: "Unknown (" + hash + ")", description: "", icon: null, typeName: "", classType: 3, itemCategoryHashes: [], stats: {}, damageTypeHash: null, firstSocketPlugHash: null };
       itemDefCache[hash] = fallback;
       return fallback;
     }
+  }
+
+  const damageTypeCache = {};
+  async function fetchDamageType(hash){
+    if (!hash) return null;
+    if (damageTypeCache[hash] !== undefined) return damageTypeCache[hash];
+    try {
+      const def = await apiGet("/Platform/Destiny2/Manifest/DestinyDamageTypeDefinition/" + hash + "/");
+      const result = (def.displayProperties && def.displayProperties.name) || null;
+      damageTypeCache[hash] = result;
+      return result;
+    } catch (err){
+      console.warn("Damage type fetch failed for hash " + hash + ":", err.message);
+      damageTypeCache[hash] = null;
+      return null;
+    }
+  }
+
+  // Confirmed via a Bungie.net forum thread showing the actual raw API
+  // response, cross-checked against a second independent source. These
+  // are the OLD stat hashes — Armor 3.0 renamed the stats in place rather
+  // than creating new ones (Mobility->Weapons, Resilience->Health,
+  // Recovery->Class, Discipline->Grenade, Intellect->Super, Strength->Melee).
+  const STAT_HASHES = {
+    weapons: "2996146975",
+    health: "392767087",
+    class: "1943323491",
+    grenade: "1735777505",
+    super: "144602215",
+    melee: "4244567218"
+  };
+
+  // Confirmed against Bungie's own Update 9.7.0 patch notes (Monument of
+  // Triumph, June 9 2026) — the six new archetypes added there, plus the
+  // original six from the Edge of Fate announcement. 12 total.
+  const ARCHETYPES = [
+    { name: "Paragon", primary: "super", secondary: "melee" },
+    { name: "Grenadier", primary: "grenade", secondary: "super" },
+    { name: "Specialist", primary: "class", secondary: "weapons" },
+    { name: "Brawler", primary: "melee", secondary: "health" },
+    { name: "Bulwark", primary: "health", secondary: "class" },
+    { name: "Gunner", primary: "weapons", secondary: "grenade" },
+    { name: "Siegebreaker", primary: "health", secondary: "grenade" },
+    { name: "Skirmisher", primary: "melee", secondary: "weapons" },
+    { name: "Demolitionist", primary: "grenade", secondary: "class" },
+    { name: "Colossus", primary: "super", secondary: "health" },
+    { name: "Reaver", primary: "class", secondary: "melee" },
+    { name: "Powerhouse", primary: "weapons", secondary: "super" }
+  ];
+
+  function detectArchetype(rawStats){
+    const values = {};
+    let populatedCount = 0;
+    Object.keys(STAT_HASHES).forEach(key => {
+      const entry = rawStats[STAT_HASHES[key]];
+      const v = entry && typeof entry.value === "number" ? entry.value : 0;
+      values[key] = v;
+      if (v > 0) populatedCount++;
+    });
+    if (populatedCount < 2) return null; // not armor, or stats didn't come through
+    const sorted = Object.entries(values).sort((a, b) => b[1] - a[1]);
+    const [primary, secondary] = [sorted[0][0], sorted[1][0]];
+    const match = ARCHETYPES.find(a => a.primary === primary && a.secondary === secondary);
+    return match ? match.name : null;
+  }
+
+  // Armor doesn't have a damage-type field the way weapons do, but exotic
+  // perk text almost always names subclass-specific verbs. Keyword list
+  // cross-checked against a published D2 subclass terminology glossary —
+  // checked top to bottom, first match wins. This is pattern-matching on
+  // known terminology, not a guaranteed API field, so it can occasionally
+  // miss an item whose perk text doesn't use these exact words.
+  const ELEMENT_KEYWORDS = [
+    { name: "Void", pattern: /\b(devour|volatile|nova bomb|weaken(?:ed)?|suppress|invisib|void overshield)\b/i },
+    { name: "Solar", pattern: /\b(scorch(?:ed)?|ignite|radiant|cure|restoration|sunspot|firesprite)\b/i },
+    { name: "Arc", pattern: /\b(jolt(?:ed)?|amplified|ionic trace|blind(?:ed)?|spark)\b/i },
+    { name: "Stasis", pattern: /\b(freeze|freezing|frozen|slow(?:ed)?|shatter|stasis crystal|stasis shard)\b/i },
+    { name: "Strand", pattern: /\b(sever(?:ed)?|suspend(?:ed)?|unravel(?:ed)?|tangle|woven mail)\b/i }
+  ];
+
+  function detectAffinityFromText(text){
+    if (!text) return null;
+    for (const el of ELEMENT_KEYWORDS){
+      if (el.pattern.test(text)) return el.name;
+    }
+    return null;
+  }
+
+  function findBuildMatch(itemHash){
+    const builds = (window.BuildsData && window.BuildsData.BUILDS) || [];
+    for (const b of builds){
+      if ((b.exoticArmor && b.exoticArmor.itemHash === itemHash) || (b.exoticWeapon && b.exoticWeapon.itemHash === itemHash)){
+        return b;
+      }
+    }
+    return null;
   }
 
   const vendorDefCache = {};
@@ -368,30 +507,26 @@
       const bySaleIndex = {};
       saleList.forEach(item => { bySaleIndex[item.vendorItemIndex] = item; });
 
+      const CLASS_LABELS = { 0: "Titan", 1: "Hunter", 2: "Warlock" };
+
       contentEl.innerHTML = "";
       for (const cat of categoriesRaw){
         const catName = categoryNames[cat.displayCategoryIndex] || "";
-        // Only the rotating exotic offers change week to week — the other
-        // categories (rank rewards, engram bundles, the info tile) are the
-        // same every week regardless of what's featured, so skip them.
-        if (catName.trim().toLowerCase() !== "multivarious strange offers") continue;
+        const normalized = catName.trim().toLowerCase();
+        // These two are the categories that actually rotate week to week —
+        // the exotic gear + catalysts and the exotic class item/armor
+        // offers. The rest (rank rewards, engram bundles, the info tile)
+        // are the same every week regardless of what's featured, so skip them.
+        if (normalized !== "multivarious strange offers" && normalized !== "strange gear offers") continue;
 
         const itemsInCat = (cat.itemIndexes || []).map(i => bySaleIndex[i]).filter(Boolean);
         if (!itemsInCat.length) continue;
 
-        const catWrap = document.createElement("div");
-        catWrap.className = "xur-category";
-        const label = document.createElement("div");
-        label.className = "xur-category-label";
-        label.textContent = catName || ("Category " + cat.displayCategoryIndex);
-        catWrap.appendChild(label);
-
-        const grid = document.createElement("div");
-        grid.className = "xur-grid";
-        catWrap.appendChild(grid);
-        contentEl.appendChild(catWrap);
-
-        // Sequential, one item (and its cost currency) at a time.
+        // Sequential, one item (and its cost currency) at a time. Resolve
+        // definitions first so Multivarious Strange Offers can be grouped
+        // by class (classType is a real, documented API field, not a
+        // guess from the item name).
+        const resolved = [];
         for (const saleItem of itemsInCat){
           const itemDef = await fetchItemDef(saleItem.itemHash);
           let costHtml = "";
@@ -403,21 +538,93 @@
               cost.quantity + ' ' + costDef.name +
             '</div>';
           }
-          const card = document.createElement("div");
-          card.className = "xur-card panel-card";
-          card.innerHTML =
-            '<div class="xur-icon">' + (itemDef.icon ? '<img src="' + itemDef.icon + '" alt="">' : '') + '</div>' +
-            '<div class="xur-info">' +
-              '<div class="xur-name">' + itemDef.name + (saleItem.quantity > 1 ? ' \u00d7' + saleItem.quantity : '') + '</div>' +
-              '<div class="xur-type">' + itemDef.typeName + '</div>' +
-              costHtml +
+
+          // Archetype — only resolves to something on armor (weapons don't
+          // have these six stats populated).
+          const archetype = detectArchetype(itemDef.stats);
+
+          // Affinity — weapons get a clean, verified answer via a live
+          // manifest lookup (same pattern god-rolls.html already uses for
+          // damage type, no hardcoded enum). Armor doesn't have a damage
+          // type field at all, so it falls back to scanning the intrinsic
+          // perk's text for subclass keywords (Nova Bomb, Devour, etc.) —
+          // this second path is UNVERIFIED against a live pull as of
+          // writing, since it depends on the socket structure actually
+          // holding the perk where we're guessing it does.
+          let affinity = null;
+          if (itemDef.damageTypeHash){
+            affinity = await fetchDamageType(itemDef.damageTypeHash);
+          } else if (itemDef.firstSocketPlugHash){
+            const perkDef = await fetchItemDef(itemDef.firstSocketPlugHash);
+            affinity = detectAffinityFromText(perkDef.name + " " + perkDef.description);
+            console.log("[This Week debug] armor affinity check \u2014 item:", itemDef.name, "| perk:", perkDef.name, "| perk text:", perkDef.description, "| detected affinity:", affinity);
+          }
+
+          const buildMatch = findBuildMatch(saleItem.itemHash);
+
+          let tagsHtml = "";
+          if (archetype || affinity){
+            tagsHtml = '<div class="xur-tags">' +
+              (archetype ? '<span class="xur-tag xur-tag-archetype">' + archetype + '</span>' : '') +
+              (affinity ? '<span class="xur-tag xur-tag-affinity-' + affinity.toLowerCase() + '">' + affinity + '</span>' : '') +
             '</div>';
-          grid.appendChild(card);
+          }
+
+          const buildHtml = buildMatch
+            ? '<div class="xur-build-note">We recommend this in <a href="builds.html#build-' + buildMatch.slug + '">' + buildMatch.title + '</a></div>'
+            : "";
+
+          const cardHtml =
+            '<div class="xur-card panel-card">' +
+              '<div class="xur-card-top">' +
+                '<div class="xur-icon">' + (itemDef.icon ? '<img src="' + itemDef.icon + '" alt="">' : '') + '</div>' +
+                '<div class="xur-info">' +
+                  '<div class="xur-name">' + itemDef.name + (saleItem.quantity > 1 ? ' \u00d7' + saleItem.quantity : '') + '</div>' +
+                  '<div class="xur-type">' + itemDef.typeName + '</div>' +
+                  costHtml +
+                '</div>' +
+              '</div>' +
+              tagsHtml +
+              buildHtml +
+            '</div>';
+          resolved.push({ classType: itemDef.classType, html: cardHtml });
         }
+
+        const catWrap = document.createElement("div");
+        catWrap.className = "xur-category";
+        const label = document.createElement("div");
+        label.className = "xur-category-label";
+        label.textContent = catName || ("Category " + cat.displayCategoryIndex);
+        catWrap.appendChild(label);
+
+        if (normalized === "multivarious strange offers"){
+          // Grouped by class — a real API field (classType), not guessed
+          // from the item name. classType 3 = not class-specific (the
+          // vehicle/sparrow-type offers), grouped under "For Everyone."
+          [0, 1, 2, 3].forEach(ct => {
+            const itemsForClass = resolved.filter(r => r.classType === ct);
+            if (!itemsForClass.length) return;
+            const subLabel = document.createElement("div");
+            subLabel.className = "xur-class-label";
+            subLabel.textContent = CLASS_LABELS[ct] || "For Everyone";
+            catWrap.appendChild(subLabel);
+            const grid = document.createElement("div");
+            grid.className = "xur-grid";
+            grid.innerHTML = itemsForClass.map(r => r.html).join("");
+            catWrap.appendChild(grid);
+          });
+        } else {
+          const grid = document.createElement("div");
+          grid.className = "xur-grid";
+          grid.innerHTML = resolved.map(r => r.html).join("");
+          catWrap.appendChild(grid);
+        }
+
+        contentEl.appendChild(catWrap);
       }
 
       if (!contentEl.children.length){
-        contentEl.innerHTML = '<div class="tw-status">Couldn\u2019t find a "Multivarious Strange Offers" category this pull \u2014 Bungie may have renamed it, or he\u2019s not selling anything in it right now.</div>';
+        contentEl.innerHTML = '<div class="tw-status">Couldn\u2019t find either strange-offers category this pull \u2014 Bungie may have renamed them, or he\u2019s not selling anything in them right now.</div>';
       }
     } catch (err){
       contentEl.innerHTML = '<div class="tw-status tw-error">Couldn\u2019t load Xur\u2019s inventory: ' + err.message + '</div>';
