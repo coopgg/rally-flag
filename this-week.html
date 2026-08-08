@@ -64,6 +64,11 @@
     font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--accent-bright);
   }
   .xur-cost img{ width:14px; height:14px; object-fit:contain; }
+  .xur-card-placeholder{
+    border-style:dashed; opacity:0.7; display:flex; align-items:center;
+  }
+  .xur-card-placeholder .xur-name{ color:var(--text-dim); white-space:normal; }
+  .xur-card-placeholder .xur-type{ line-height:1.5; margin-top:4px; }
 
   .xur-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
   .xur-tag{
@@ -599,7 +604,7 @@
               buildHtml +
             '</div>';
           console.log("[This Week debug] item:", itemDef.name, "| category:", catName, "| classType:", itemDef.classType, "(0=Titan,1=Hunter,2=Warlock,3=Any)");
-          resolved.push({ classType: itemDef.classType, html: cardHtml });
+          resolved.push({ classType: itemDef.classType, typeName: itemDef.typeName, html: cardHtml });
         }
 
         const catWrap = document.createElement("div");
@@ -613,18 +618,51 @@
           // Grouped by class — a real API field (classType), not guessed
           // from the item name. classType 3 = not class-specific (the
           // vehicle/sparrow-type offers), grouped under "For Everyone."
-          [0, 1, 2, 3].forEach(ct => {
+          //
+          // Confirmed via a full unfiltered pull (xur-debug.html): the
+          // public API reliably returns regular armor pieces per class,
+          // but only ONE class's actual class-item slot (Titan Mark /
+          // Hunter Cloak / Warlock Bond) per pull, never all three. Rather
+          // than hardcode specific item names (which rotate weekly and
+          // would go stale immediately), each class always gets a
+          // class-item slot shown — real data if the API gave it to us
+          // this pull, otherwise a plain, always-true fallback note. Xur
+          // reliably carries one for every class each week; which specific
+          // roll only shows in-game, tied to the character you're on.
+          const CLASS_ITEM_TYPE_NAMES = { 0: "Titan Mark", 1: "Hunter Cloak", 2: "Warlock Bond" };
+          [0, 1, 2].forEach(ct => {
             const itemsForClass = resolved.filter(r => r.classType === ct);
-            if (!itemsForClass.length) return;
             const subLabel = document.createElement("div");
             subLabel.className = "xur-class-label";
-            subLabel.textContent = CLASS_LABELS[ct] || "For Everyone";
+            subLabel.textContent = CLASS_LABELS[ct];
             catWrap.appendChild(subLabel);
             const grid = document.createElement("div");
             grid.className = "xur-grid";
             grid.innerHTML = itemsForClass.map(r => r.html).join("");
+            const hasClassItem = itemsForClass.some(r => r.typeName === CLASS_ITEM_TYPE_NAMES[ct]);
+            if (!hasClassItem){
+              grid.innerHTML +=
+                '<div class="xur-card panel-card xur-card-placeholder">' +
+                  '<div class="xur-info">' +
+                    '<div class="xur-name">Exotic Class Item</div>' +
+                    '<div class="xur-type">Xur always carries a ' + CLASS_ITEM_TYPE_NAMES[ct] + ' too \u2014 this week\u2019s roll didn\u2019t come through this pull. Check in-game on your ' + CLASS_LABELS[ct] + ' to see it.</div>' +
+                  '</div>' +
+                '</div>';
+            }
             catWrap.appendChild(grid);
           });
+
+          const anyItems = resolved.filter(r => r.classType === 3);
+          if (anyItems.length){
+            const subLabel = document.createElement("div");
+            subLabel.className = "xur-class-label";
+            subLabel.textContent = "For Everyone";
+            catWrap.appendChild(subLabel);
+            const grid = document.createElement("div");
+            grid.className = "xur-grid";
+            grid.innerHTML = anyItems.map(r => r.html).join("");
+            catWrap.appendChild(grid);
+          }
         } else {
           const grid = document.createElement("div");
           grid.className = "xur-grid";
