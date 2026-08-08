@@ -507,6 +507,17 @@
       const bySaleIndex = {};
       saleList.forEach(item => { bySaleIndex[item.vendorItemIndex] = item; });
 
+      // Temporary diagnostic — logs every category this pull actually
+      // contains and how many items are in each, including ones we don't
+      // currently render. Helps confirm whether Hunter/Warlock class items
+      // live under a category we're not showing, vs. something else.
+      console.log("[This Week debug] all categories this pull:",
+        categoriesRaw.map(cat => ({
+          name: categoryNames[cat.displayCategoryIndex] || ("Category " + cat.displayCategoryIndex),
+          itemCount: (cat.itemIndexes || []).length
+        }))
+      );
+
       const CLASS_LABELS = { 0: "Titan", 1: "Hunter", 2: "Warlock" };
 
       contentEl.innerHTML = "";
@@ -587,6 +598,7 @@
               tagsHtml +
               buildHtml +
             '</div>';
+          console.log("[This Week debug] item:", itemDef.name, "| category:", catName, "| classType:", itemDef.classType, "(0=Titan,1=Hunter,2=Warlock,3=Any)");
           resolved.push({ classType: itemDef.classType, html: cardHtml });
         }
 
