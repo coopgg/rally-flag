@@ -626,11 +626,25 @@
           // than hardcode specific item names (which rotate weekly and
           // would go stale immediately), each class always gets a
           // class-item slot shown — real data if the API gave it to us
-          // this pull, otherwise a plain, always-true fallback note. Xur
-          // reliably carries one for every class each week; which specific
-          // roll only shows in-game, tied to the character you're on.
+          // this pull, otherwise the known, permanently-fixed base item
+          // (there's only ever one class item per class, ever — only the
+          // perk roll on it rotates) with its real icon resolved live,
+          // same manifest pattern as everything else on this page.
           const CLASS_ITEM_TYPE_NAMES = { 0: "Titan Mark", 1: "Hunter Cloak", 2: "Warlock Bond" };
-          [0, 1, 2].forEach(ct => {
+          // Titan (Stoicism) stays resolved live via itemHash — that hash
+          // was independently confirmed against a real live pull, matched
+          // exactly. Hunter (Relativism) and Warlock (Solipsism) use
+          // confirmed icon URLs directly instead of a hash lookup, since
+          // those two hashes were only ever a light.gg-derived guess,
+          // never checked against a live pull the way Stoicism's was \u2014
+          // these exact URLs came from a real, current in-game screenshot,
+          // which is stronger ground truth than the guess it replaces.
+          const CLASS_ITEM_HASH_LOOKUP = { 0: 2362430352 };
+          const CLASS_ITEM_HARDCODED = {
+            1: { name: "Relativism", icon: "https://www.bungie.net/common/destiny2_content/icons/58ae63b773059e5bd7a4d43298f73a50.jpg" },
+            2: { name: "Solipsism", icon: "https://www.bungie.net/common/destiny2_content/icons/7b57cd041db1987c3f566b96535daf9f.jpg" }
+          };
+          for (const ct of [0, 1, 2]){
             const itemsForClass = resolved.filter(r => r.classType === ct);
             const subLabel = document.createElement("div");
             subLabel.className = "xur-class-label";
@@ -641,16 +655,23 @@
             grid.innerHTML = itemsForClass.map(r => r.html).join("");
             const hasClassItem = itemsForClass.some(r => r.typeName === CLASS_ITEM_TYPE_NAMES[ct]);
             if (!hasClassItem){
+              const baseDef = CLASS_ITEM_HASH_LOOKUP[ct]
+                ? await fetchItemDef(CLASS_ITEM_HASH_LOOKUP[ct])
+                : CLASS_ITEM_HARDCODED[ct];
               grid.innerHTML +=
                 '<div class="xur-card panel-card xur-card-placeholder">' +
-                  '<div class="xur-info">' +
-                    '<div class="xur-name">Exotic Class Item</div>' +
-                    '<div class="xur-type">Xur always carries a ' + CLASS_ITEM_TYPE_NAMES[ct] + ' too \u2014 this week\u2019s roll didn\u2019t come through this pull. Check in-game on your ' + CLASS_LABELS[ct] + ' to see it.</div>' +
+                  '<div class="xur-card-top">' +
+                    '<div class="xur-icon">' + (baseDef.icon ? '<img src="' + baseDef.icon + '" alt="">' : '') + '</div>' +
+                    '<div class="xur-info">' +
+                      '<div class="xur-name">' + baseDef.name + '</div>' +
+                      '<div class="xur-type">' + CLASS_ITEM_TYPE_NAMES[ct] + '</div>' +
+                    '</div>' +
                   '</div>' +
+                  '<div class="xur-type" style="margin-top:8px;">Xur always carries this \u2014 this week\u2019s specific perk roll didn\u2019t come through this pull. Check in-game on your ' + CLASS_LABELS[ct] + ' to see it.</div>' +
                 '</div>';
             }
             catWrap.appendChild(grid);
-          });
+          }
 
           const anyItems = resolved.filter(r => r.classType === 3);
           if (anyItems.length){
