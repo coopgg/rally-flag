@@ -64,11 +64,6 @@
     font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--accent-bright);
   }
   .xur-cost img{ width:14px; height:14px; object-fit:contain; }
-  .xur-card-placeholder{
-    border-style:dashed; opacity:0.7; display:flex; align-items:center;
-  }
-  .xur-card-placeholder .xur-name{ color:var(--text-dim); white-space:normal; }
-  .xur-card-placeholder .xur-type{ line-height:1.5; margin-top:4px; }
 
   .xur-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
   .xur-tag{
@@ -382,6 +377,37 @@
     return false;
   }
 
+  function nextXurDeparture(){
+    const now = new Date();
+    const target = new Date(now);
+    target.setUTCHours(XUR_RESET_UTC_HOUR, 0, 0, 0);
+    let daysUntilTuesday = (2 - target.getUTCDay() + 7) % 7; // 2 = Tuesday
+    if (daysUntilTuesday === 0 && target.getTime() <= now.getTime()) daysUntilTuesday = 7;
+    target.setUTCDate(target.getUTCDate() + daysUntilTuesday);
+    return target;
+  }
+
+  let departureTimer = null;
+  function startDepartureCountdown(el){
+    if (departureTimer) clearInterval(departureTimer);
+    const target = nextXurDeparture();
+    function tick(){
+      const diff = target.getTime() - Date.now();
+      if (diff <= 0){
+        el.textContent = "Leaving now\u2026";
+        clearInterval(departureTimer);
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      el.textContent = "Departs in " + (d > 0 ? d + "d " : "") + h + "h " + m + "m " + s + "s";
+    }
+    tick();
+    departureTimer = setInterval(tick, 1000);
+  }
+
   let countdownTimer = null;
   function renderCountdown(container, arrivalIso, isEstimate){
     if (countdownTimer) clearInterval(countdownTimer);
@@ -484,9 +510,7 @@
         return;
       }
 
-      if (vendorEntry.nextRefreshDate){
-        refreshEl.textContent = "Refreshes " + formatDate(vendorEntry.nextRefreshDate);
-      }
+      startDepartureCountdown(refreshEl);
 
       const saleItems = saleItemsCheck;
       const categoriesRaw = (vendorsResp.categories && vendorsResp.categories.data && vendorsResp.categories.data[XUR_VENDOR_HASH] && vendorsResp.categories.data[XUR_VENDOR_HASH].categories) || [];
@@ -543,6 +567,7 @@
         // by class (classType is a real, documented API field, not a
         // guess from the item name).
         const resolved = [];
+        let lastCostHtml = ""; // reused for the class-item fallback below — every item in this category costs the same 41 Strange Coin, so no need to re-fetch the currency icon separately
         for (const saleItem of itemsInCat){
           const itemDef = await fetchItemDef(saleItem.itemHash);
           let costHtml = "";
@@ -553,6 +578,7 @@
               (costDef.icon ? '<img src="' + costDef.icon + '" alt="">' : '') +
               cost.quantity + ' ' + costDef.name +
             '</div>';
+            lastCostHtml = costHtml;
           }
 
           // Archetype — only resolves to something on armor (weapons don't
@@ -659,15 +685,15 @@
                 ? await fetchItemDef(CLASS_ITEM_HASH_LOOKUP[ct])
                 : CLASS_ITEM_HARDCODED[ct];
               grid.innerHTML +=
-                '<div class="xur-card panel-card xur-card-placeholder">' +
+                '<div class="xur-card panel-card">' +
                   '<div class="xur-card-top">' +
                     '<div class="xur-icon">' + (baseDef.icon ? '<img src="' + baseDef.icon + '" alt="">' : '') + '</div>' +
                     '<div class="xur-info">' +
                       '<div class="xur-name">' + baseDef.name + '</div>' +
                       '<div class="xur-type">' + CLASS_ITEM_TYPE_NAMES[ct] + '</div>' +
+                      lastCostHtml +
                     '</div>' +
                   '</div>' +
-                  '<div class="xur-type" style="margin-top:8px;">Xur always carries this \u2014 this week\u2019s specific perk roll didn\u2019t come through this pull. Check in-game on your ' + CLASS_LABELS[ct] + ' to see it.</div>' +
                 '</div>';
             }
             catWrap.appendChild(grid);
