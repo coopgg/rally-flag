@@ -167,6 +167,11 @@
   }
 
   .tags-row{ display:flex; flex-wrap:wrap; gap:6px; padding-top:14px; border-top:1px solid var(--panel-border); }
+  .mobalytics-link{
+    display:inline-block; margin-top:14px; font-size:12.5px; color:var(--accent-bright);
+    text-decoration:none;
+  }
+  .mobalytics-link:hover{ text-decoration:underline; }
   .build-tag{
     font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border);
@@ -473,6 +478,12 @@
       const loopHtml = (build.loop || []).map(step => '<li class="loop-item"><div class="loop-text">' + step + '</div></li>').join("");
       const perksHtml = (build.recommendedArtifactPerks || []).map(p => '<span class="perk-tag">' + p + '</span>').join("");
       const tagsHtml = (build.tags || []).map(t => '<span class="build-tag">' + t + '</span>').join("");
+      // Only rendered once a build actually has a live Mobalytics page —
+      // an empty mobalyticsUrl means it hasn't been posted there yet, so
+      // no link shows rather than a dead one.
+      const mobalyticsHtml = build.mobalyticsUrl
+        ? '<a class="mobalytics-link" href="' + build.mobalyticsUrl + '" target="_blank" rel="noopener">View on Mobalytics \u2192</a>'
+        : "";
 
       card.innerHTML =
         '<div class="build-head" role="button" tabindex="0" aria-expanded="false">' +
@@ -494,6 +505,7 @@
           '</div>' +
           (perksHtml ? '<div class="section-label">Artifact Perks To Slot</div><div class="perks-row">' + perksHtml + '</div>' : "") +
           (tagsHtml ? '<div class="tags-row">' + tagsHtml + '</div>' : "") +
+          mobalyticsHtml +
         '</div>';
 
       const headEl = card.querySelector(".build-head");

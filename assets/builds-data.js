@@ -12,6 +12,7 @@ window.BuildsData = (function(){
     {
       title: "Weakened Prey",
       slug: "weakened-prey",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/silent-blade-hf1iqp/builds/614cdbe0-6de7-4a1b-8f87-5b9b9d754cc1",
       class: "Warlock",
       subclass: "Void",
       tagline: "Turncoat weakens everything in sight, Devour cleans it up, and Skull of Dire Ahamkara turns every kill into more Super energy.",
@@ -47,6 +48,7 @@ window.BuildsData = (function(){
     {
       title: "Ionic Overclock",
       slug: "ionic-overclock",
+      mobalyticsUrl: "",
       class: "Warlock",
       subclass: "Arc",
       tagline: "A self-feeding Ionic Trace loop that keeps Chaos Reach topped up and jolting everything downrange.",
@@ -79,6 +81,7 @@ window.BuildsData = (function(){
     {
       title: "Perpetual Slam",
       slug: "perpetual-slam",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/silent-blade-hf1iqp/builds/2a4a7a64-b61c-45e9-bee3-d0548d766596",
       class: "Titan",
       subclass: "Prismatic",
       tagline: "A melee loop that keeps feeding itself — Consecration slams heal, hit harder, and refund the energy to do it again.",
@@ -112,6 +115,7 @@ window.BuildsData = (function(){
     {
       title: "Contagion Chain",
       slug: "contagion-chain",
+      mobalyticsUrl: "",
       class: "Warlock",
       subclass: "Strand",
       tagline: "Poison that spreads itself \u2014 melee hits, gunfire, and every kill they cause all feed the same chain reaction.",
@@ -145,6 +149,7 @@ window.BuildsData = (function(){
     {
       title: "One Shot, One Kill",
       slug: "one-shot-one-kill",
+      mobalyticsUrl: "",
       class: "Hunter",
       subclass: "Solar",
       tagline: "Two Golden Guns for the price of one \u2014 a helmet and a sniper that were designed to be worn together.",
@@ -177,6 +182,7 @@ window.BuildsData = (function(){
     {
       title: "Frostwall",
       slug: "frostwall",
+      mobalyticsUrl: "",
       class: "Titan",
       subclass: "Stasis",
       tagline: "Slide into a melee and the ground turns to ice \u2014 shatter it and the whole room goes with it.",
@@ -210,6 +216,7 @@ window.BuildsData = (function(){
     {
       title: "Endless Barrage",
       slug: "endless-barrage",
+      mobalyticsUrl: "",
       class: "Hunter",
       subclass: "Solar",
       tagline: "Kill things to build your Super, use your Super to kill things, get your Super back almost instantly.",
@@ -243,6 +250,7 @@ window.BuildsData = (function(){
     {
       title: "Chain Ignition",
       slug: "chain-ignition",
+      mobalyticsUrl: "",
       class: "Warlock",
       subclass: "Solar",
       tagline: "Every Scorch tick and every Ignition hands back the melee energy to go start another one.",
@@ -277,6 +285,7 @@ window.BuildsData = (function(){
     {
       title: "Guided Tether",
       slug: "guided-tether",
+      mobalyticsUrl: "",
       class: "Hunter",
       subclass: "Void",
       tagline: "Charge a bow on ad clear, tether the room, then turn every ring shot loose on the boss.",
@@ -311,6 +320,7 @@ window.BuildsData = (function(){
     {
       title: "Eternal Knighthawk",
       slug: "eternal-knighthawk",
+      mobalyticsUrl: "",
       class: "Hunter",
       subclass: "Prismatic",
       tagline: "The same Golden Gun/Still Hunt burst as the Solar version, plus a free invisibility loop Prismatic lets you bolt on for nothing.",
