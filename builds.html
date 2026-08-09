@@ -67,6 +67,12 @@
   /* ---------- Grid ---------- */
   .grid-section{ max-width:1000px; margin:36px auto 0; padding:0 24px 90px; }
   .build-grid{ display:flex; flex-direction:column; gap:20px; }
+  .build-class-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase; margin:32px 0 4px;
+    padding-bottom:8px; border-bottom:1px solid var(--panel-border);
+  }
+  .build-class-label:first-child{ margin-top:0; }
   .build-card{ padding:26px; }
 
   .build-head{
@@ -406,6 +412,8 @@
     );
   }
 
+  const CLASS_ORDER = ["Titan", "Hunter", "Warlock"];
+
   function render(){
     const grid = document.getElementById("build-grid");
     grid.innerHTML = "";
@@ -421,7 +429,22 @@
       return;
     }
 
-    visible.forEach(build => {
+    // Grouped by class, fixed order (Titan/Hunter/Warlock) so section order
+    // stays consistent regardless of which builds a filter happens to leave
+    // visible. Any unexpected class value not in CLASS_ORDER still shows,
+    // just appended after the three known ones rather than silently dropped.
+    const byClass = {};
+    visible.forEach(b => { (byClass[b.class] = byClass[b.class] || []).push(b); });
+    const classesToShow = CLASS_ORDER.filter(c => byClass[c])
+      .concat(Object.keys(byClass).filter(c => !CLASS_ORDER.includes(c)));
+
+    classesToShow.forEach(className => {
+      const label = document.createElement("div");
+      label.className = "build-class-label";
+      label.textContent = className;
+      grid.appendChild(label);
+
+      byClass[className].forEach(build => {
       const card = document.createElement("div");
       card.className = "build-card panel-card";
       card.id = "build-" + build.slug;
@@ -482,6 +505,7 @@
       if (expandedSlugs.has(build.slug)) setCardExpanded(card, build, true);
 
       grid.appendChild(card);
+      });
     });
 
     updateExpandAllLabel();
