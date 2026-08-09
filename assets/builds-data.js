@@ -12,7 +12,7 @@ window.BuildsData = (function(){
     {
       title: "Weakened Prey",
       slug: "weakened-prey",
-      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/silent-blade-hf1iqp/builds/614cdbe0-6de7-4a1b-8f87-5b9b9d754cc1",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/614cdbe0-6de7-4a1b-8f87-5b9b9d754cc1",
       class: "Warlock",
       subclass: "Void",
       tagline: "Turncoat weakens everything in sight, Devour cleans it up, and Skull of Dire Ahamkara turns every kill into more Super energy.",
@@ -81,7 +81,7 @@ window.BuildsData = (function(){
     {
       title: "Perpetual Slam",
       slug: "perpetual-slam",
-      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/silent-blade-hf1iqp/builds/2a4a7a64-b61c-45e9-bee3-d0548d766596",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/2a4a7a64-b61c-45e9-bee3-d0548d766596",
       class: "Titan",
       subclass: "Prismatic",
       tagline: "A melee loop that keeps feeding itself — Consecration slams heal, hit harder, and refund the energy to do it again.",
