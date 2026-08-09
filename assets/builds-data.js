@@ -10,6 +10,41 @@
 window.BuildsData = (function(){
   const BUILDS = [
     {
+      title: "Weakened Prey",
+      slug: "weakened-prey",
+      class: "Warlock",
+      subclass: "Void",
+      tagline: "Turncoat weakens everything in sight, Devour cleans it up, and Skull of Dire Ahamkara turns every kill into more Super energy.",
+      exoticArmor: {
+        name: "Skull of Dire Ahamkara",
+        slot: "Helmet",
+        itemHash: 3050017626,
+        perkName: "Actual Grandeur",
+        perkDesc: "After casting a Nova Bomb, briefly gain a free cast of a fast-moving but weaker Nova Bomb: Lance. Your Nova Bomb: Cataclysm is empowered if detonated with another Nova Bomb. Nova Bomb final blows and weapon final blows while you have Devour grant Super energy."
+      },
+      exoticWeapon: {
+        name: "Turncoat",
+        weaponType: "Hand Cannon",
+        itemHash: 253843484,
+        perkName: "Latent Power",
+        perkDesc: "Dealing damage builds Latent Power; precision hits and final blows build more. At full power, hold [Alternate Weapon Action] to trigger Unleashed Power, empowering the weapon with increased rate of fire and hip-fire accuracy and causing shots to weaken targets. After a short time, it becomes Overwhelming Power, which deals damage to you over time. Reload or stow the weapon to end these effects."
+      },
+      armorSet: { name: "Eutechnology", slug: "eutechnology" },
+      artifact: { name: "Slayer Baron Apothecary Satchel", slug: "slayer-baron-apothecary-satchel" },
+      loop: [
+        "Turncoat builds Latent Power just from shooting \u2014 precision hits and final blows fill it fastest. Once it's full, hold the alt weapon action to trigger Unleashed Power: faster rate of fire, better hip-fire, and every shot Weakens whatever it hits (a real 15% PvE damage debuff that also blinds the target).",
+        "Power from Pain (artifact) turns those Weakened kills into Devour and a Void breach at the same time \u2014 so the moment Turncoat starts weakening a room, kills start feeding both your survivability and Eutechnology's breach economy automatically.",
+        "Devour final blows restore half your health and extend Devour's own duration, and Feed the Void doubles that strength for Warlocks \u2014 so once it's rolling, staying aggressive is what keeps you alive, not a reason to back off.",
+        "Actual Grandeur ties Super regen directly to Devour: Nova Bomb and weapon final blows while Devoured grant Super energy, and after casting Nova Bomb: Cataclysm you get a free follow-up Nova Bomb: Lance. Landing kills while Devoured is what gets Nova Bomb back faster.",
+        "Void Renewal (artifact) keeps the breach supply going even after Power from Pain isn't the one triggering it \u2014 Void final blows while Devour is active have a chance to drop another breach. Supernova (artifact) then makes picking one of those breaches up empower your next Void hit into a wide weakening pulse, which loops straight back into the start of this whole chain.",
+        "Eutechnology isn't the centerpiece, but it's along for the same ride: Gift of the Ley Lines spawns a breach off rapid Void kills, and Techeun's Foresight triggers a detonation off your next Void weapon final blow after grabbing one \u2014 both fire constantly once Turncoat has a room weakened.",
+        "Watch the Overwhelming Power timer \u2014 reload or stow Turncoat before it starts damaging you, then swap back in once Latent Power refills."
+      ],
+      recommendedArtifactPerks: ["Power from Pain", "Void Renewal", "Supernova"],
+      whyItWorks: "Every piece here solves a problem for the piece next to it. Turncoat's Weaken is the best part of the gun but does nothing for your own survivability on its own \u2014 Power from Pain fixes that by turning Weakened kills straight into Devour, and Devour's own 50% heal (doubled by Feed the Void) is what makes playing aggressively with Turncoat sustainable instead of risky. Actual Grandeur then ties your Super regen to the exact thing Devour already has you doing \u2014 getting final blows \u2014 so Nova Bomb keeps coming back without a separate ability rotation to manage. The artifact and Eutechnology both run on Void breaches, and between Power from Pain, Void Renewal, and Eutechnology's own Gift of the Ley Lines, breaches show up constantly once the loop is moving \u2014 Supernova then spends each one on a weakening pulse that sets up the next kill. Nothing in this build is fighting for the same trigger; Weaken, Devour, Super regen, and breach generation all come from the same handful of kills.",
+      tags: ["Weaken", "Devour", "Ad-Clear", "Boss Damage", "High Survivability"]
+    },
+    {
       title: "Ionic Overclock",
       slug: "ionic-overclock",
       class: "Warlock",
