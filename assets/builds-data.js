@@ -350,6 +350,41 @@ window.BuildsData = (function(){
       recommendedArtifactPerks: ["Sniper's Meditation", "Incendiary Rifle Rounds", "Radiant Orbs"],
       whyItWorks: "The Nighthawk/Still Hunt core is the same developer-built interaction as the pure Solar version \u2014 wearing Nighthawk directly changes what Still Hunt's own charged shot does, which is rare even among iconic Destiny 2 combos. Running it on Prismatic instead of Solar Gunslinger doesn't cost anything: since Prismatic lets you mix an aspect from another subclass, Stylish Executioner rides along as pure upside, adding an invisibility/weaken loop for ad clear and survivability between damage windows that a pure Solar build simply doesn't have access to.",
       tags: ["Boss Damage", "Prismatic", "Precision", "Invisibility"]
+    },
+    {
+      title: "Perpetual Bolt Charge",
+      slug: "perpetual-bolt-charge",
+      mobalyticsUrl: "",
+      class: "Hunter",
+      subclass: "Arc",
+      tagline: "Shinobu's Vow turns Skip Grenade into a self-fueling Bolt Charge loop, and Riskrunner mops up whatever the grenades don't.",
+      exoticArmor: {
+        name: "Shinobu's Vow",
+        slot: "Gauntlets",
+        itemHash: 1053737370,
+        perkName: "New Tricks",
+        perkDesc: "Grants an extra Skip Grenade charge. Skip Grenade damage builds Bolt Charge, and gaining Bolt Charge refunds grenade energy in return. Once Bolt Charge is ready, it heals nearby allies and empowers your next Skip Grenade throw."
+      },
+      exoticWeapon: {
+        name: "Riskrunner",
+        weaponType: "Submachine Gun",
+        itemHash: 3089417789,
+        perkName: "Arc Conductor",
+        perkDesc: "Taking Arc damage overcharges the weapon, boosting its damage and granting resistance to incoming Arc damage. Kills extend the overcharged window. While overcharged, shots have a chance to chain lightning between targets and return ammo."
+      },
+      armorSet: { name: "Exodus Down", slug: "exodus-down" },
+      artifact: { name: "Slayer Baron Apothecary Satchel", slug: "slayer-baron-apothecary-satchel" },
+      loop: [
+        "Throw a Skip Grenade into a group. Spark of Shock jolts everyone it touches, and the grenade damage starts stacking Bolt Charge on Shinobu's Vow.",
+        "Bolt Charge loops straight back into grenade energy \u2014 New Tricks refunds Skip Grenade energy as Bolt Charge builds, so you're rarely without a grenade to throw. Spark of Ions and Spark of Discharge convert jolted and Arc kills into Ionic Traces on top of that, keeping the tank topped off.",
+        "Every grenade cycle burns through Armor Charge fast. Exodus Down's Repurposed Charge triggers off gaining or spending it, so the constant churn quietly heals you and adds damage resistance without any extra input.",
+        "When Bolt Charge is fully stacked, it heals nearby allies and pumps up your next Skip Grenade throw \u2014 useful to time right before you push into a new group.",
+        "Swap to Riskrunner for anything the grenades didn't clear. A little incoming Arc damage (or your own grenade splash) triggers Arc Conductor \u2014 damage resistance, chain lightning, and ammo return while it's active.",
+        "Retinal Burn (artifact) spends an Armor Charge on Arc precision hits to Blind targets, and Arc Compounding makes Arc damage hit Blinded targets harder \u2014 both fire naturally while you're already cycling Armor Charge for Exodus Down, so the extra damage is close to free. Trace Evidence adds another Armor Charge source on top, off rapid hits against Jolted or Blinded targets."
+      ],
+      recommendedArtifactPerks: ["Trace Evidence", "Retinal Burn", "Arc Compounding"],
+      whyItWorks: "Nothing here is fighting over the same resource. Shinobu's Vow's New Tricks and the Spark of Ions/Discharge fragments both feed grenade energy from different triggers (grenade damage vs. Arc/Jolt kills), so Skip Grenade rarely goes on cooldown for long. That same grenade spam burns Armor Charge constantly, and Exodus Down turns that churn into passive healing and damage resistance instead of a resource you have to manage. The artifact perks lean on the exact same Armor Charge cycle \u2014 Retinal Burn spends it to Blind, Arc Compounding cashes that Blind in for bonus Arc damage, and Trace Evidence keeps the Armor Charge supply coming from kills you're already getting. Riskrunner sits on top as the answer for anything that survives the grenade-and-jolt phase, converting a little incoming Arc damage into chain lightning that clears whatever's left.",
+      tags: ["Add-Clear", "Ability Spam", "Crowd Control", "Jolt"]
     }
   ];
 
