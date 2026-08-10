@@ -24,7 +24,19 @@
     gap:16px;
   }
   .weapon-card{ padding:24px; }
-  .weapon-head{ display:flex; gap:16px; align-items:flex-start; margin-bottom:16px; }
+  .weapon-head{
+    display:flex; gap:16px; align-items:flex-start; margin-bottom:16px;
+    cursor:pointer; user-select:none;
+  }
+  .weapon-caret{
+    flex-shrink:0; width:18px; height:18px; margin-top:19px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); transition: transform 0.18s ease;
+  }
+  .weapon-caret svg{ width:11px; height:11px; }
+  .weapon-card.expanded .weapon-caret{ transform:rotate(90deg); }
+  .weapon-body{ display:none; }
+  .weapon-card.expanded .weapon-body{ display:block; }
   .weapon-icon{
     position:relative; flex-shrink:0; width:56px; height:56px;
     display:flex; align-items:center; justify-content:center;
@@ -130,6 +142,12 @@
     white-space:nowrap;
   }
   .result-count strong{ color:var(--accent-bright); }
+  .expand-all-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+  }
+  .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
 
   .filter-row{
     display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
@@ -186,6 +204,7 @@
       <input type="text" id="search-input" placeholder="Search weapons or perks…" autocomplete="off">
     </div>
     <div class="result-count"><strong id="count-num">—</strong> weapons</div>
+    <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
   </div>
 
   <div class="filter-row">
@@ -297,6 +316,7 @@
 
     card.innerHTML =
       '<div class="weapon-head">' +
+        '<span class="weapon-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
         '<div class="weapon-icon" id="icon-' + weapon.slug + '">' + monogram(weapon.name) + '</div>' +
         '<div><div class="weapon-name-row">' +
           '<div class="weapon-name" id="name-' + weapon.slug + '">' + weapon.name + '</div>' +
@@ -304,23 +324,39 @@
         '</div>' +
         '<div class="weapon-meta" id="meta-' + weapon.slug + '">Loading live data\u2026</div></div>' +
       '</div>' +
-      '<div class="weapon-flavor" id="flavor-' + weapon.slug + '"></div>' +
-      '<div class="perk-section">' +
-        '<div class="perk-section-label">Recommended Perks</div>' +
-        '<div class="perk-grid" id="perks-' + weapon.slug + '"><span class="load-error">Loading\u2026</span></div>' +
-      '</div>' +
-      (weapon.altRoll ? '<button class="alt-roll-btn" id="alt-btn-' + weapon.slug + '" type="button">Show alternate roll</button>' : '') +
-      (weapon.note ? '<div class="weapon-note">' + weapon.note + '</div>' : '') +
-      (weapon.pairing ? '<div class="pairing-section">' +
-        '<div class="pairing-label">Pairs Well With</div>' +
-        '<div class="pairing-note">' + weapon.pairing.note + '</div>' +
-        (weapon.pairing.armorSlug ? '<a class="pairing-armor-link" href="armor-set-bonuses.html?highlight=' + weapon.pairing.armorSlug + '">View armor set \u2192</a>' : '') +
-      '</div>' : '') +
-      (weapon.raidSlug ? '<a class="cross-link" href="raid-guide.html?slug=' + weapon.raidSlug + '">View the raid guide it drops from \u2192</a>' : '') +
-      (weapon.dungeonSlug ? '<a class="cross-link" href="dungeon-guide.html?slug=' + weapon.dungeonSlug + '">View the dungeon guide it drops from \u2192</a>' : '') +
-      '<a class="light-gg-link" id="lightgg-' + weapon.slug + '" href="https://www.light.gg/db/items/' + weapon.itemHash + '/" target="_blank" rel="noopener">View on light.gg \u2192</a>';
+      '<div class="weapon-body">' +
+        '<div class="weapon-flavor" id="flavor-' + weapon.slug + '"></div>' +
+        '<div class="perk-section">' +
+          '<div class="perk-section-label">Recommended Perks</div>' +
+          '<div class="perk-grid" id="perks-' + weapon.slug + '"><span class="load-error">Loading\u2026</span></div>' +
+        '</div>' +
+        (weapon.altRoll ? '<button class="alt-roll-btn" id="alt-btn-' + weapon.slug + '" type="button">Show alternate roll</button>' : '') +
+        (weapon.note ? '<div class="weapon-note">' + weapon.note + '</div>' : '') +
+        (weapon.pairing ? '<div class="pairing-section">' +
+          '<div class="pairing-label">Pairs Well With</div>' +
+          '<div class="pairing-note">' + weapon.pairing.note + '</div>' +
+          (weapon.pairing.armorSlug ? '<a class="pairing-armor-link" href="armor-set-bonuses.html?highlight=' + weapon.pairing.armorSlug + '">View armor set \u2192</a>' : '') +
+        '</div>' : '') +
+        (weapon.raidSlug ? '<a class="cross-link" href="raid-guide.html?slug=' + weapon.raidSlug + '">View the raid guide it drops from \u2192</a>' : '') +
+        (weapon.dungeonSlug ? '<a class="cross-link" href="dungeon-guide.html?slug=' + weapon.dungeonSlug + '">View the dungeon guide it drops from \u2192</a>' : '') +
+        '<a class="light-gg-link" id="lightgg-' + weapon.slug + '" href="https://www.light.gg/db/items/' + weapon.itemHash + '/" target="_blank" rel="noopener">View on light.gg \u2192</a>' +
+      '</div>';
+
+    const head = card.querySelector(".weapon-head");
+    head.addEventListener("click", () => {
+      card.classList.toggle("expanded");
+      updateExpandAllLabel();
+    });
 
     return card;
+  }
+
+  function updateExpandAllLabel(){
+    const cards = Array.from(document.querySelectorAll(".weapon-card"));
+    const visibleCards = cards.filter(c => c.style.display !== "none");
+    const anyCollapsed = visibleCards.some(c => !c.classList.contains("expanded"));
+    const btn = document.getElementById("expand-all-btn");
+    if (btn) btn.textContent = anyCollapsed ? "Expand all" : "Collapse all";
   }
 
   async function hydrateWeapon(weapon, roll){
@@ -416,6 +452,14 @@
       wireAltRollToggle(weapon);
     }
     initFilters();
+    updateExpandAllLabel();
+
+    document.getElementById("expand-all-btn").addEventListener("click", () => {
+      const cards = Array.from(document.querySelectorAll(".weapon-card")).filter(c => c.style.display !== "none");
+      const anyCollapsed = cards.some(c => !c.classList.contains("expanded"));
+      cards.forEach(c => c.classList.toggle("expanded", anyCollapsed));
+      updateExpandAllLabel();
+    });
   }
 
   // ---------------------------------------------------------------
@@ -506,6 +550,7 @@
     } else if (emptyMsg){
       emptyMsg.remove();
     }
+    updateExpandAllLabel();
   }
 
   render();
