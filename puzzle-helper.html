@@ -678,6 +678,12 @@
   const VERITY_MISSING = { C: ["S", "T"], S: ["C", "T"], T: ["C", "S"] };
   const VERITY_COMPOSITE_NAME = { ST: "Prism", CT: "Cone", CS: "Cylinder", CC: "Sphere", SS: "Cube", TT: "Pyramid" };
   const VERITY_NAME_TO_PAIR = { Sphere: ["C","C"], Cube: ["S","S"], Pyramid: ["T","T"], Prism: ["S","T"], Cone: ["C","T"], Cylinder: ["C","S"] };
+  // Knight drop is fixed by physical lane, ALWAYS \u2014 completely independent of what
+  // any Inside player calls out. Left Knight always drops Circle, Middle always
+  // drops Triangle, Right always drops Square. Confirmed directly by Nick + a
+  // second player after the solver previously (and incorrectly) derived this
+  // from the Inside callout assignment.
+  const VERITY_KNIGHT_LANE_FOR_SHAPE = { C: 0, T: 1, S: 2 }; // 0=Left, 1=Middle, 2=Right
 
   function verityImgBtn(icons, key){
     return '<button type="button" class="verity-shape-btn" data-shape="' + key + '"><img src="' + icons[key] + '" alt="' + (VERITY_NAMES[key] || key) + '"></button>';
@@ -702,6 +708,26 @@
       if (seq[i] === seq[i - 1]) return false;
     }
     return true;
+  }
+  // Counts how many forced Ogre resets a given swap path requires — each
+  // Ogre cycle only spawns one Knight per lane, so a path that happens to
+  // request the same lane's shape twice before all three lanes have gone
+  // once needs an extra reset. Different equally-short swap paths can need
+  // very different numbers of resets purely by luck of ordering, so this
+  // is used to prefer the most efficient one.
+  function countOgres(path){
+    const pickups = [];
+    path.forEach(m => {
+      pickups.push(VERITY_KNIGHT_LANE_FOR_SHAPE[m.fromShape]);
+      pickups.push(VERITY_KNIGHT_LANE_FOR_SHAPE[m.toShape]);
+    });
+    let used = new Set();
+    let ogres = 0;
+    pickups.forEach(lane => {
+      if (used.has(lane)){ ogres++; used = new Set(); }
+      used.add(lane);
+    });
+    return ogres;
   }
 
   function solveVerity(startState, targetState){
@@ -743,10 +769,14 @@
         }
       }
       if (solutionsAtThisDepth.length){
-        // Prefer any solution at this minimum depth that never deposits
-        // into the same statue twice in a row (Equal Distribution).
-        const clean = solutionsAtThisDepth.find(respectsEqualDistribution);
-        const chosen = clean || solutionsAtThisDepth[0];
+        // Among equally-short solutions, prefer whichever needs the fewest
+        // forced Ogre resets (see countOgres), then break ties by Equal
+        // Distribution cleanliness (never deposit into the same statue
+        // twice in a row).
+        const minOgres = Math.min(...solutionsAtThisDepth.map(countOgres));
+        const lowOgre = solutionsAtThisDepth.filter(p => countOgres(p) === minOgres);
+        const clean = lowOgre.find(respectsEqualDistribution);
+        const chosen = clean || lowOgre[0];
         return { path: chosen, equalDistribution: !!clean };
       }
       frontier = next;
@@ -1239,13 +1269,22 @@
       // deposited (into two different statues), the game auto-swaps their
       // other, non-participating components — that's what workingState
       // below simulates.
-      const knightLaneForShape = {};
-      insideHeld.forEach((shape, laneIdx) => { knightLaneForShape[shape] = laneIdx; });
-
+      // IMPORTANT: nothing is ever carried cross-lane in terms of WHERE
+      // the shape token comes from \u2014 Knight lane is fixed per shape,
+      // always (see VERITY_KNIGHT_LANE_FOR_SHAPE), regardless of Inside
+      // callouts. What IS cross-lane is the deposit: "putting" a shape at
+      // a statue dissects a matching component OUT of that statue (using
+      // the Knight-dropped shape as the key, not as added material). Once
+      // both halves of a swap have been dissected out (two different
+      // shapes, from two different statues), the game auto-trades those
+      // two extracted components between the two statues \u2014 that's what
+      // workingState below simulates. The deposit lane for each pickup
+      // is therefore the STATUE currently holding that shape (m.fromLane /
+      // m.toLane from the BFS move), never the Knight's own lane.
       const pickups = [];
       solution.forEach(m => {
-        pickups.push({ shape: m.fromShape, knightLane: knightLaneForShape[m.fromShape], depositLane: m.fromLane });
-        pickups.push({ shape: m.toShape, knightLane: knightLaneForShape[m.toShape], depositLane: m.toLane });
+        pickups.push({ shape: m.fromShape, knightLane: VERITY_KNIGHT_LANE_FOR_SHAPE[m.fromShape], depositLane: m.fromLane });
+        pickups.push({ shape: m.toShape, knightLane: VERITY_KNIGHT_LANE_FOR_SHAPE[m.toShape], depositLane: m.toLane });
       });
 
       // Composite-icon snapshot of all 3 lanes at a given point, so a player
@@ -1262,14 +1301,23 @@
       let workingState = startState.map(pair => [...pair]);
       let stepNum = 0;
       const rows = [];
+      // Each Ogre cycle spawns exactly one Knight per lane. Once a lane's
+      // Knight has been used this cycle, that lane can't offer another
+      // pickup until the Ogres are killed and the Knights respawn \u2014 so
+      // insert the Ogre step whenever the NEXT pickup would reuse a lane
+      // already used since the last reset, rather than assuming a fixed
+      // count of 3.
+      let usedLanesThisCycle = new Set();
       pickups.forEach((p, idx) => {
-        if (idx > 0 && idx % 3 === 0){
+        if (usedLanesThisCycle.has(p.knightLane)){
           stepNum++;
           rows.push(
             '<div class="verity-solution-step verity-ogre-step"><span class="step-num">' + stepNum + '</span>' +
             'Kill Ogres</div>'
           );
+          usedLanesThisCycle = new Set();
         }
+        usedLanesThisCycle.add(p.knightLane);
         stepNum++;
         rows.push(
           '<div class="verity-solution-step"><span class="step-num">' + stepNum + '</span>' +
