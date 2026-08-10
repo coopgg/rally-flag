@@ -29,6 +29,12 @@
     white-space:nowrap;
   }
   .set-count strong{ color:var(--accent-bright); }
+  .expand-all-btn{
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+  }
+  .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
 
   .filter-row{
     display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
@@ -70,7 +76,19 @@
     transition: border-color 0.3s ease, background 0.3s ease;
   }
   .set-card.highlighted{ border-color: var(--accent); background: var(--accent-dim); }
-  .set-card-head{ display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .set-card-head{
+    display:flex; align-items:center; gap:12px; margin-bottom:16px;
+    cursor:pointer; user-select:none;
+  }
+  .set-caret{
+    flex-shrink:0; width:18px; height:18px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent); transition: transform 0.18s ease;
+  }
+  .set-caret svg{ width:11px; height:11px; }
+  .set-card.expanded .set-caret{ transform:rotate(90deg); }
+  .set-card-body{ display:none; }
+  .set-card.expanded .set-card-body{ display:block; }
   .set-monogram{
     position:relative; flex-shrink:0; width:38px; height:38px;
     display:flex; align-items:center; justify-content:center;
@@ -172,6 +190,7 @@
       <input type="text" id="search-input" placeholder="Search sets or bonuses…" autocomplete="off">
     </div>
     <div class="set-count"><strong id="count-num">0</strong> sets</div>
+    <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
   </div>
 
   <div class="filter-row">
@@ -199,7 +218,7 @@
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
-  <p>Set names, perk text, and drop sources sourced from public game data. Data © Bungie. Cross-referenced with the <a href="https://wewantdestiny3.com/armor-set-bonuses/" target="_blank" rel="noopener">We Want Destiny 3</a> set bonus database.</p>
+  <p>Set names, perk text, and drop sources sourced from public game data. Data © Bungie.</p>
 </footer>
 
 <script src="assets/nav.js"></script>
@@ -458,25 +477,50 @@
 
       card.innerHTML =
         '<div class="set-card-head">' +
+          '<span class="set-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
           '<div class="set-monogram" id="icon-' + set.slug + '">' + monogram(set.name) + '</div>' +
           '<div><div class="set-name">' + set.name + '</div><div class="set-source">' + set.source + ' \u00b7 ' + set.sourceDetail + '</div></div>' +
         '</div>' +
-        '<div class="perk"><div class="perk-badge" id="two-badge-' + set.slug + '">2</div><div class="perk-body"><div class="perk-name">2 Piece | ' + set.two[0] + '</div><div class="perk-desc">' + set.two[1] + '</div></div></div>' +
-        '<div class="perk"><div class="perk-badge" id="four-badge-' + set.slug + '">4</div><div class="perk-body"><div class="perk-name">4 Piece | ' + set.four[0] + '</div><div class="perk-desc">' + set.four[1] + '</div></div></div>' +
-        subclassPairsHtml +
-        pairsHtml +
-        artifactPairsHtml;
+        '<div class="set-card-body">' +
+          '<div class="perk"><div class="perk-badge" id="two-badge-' + set.slug + '">2</div><div class="perk-body"><div class="perk-name">2 Piece | ' + set.two[0] + '</div><div class="perk-desc">' + set.two[1] + '</div></div></div>' +
+          '<div class="perk"><div class="perk-badge" id="four-badge-' + set.slug + '">4</div><div class="perk-body"><div class="perk-name">4 Piece | ' + set.four[0] + '</div><div class="perk-desc">' + set.four[1] + '</div></div></div>' +
+          subclassPairsHtml +
+          pairsHtml +
+          artifactPairsHtml +
+        '</div>';
+
+      if (set.slug === highlightSlug) card.classList.add("expanded");
+
+      card.querySelector(".set-card-head").addEventListener("click", () => {
+        card.classList.toggle("expanded");
+        updateExpandAllLabel();
+      });
 
       grid.appendChild(card);
     });
 
     hydrateAllVisible(visible);
+    updateExpandAllLabel();
 
     if (highlightSlug){
       const el = document.getElementById("set-" + highlightSlug);
       if (el) setTimeout(() => el.scrollIntoView({ behavior:"smooth", block:"center" }), 100);
     }
   }
+
+  function updateExpandAllLabel(){
+    const cards = Array.from(document.querySelectorAll(".set-card")).filter(c => c.style.display !== "none");
+    const anyCollapsed = cards.some(c => !c.classList.contains("expanded"));
+    const btn = document.getElementById("expand-all-btn");
+    if (btn) btn.textContent = anyCollapsed ? "Expand all" : "Collapse all";
+  }
+
+  document.getElementById("expand-all-btn").addEventListener("click", () => {
+    const cards = Array.from(document.querySelectorAll(".set-card")).filter(c => c.style.display !== "none");
+    const anyCollapsed = cards.some(c => !c.classList.contains("expanded"));
+    cards.forEach(c => c.classList.toggle("expanded", anyCollapsed));
+    updateExpandAllLabel();
+  });
 
   render();
 })();
