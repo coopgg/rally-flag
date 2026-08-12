@@ -11,6 +11,13 @@
    ============================================================ */
 window.GodRollsData = (function(){
   const WEAPONS = [
+    { name:"VS Velocity Baton", slug:"vs-velocity-baton",
+      itemHash: 2452936816,
+      perkHashes: [373417387, 2108812838, 2541826827, 1926441324, 4232410959, 882794620, 325500297],
+      raidSlug: null, dungeonSlug: null,
+      note: "Energy pick for Contagion Chain \u2014 Void, Special ammo.",
+      buildTags: ["contagion-chain"],
+      pairing: null },
     { name:"Lost Signal", slug:"lost-signal",
       itemHash: 1197771438,
       perkHashes: [3250572790, 2108812838, 3528046508, 1906147653, 734193227],
@@ -48,10 +55,10 @@ window.GodRollsData = (function(){
       pairing: null },
     { name:"Qua-Vinctus IV", slug:"qua-vinctus-iv",
       itemHash: 4176551594,
-      perkHashes: [3048246338, 3267421167, 102912326, 2896748467, 2671305723, 622249644, 1523545668],
+      perkHashes: [111235976, 3267421167, 102912326, 2896748467, 4236235115, 3513245618, 1523545668],
       raidSlug: null, dungeonSlug: null,
-      note: "",
-      buildTags: [],
+      note: "Heavy pick for Contagion Chain \u2014 Strand, but stays in the Power slot since only Special/Primary Strand and Stasis weapons move to Kinetic.",
+      buildTags: ["contagion-chain"],
       pairing: null },
     { name:"LIONFISH-4FR", slug:"lionfish-4fr",
       itemHash: 2423071981,

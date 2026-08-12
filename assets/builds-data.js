@@ -133,22 +133,22 @@ window.BuildsData = (function(){
         perkName: "Screaming Swarm + Toxic Overload",
         perkDesc: "Fires tracking toxic projectiles; landing a final blow or several precision hits triggers a burst that poisons everyone nearby \u2014 which then chains into Necrotic Grip's spread."
       },
-      armorSet: { name: "Thunderhead", slug: "thunderhead" },
+      armorSet: { name: "Flain", slug: "flain" },
       artifact: { name: "Tablet of Ruin", slug: "tablet-of-ruin" },
       loop: [
         "Necrotic Grip poisons whatever you melee, and killing a poisoned target spreads the poison again to anyone standing near it.",
         "Osteo Striga does the same thing at range \u2014 precision hits or a final blow trigger its own poison burst, and thanks to Necrotic Grip, those kills spread the poison too, so melee and gunfire feed the same chain instead of two separate effects.",
         "Run this on Strand (Arcane Needle melee, three charges) or the Prismatic exotic class item route with Spirit of Necrotic, and every melee charge is another chain started.",
-        "Thunderhead's 2-piece grants point-blank damage resistance off a grenade activation \u2014 useful cover for staying in melee range \u2014 and its 4-piece turns unraveled kills into grenade energy, so Strand suspend/sever effects loop back into more melee charges.",
+        "Flain's 2-piece (Sinew Stitching) turns the damage you take while brawling at melee range into free Threadlings, and its 4-piece (Knit Together) makes the next several Threadling hits heal you once your shield breaks \u2014 solid survivability for a build that wants you standing in the middle of a poisoned crowd.",
         "Tablet of Ruin's Unraveling Orbs and Horde Shuttle mods add Strand Unraveling Rounds and Threadling generation on top, so the artifact is clearing adds through the same Strand debuffs the build is already applying."
       ],
-      recommendedArtifactPerks: ["Unraveling Orbs", "Horde Shuttle", "Vile Weave"],
-      whyItWorks: "Necrotic Grip and Osteo Striga are almost always recommended together because they're the same mechanic twice: one poisons at melee range, the other at range, and each one's kills re-trigger the other's spread. That's what makes a couple of poisoned enemies enough to clear a full room. Thunderhead and Tablet of Ruin don't add a new mechanic on top \u2014 they just make the existing Strand suspend/sever side of the kit (which you're already applying to poisoned targets) generate more of the melee energy this build was already built around.",
+      recommendedArtifactPerks: ["Unraveling Orbs", "Elemental Siphon", "Vile Weave", "Horde Shuttle", "Gold from Lead", "To Shreds", "Limit Break"],
+      whyItWorks: "Necrotic Grip and Osteo Striga are almost always recommended together because they're the same mechanic twice: one poisons at melee range, the other at range, and each one's kills re-trigger the other's spread. That's what makes a couple of poisoned enemies enough to clear a full room. Flain doesn't add a new mechanic on top \u2014 it converts the damage you're already taking at melee range into Threadlings, then heals you off those Threadlings once your shield breaks, which is exactly the kind of support a stand-in-the-crowd poison build needs. Tablet of Ruin's Strand mods clear adds through the same debuffs the build is already applying.",
       tags: ["Poison", "Add Clear", "Strand", "Melee Loop"]
     },
     {
-      title: "One Shot, One Kill",
-      slug: "one-shot-one-kill",
+      title: "Marksman's Encore",
+      slug: "marksmans-encore",
       mobalyticsUrl: "",
       class: "Hunter",
       subclass: "Solar",
@@ -173,45 +173,81 @@ window.BuildsData = (function(){
         "Still Hunt charges its own Golden Gun mode from precision hits or Orbs of Power \u2014 while your actual Super charges separately, so you effectively get two burst-damage windows instead of one.",
         "Celestial Nighthawk collapses both into a single overpowered shot rather than a 3-round burst, and precision final blows from either one shave time off your Super's cooldown, keeping the cycle coming back around.",
         "Lustrous's 2-piece grants Solar weapons flinch resistance and faster handling/reload right after you're healed \u2014 exactly what a sniper needs to stay steady through a damage phase \u2014 and its 4-piece heals you back on rapid Solar kills, so landing shots sustains you rather than draining you.",
-        "Hunter's Journal's Sniper's Meditation stacks bonus sniper damage, stability, and reload on hit, and Incendiary Rifle Rounds scorches targets on Solar sniper precision hits \u2014 both stacking directly onto the same shots this build already lives on."
+        "Hunter's Journal's Sniper's Meditation stacks bonus sniper damage, stability, and reload on hit, and Incendiary Rifle Rounds scorches targets on Solar sniper precision hits \u2014 both stacking directly onto the same shots this build already lives on. Sustained Fire and Targeting Autoloader cover Chroma Rush between those windows, Solar Fulmination and Radiant Orbs reinforce the Crackshot/scorch loop, and Shieldcrush turns the build's near-constant Radiant uptime into faster grenade and melee recharge."
       ],
-      recommendedArtifactPerks: ["Sniper's Meditation", "Incendiary Rifle Rounds", "Radiant Orbs"],
+      recommendedArtifactPerks: ["Incendiary Rifle Rounds", "Sustained Fire", "Radiant Orbs", "Solar Fulmination", "Targeting Autoloader", "Sniper's Meditation", "Shieldcrush"],
       whyItWorks: "The reason this pairing has stayed relevant for years is that Bungie built an explicit interaction between the two items rather than leaving them to synergize by coincidence: wearing Nighthawk changes what Still Hunt's own built-in Golden Gun does. That means the exotic weapon and exotic helmet are reinforcing the exact same mechanic instead of two unrelated bonuses, which is rare even among iconic Destiny 2 combos. Lustrous and Hunter's Journal then support that mechanic from two different angles \u2014 survivability so you can keep lining up precision shots, and raw sniper stats once you do.",
       tags: ["Boss Damage", "Precision", "Solar", "Burst Damage"]
     },
     {
-      title: "Frostwall",
-      slug: "frostwall",
+      title: "Biotic Storm",
+      slug: "biotic-storm",
       mobalyticsUrl: "",
       class: "Titan",
       subclass: "Stasis",
       tagline: "Slide into a melee and the ground turns to ice \u2014 shatter it and the whole room goes with it.",
       exoticArmor: {
-        name: "Synthoceps (team play) or Wormgod Caress (solo)",
+        name: "Synthoceps",
         slot: "Gauntlets",
         itemHash: 241462142,
-        perkName: "Synthoceps: Increased Melee Damage / Wormgod Caress: Burning Fists",
-        perkDesc: "Synthoceps boosts melee and Super damage while surrounded by 2+ combatants \u2014 easy to trigger with teammates funneling adds toward you. Wormgod Caress instead ramps up melee damage with your own consecutive melee kills, which suits chaining slide-melees solo without relying on being surrounded."
+        perkName: "Biotic Enhancements",
+        perkDesc: "When you're surrounded by 2+ combatants, gain increased melee and Super damage, plus improved weapon handling and reload speed \u2014 easy to trigger with teammates funneling adds toward you, which is what makes this the team-play version."
       },
       exoticWeapon: {
-        name: "Ice Breaker (or Fighting Lion)",
+        name: "Ice Breaker",
         weaponType: "Sniper Rifle",
         itemHash: 1111334348,
-        perkName: "Enhanced Container Rounds",
-        perkDesc: "Precision final blows or shattering a frozen target trigger a Solar ignition. Final blows or assists with any other weapon or ability have a chance to refill its magazine, so it rarely runs dry. Fighting Lion is the team-play alternative \u2014 its bouncing, remote-detonated grenades shatter crystals from a distance across a wider area."
+        perkName: "No Backpack + Ice Breaker",
+        perkDesc: "No Backpack: final blows or assists with any other weapon or ability have a chance to generate ammo for Ice Breaker, with powerful combatants creating multiple rounds. Ice Breaker (the weapon's own intrinsic): defeating a target causes them to explode; precision final blows or shattering a frozen target instead trigger a Solar ignition. Special ammo, so it isn't competing with Hezen Vengeance's Heavy reserves. Fighting Lion is a viable alternate \u2014 its bouncing, remote-detonated grenades shatter crystals from a distance across a wider area, and unlocks Weakened Clear/Kinetic Impacts on the artifact instead (see Artifact and Perks)."
       },
       armorSet: { name: "Seventh Seraph", slug: "seventh-seraph" },
       artifact: { name: "Slayer Baron Apothecary Satchel", slug: "slayer-baron-apothecary-satchel" },
       loop: [
         "Sliding into a charged melee (Howl of the Storm) launches a wave of Stasis energy that freezes targets and creates Stasis crystals all around you, refunding melee energy on the kill so you can do it again almost immediately.",
         "Tectonic Harvest turns every Stasis shard you pick up into Frost Armor, and while you have Frost Armor, Stasis or Kinetic final blows have a chance to shatter the target outright \u2014 chaining through whatever's standing nearby.",
-        "Slayer Baron's Crystalline Converter stacks up off those same shards and empowers your next Stasis melee to drop multiple crystals at once instead of one, while Hail the Storm makes shattering crystals or frozen targets hit harder and throw damaging ice shards outward \u2014 two more layers on the same chain. Frost Renewal shares Frost Armor with nearby allies when you take a critical hit, which is the actual \"team play\" payoff.",
+        "Slayer Baron's Crystalline Converter stacks up off those same shards and empowers your next Stasis melee to drop multiple crystals at once instead of one, while Hail the Storm makes shattering crystals or frozen targets hit harder and throw damaging ice shards outward. Frost Renewal shares Frost Armor with nearby allies when you take a critical hit \u2014 the actual \"team play\" payoff Synthoceps is built around.",
         "Seventh Seraph's 4-piece, Rasputin's Reprisal, triggers off \u2014 among other things \u2014 destroying a construct, and the game quietly classifies Stasis crystals as constructs. Since you're already shattering crystals constantly, this fires a Solar detonation that damages nearby combatants and heals allies almost every time you break one.",
-        "Ice Breaker turns every frozen or shattered kill into an Ignition on top of the shatter, and its own ammo economy means it's rarely empty when there's a crowd worth converting into one big explosion."
+        "Ice Breaker turns every frozen or shattered kill into an Ignition on top of the shatter, and No Backpack keeps it fed from every other kill you're getting \u2014 it's rarely empty when there's a crowd worth converting into one big explosion.",
+        "Synthoceps' Biotic Enhancements rewards being surrounded with bonus melee and Super damage plus faster handling and reload \u2014 exactly the situation teammates funneling adds toward you creates."
       ],
-      recommendedArtifactPerks: ["Wind Chill", "Crystalline Converter", "Hail the Storm", "Frost Renewal"],
-      whyItWorks: "Seventh Seraph wasn't built with Stasis in mind \u2014 its 4-piece is written around \"destroying a construct,\" and most players would assume that means Warmind Cells or similar. Stasis crystals happen to qualify too, so a set that looks unrelated turns into a second detonation source stacked on top of a build that's already generating Frost Armor and shatters from three other places at once (Tectonic Harvest, Slayer Baron's mods, and your own slide-melee loop). That's what makes it feel close to invincible while also clearing the room: nearly everything you do is simultaneously your damage, your healing, and your next charge of melee energy.",
-      tags: ["Frost Armor", "Shatter", "Stasis", "Ad Clear", "Survivability"]
+      recommendedArtifactPerks: ["Wind Chill", "Crystalline Converter", "Hail the Storm", "Frost Renewal", "Curative Orbs", "Served Cold", "Brain Freeze"],
+      whyItWorks: "Seventh Seraph wasn't built with Stasis in mind \u2014 its 4-piece is written around \"destroying a construct,\" and most players would assume that means Warmind Cells or similar. Stasis crystals happen to qualify too, so a set that looks unrelated turns into a second detonation source stacked on top of a build that's already generating Frost Armor and shatters from three other places at once (Tectonic Harvest, Slayer Baron's mods, and your own slide-melee loop). Synthoceps completes the team-play identity: Biotic Enhancements rewards exactly the surrounded-by-teammates-and-adds situation this build creates. That's what makes it feel close to invincible while also clearing the room: nearly everything you do is simultaneously your damage, your healing, and your next charge of melee energy.",
+      tags: ["Frost Armor", "Shatter", "Stasis", "Ad Clear", "Team Play"]
+    },
+    {
+      title: "Frozen Fists",
+      slug: "frozen-fists",
+      mobalyticsUrl: "",
+      class: "Titan",
+      subclass: "Stasis",
+      tagline: "Solo version of Biotic Storm \u2014 Wormgod Caress trades the crowd-dependent buff for a melee damage ceiling that ramps with every kill.",
+      exoticArmor: {
+        name: "Wormgod Caress",
+        slot: "Gauntlets",
+        itemHash: 1203306856,
+        perkName: "Burning Fists",
+        perkDesc: "Melee or finisher kills grant a stack of Burning Fists (max 5), escalating melee damage that decays if you go 2+ seconds without another kill. At max stacks: +400% base melee damage and +35% PvE weapon damage. Doesn't need teammates or being surrounded \u2014 it needs you to keep the slide-melee chain going, which Howl of the Storm's melee-energy refund already sustains solo."
+      },
+      exoticWeapon: {
+        name: "Ice Breaker",
+        weaponType: "Sniper Rifle",
+        itemHash: 1111334348,
+        perkName: "No Backpack + Ice Breaker",
+        perkDesc: "No Backpack: final blows or assists with any other weapon or ability have a chance to generate ammo for Ice Breaker, with powerful combatants creating multiple rounds. Ice Breaker (the weapon's own intrinsic): defeating a target causes them to explode; precision final blows or shattering a frozen target instead trigger a Solar ignition. Fighting Lion is a viable alternate \u2014 its bouncing, remote-detonated grenades shatter crystals from a distance, and unlocks Weakened Clear/Kinetic Impacts on the artifact instead (see Artifact and Perks)."
+      },
+      armorSet: { name: "Seventh Seraph", slug: "seventh-seraph" },
+      artifact: { name: "Slayer Baron Apothecary Satchel", slug: "slayer-baron-apothecary-satchel" },
+      loop: [
+        "Sliding into a charged melee (Howl of the Storm) launches a wave of Stasis energy that freezes targets and creates Stasis crystals, refunding melee energy on the kill \u2014 the chain that keeps Burning Fists topped off without needing anyone else's help.",
+        "Each melee kill stacks Burning Fists further, up to 5 \u2014 escalating melee damage that can one-shot tanky yellow-bar targets at max stacks, plus a real weapon damage bonus once you're past 2 stacks.",
+        "Tectonic Harvest turns every Stasis shard into Frost Armor, and Frost Armor gives Stasis or Kinetic final blows a shatter chance \u2014 chaining through whatever's nearby and feeding the next round of shards.",
+        "Slayer Baron's Crystalline Converter and Hail the Storm add more crystals per melee and more damage per shatter; Served Cold and Brain Freeze (artifact) turn shard pickups into class ability energy and add slowing crowd control on top.",
+        "Seventh Seraph's 4-piece fires a Solar detonation off destroyed Stasis crystals \u2014 which the game quietly classifies as \"constructs\" \u2014 so shattering crystals is simultaneously damage and healing.",
+        "Ice Breaker turns every frozen or shattered kill into an Ignition, and its self-sustaining ammo economy means it's rarely dry when there's a crowd worth converting into an explosion."
+      ],
+      recommendedArtifactPerks: ["Wind Chill", "Crystalline Converter", "Hail the Storm", "Frost Renewal", "Curative Orbs", "Served Cold", "Brain Freeze"],
+      whyItWorks: "This is the same Stasis engine as Biotic Storm \u2014 Tectonic Harvest, Howl of the Storm, Seventh Seraph, Slayer Baron all work identically \u2014 but Wormgod Caress changes what the exotic slot is actually for. Synthoceps rewards a situation teammates create (being surrounded); Burning Fists rewards a situation you create yourself (consecutive melee kills), which fits a build that's already chaining slide-melees through Howl of the Storm's own melee-energy refund. The tradeoff is real: Synthoceps is a steadier, always-on buff, while Burning Fists has a much higher ceiling (enough to one-shot tanky yellow bars at max stacks) but decays fast if the kill chain breaks \u2014 which matters more solo, where nobody else is thinning the crowd for you.",
+      tags: ["Frost Armor", "Shatter", "Stasis", "Ad Clear", "Solo"]
     },
     {
       title: "Endless Barrage",
@@ -241,10 +277,11 @@ window.BuildsData = (function(){
         "Shards of Galanor's Sharp Edges shortens the Super's cooldown off Throwing Knife final blows, then hands back a chunk of that same Super's energy once Blade Barrage ends \u2014 so landing the volley on a crowd (or a boss) pays for a good portion of the next cast.",
         "Crackshot, the newest Gunslinger aspect, fires up to three scorching shots off your class ability at marked targets and cures you for landing all three \u2014 more Scorch stacking and survivability to bridge the gap between Supers.",
         "Iron Battalion's 4-piece, Supercyclical, refunds still more Super energy for any final blow scored while the Super is active \u2014 a second, independent source of the exact energy Shards of Galanor already returns \u2014 while its 2-piece boosts Primary weapon damage, which pairs well with a Solar auto rifle running Incandescent for its own Scorch explosions.",
-        "One Thousand Voices steps in for anything that survives: its beam superheats targets for a delayed scorch explosion, and Tablet of Ruin's Particle Reconstruction partially refills its magazine and adds bonus damage on sustained Fusion Rifle hits."
+        "One Thousand Voices steps in for anything that survives: its beam superheats targets for a delayed scorch explosion, and Tablet of Ruin's Particle Reconstruction partially refills its magazine and adds bonus damage on sustained Fusion Rifle hits.",
+        "Ribbontail (Strand, Trace Rifle) runs a second loop alongside the Solar one: Unraveling Orbs grants it Unraveling Rounds off Orb pickups, Harsh Refraction adds bonus Trace Rifle damage against those Unraveled targets, and Horde Shuttle spawns Threadlings off the same Unraveled damage \u2014 which sever targets, and To Shreds turns sustained damage on Severed targets into more Unravel plus Woven Mail on the kill."
       ],
-      recommendedArtifactPerks: ["Particle Reconstruction", "Elemental Siphon", "Perpetual Destruction"],
-      whyItWorks: "This build stacks three separate systems that all do the same thing: get Blade Barrage back as fast as possible. Shards of Galanor refunds Super energy on its own, Iron Battalion's set bonus refunds more from a completely different trigger (any final blow while the Super is active, not just knife or Blade Barrage hits), and Crackshot keeps the ability economy topped up in between. With all three running at once, the Super stops being an occasional cooldown-gated tool and starts functioning like a weapon you can throw out almost on demand.",
+      recommendedArtifactPerks: ["Elemental Siphon", "Unraveling Orbs", "Horde Shuttle", "Harsh Refraction", "Gold From Lead", "Particle Reconstruction", "To Shreds"],
+      whyItWorks: "This build stacks three separate systems that all do the same thing: get Blade Barrage back as fast as possible. Shards of Galanor refunds Super energy on its own, Iron Battalion's set bonus refunds more from a completely different trigger (any final blow while the Super is active, not just knife or Blade Barrage hits), and Crackshot keeps the ability economy topped up in between. Elemental Siphon adds a fourth angle \u2014 rapid Ribbontail (Kinetic) kills create Solar elemental pickups since Blade Barrage is the equipped Super, and collecting them feeds Super energy directly. On top of that Solar engine, Ribbontail's Strand damage justifies a second, self-contained loop on the artifact: Unraveling Orbs turns Orb pickups into Unraveling Rounds, Harsh Refraction cashes that in for bonus Trace Rifle damage, and Horde Shuttle/To Shreds turn the same Unravel into Threadlings, Sever, and Woven Mail. With all of this running at once, the Super stops being an occasional cooldown-gated tool and starts functioning like a weapon you can throw out almost on demand \u2014 and Ribbontail is quietly doing its own thing on the side the whole time.",
       tags: ["Super Regen", "Boss Damage", "Solar", "Ad Clear"]
     },
     {
@@ -272,14 +309,15 @@ window.BuildsData = (function(){
       artifact: { name: "Hunter's Journal", slug: "hunters-journal" },
       loop: [
         "Daybreak's projectiles already scorch on impact for any Solar Warlock, but Dawn Chorus's Rites of Ember upgrades that to a full Ignition on hit, and ramps Scorch damage up further on top of it.",
-        "Every tick of Scorch and every Ignition you cause hands back melee energy through Rites of Ember, so simply letting Scorch cook (or landing Daybreak knives) keeps your melee coming back almost as fast as you spend it.",
+        "Every tick of Scorch and every Ignition you cause hands back melee energy through Rites of Ember, so simply letting Scorch cook (or landing an Incinerator Snap) keeps your melee coming back almost as fast as you spend it.",
+        "Hellion's Solar Soul fires on its own during that window, scorching more targets and building toward more Ignitions without any extra input from you.",
         "Lustrous's 4-piece, Cauterize, heals you off rapid Solar final blows \u2014 and Ignitions chaining through a crowd count as exactly that, so the same Scorch spread that's refunding melee energy is also keeping you topped up on health.",
-        "That healing then triggers Lustrous's 2-piece, Photogalvanic, which gives your Solar weapons increased flinch resistance, handling, and reload \u2014 One Thousand Voices included \u2014 right when you need to stay locked on target through a damage phase.",
-        "Hunter's Journal isn't a guessed pairing here \u2014 its Solar Fulmination mod is documented to explicitly double both the melee energy Dawn Chorus grants from Ignitions and the Ignition's own damage.",
+        "That healing then triggers Lustrous's 2-piece, Photogalvanic, which gives your Solar weapons increased flinch resistance, handling, and reload \u2014 One Thousand Voices and The Summoner both included \u2014 right when you need to stay locked on target through a damage phase.",
+        "Hunter's Journal's Auto Rifle perks (Sustained Fire, Targeting Autoloader) key directly off The Summoner, Solar Fulmination boosts every Ignition's damage and radius, and Radiant Orbs turns any Orb pickup into Radiant \u2014 which then feeds Shieldcrush's faster grenade and melee recharge on top of everything else.",
         "One Thousand Voices handles whatever survives the ad clear: its beam superheats targets for a delayed scorching explosion that plugs directly into the same Scorch/Ignition economy everything else in the build already runs on."
       ],
-      recommendedArtifactPerks: ["Solar Fulmination", "Radiant Orbs", "Elemental Siphon"],
-      whyItWorks: "This build works because Ignitions aren't just damage here \u2014 they're the resource that keeps the melee (and therefore more Scorch, and therefore more Ignitions) coming back. Dawn Chorus turns the ability economy and the damage into the same loop, and Lustrous closes it into a full circle: rapid Solar kills from that same Ignition spread heal you (Cauterize), and that healing buffs the Solar weapon you're using to keep the spread going (Photogalvanic). Hunter's Journal is one of the rare cases where an artifact mod was built to interact with one specific, years-old exotic helmet by name rather than a general damage type.",
+      recommendedArtifactPerks: ["Elemental Siphon", "Sustained Fire", "Radiant Orbs", "Solar Fulmination", "Targeting Autoloader", "Shieldcrush", "Press the Advantage"],
+      whyItWorks: "This build works because Ignitions aren't just damage here \u2014 they're the resource that keeps the melee (and therefore more Scorch, and therefore more Ignitions) coming back. Dawn Chorus turns the ability economy and the damage into the same loop, Hellion adds a second, passive Ignition source on top of it, and Lustrous closes it into a full circle: rapid Solar kills from that same Ignition spread heal you (Cauterize), and that healing buffs the Solar weapons you're using to keep the spread going (Photogalvanic). The Summoner being an Auto Rifle unlocks real value from Hunter's Journal beyond just Radiant Orbs and Solar Fulmination \u2014 Sustained Fire and Targeting Autoloader both key off it directly, and Shieldcrush turns the build's near-constant Radiant uptime into faster grenade and melee recharge. Press the Advantage rounds out the last slot \u2014 a Tier 1 perk, so it's eligible there even though nothing Tier-3-specific actually fit this build.",
       tags: ["Ignition", "Scorch", "Ability Loop", "Solar"]
     },
     {
@@ -352,8 +390,8 @@ window.BuildsData = (function(){
       tags: ["Boss Damage", "Prismatic", "Precision", "Invisibility"]
     },
     {
-      title: "Perpetual Bolt Charge",
-      slug: "perpetual-bolt-charge",
+      title: "Skip Charge",
+      slug: "skip-charge",
       mobalyticsUrl: "",
       class: "Hunter",
       subclass: "Arc",
