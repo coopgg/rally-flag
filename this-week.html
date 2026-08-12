@@ -179,8 +179,8 @@
   // Tuesday reset to match Bungie's actual rotator.
   // ---------------------------------------------------------------
   const FEATURED_THIS_WEEK = {
-    raids: ["vault-of-glass", "salvations-edge"],
-    dungeons: ["vespers-host", "prophecy"]
+    raids: ["vow-of-the-disciple", "last-wish"],
+    dungeons: ["sundered-doctrine", "grasp-of-avarice"]
   };
 
   const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
@@ -504,9 +504,12 @@
       const isActive = apiSaysActive && isWithinXurSchedule();
 
       if (!isActive){
-        const isEstimate = !(vendorEntry && vendorEntry.nextRefreshDate);
-        const arrivalIso = isEstimate ? estimateNextXurArrival() : vendorEntry.nextRefreshDate;
-        renderCountdown(contentEl, arrivalIso, isEstimate);
+        // Same distrust as the active/inactive check above applies here:
+        // vendorEntry.nextRefreshDate has proven unreliable, so the arrival
+        // time is always computed from the confirmed schedule rather than
+        // whatever Bungie's API happens to return for this field.
+        const arrivalIso = estimateNextXurArrival();
+        renderCountdown(contentEl, arrivalIso, false);
         return;
       }
 
