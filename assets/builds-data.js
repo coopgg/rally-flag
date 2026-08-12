@@ -99,18 +99,18 @@ window.BuildsData = (function(){
         perkName: "The Right Choice",
         perkDesc: "Every 7th round in the magazine deals bonus damage and ricochets to a nearby target, clearing ads passively so you're not spending ability energy just to finish off stragglers between slams."
       },
-      armorSet: { name: "Seventh Seraph", slug: "seventh-seraph" },
+      armorSet: { name: "CODA", slug: "coda" },
       artifact: { name: "Hunter's Journal", slug: "hunters-journal" },
       loop: [
         "Consecration launches you up and slams down, igniting the area \u2014 Knockout turns that same melee into instant healing on the kill.",
         "Spirit of Severance turns every melee kill or finisher into a damaging explosion, and Spirit of Contact adds lightning that jolts nearby enemies on the same swing \u2014 both trigger off Consecration and Frenzied Blade directly.",
-        "Glacier Grenade drops Stasis crystals on impact. Seventh Seraph's 4-piece, Rasputin's Reprisal, triggers off destroying a \"construct\" \u2014 which the game quietly classifies Stasis crystals as \u2014 so shattering one fires a Solar detonation that damages nearby combatants and heals allies.",
-        "Khvostov handles ad clear between slams so ability energy never gets spent on chip damage. Elemental Siphon, Sustained Fire, and Targeting Autoloader (artifact) all key off it being an Auto Rifle \u2014 Super energy, damage resistance, and reload/damage off the same ad-clear kills.",
+        "Khvostov handles ad clear between slams, and since it's Kinetic, CODA's 4-piece turns those kills into melee energy \u2014 the exact resource this build prioritizes first. Lotus-Eater and Commemoration are both Void, so their kills feed grenade energy through the same mechanic instead. Alternating between the two (Kinetic ad-clear, Void burst damage) also grants a window of damage resistance.",
+        "Elemental Siphon, Sustained Fire, and Targeting Autoloader (artifact) all key off Khvostov being an Auto Rifle too \u2014 Super energy, damage resistance, and reload/damage off the same ad-clear kills.",
         "Solar Fulmination boosts the damage and radius of every Ignition Consecration causes, and Radiant Orbs applies to any Prismatic subclass, so any Orb pickup grants Radiant on top. Shieldcrush and Transference then pour more melee and grenade energy back in while Amplified/Radiant or Transcendent \u2014 which this build hits naturally by mixing a Solar melee with a Stasis grenade.",
         "Thundercrash closes out boss damage phases once the loop has you topped off."
       ],
       recommendedArtifactPerks: ["Elemental Siphon", "Sustained Fire", "Targeting Autoloader", "Radiant Orbs", "Solar Fulmination", "Shieldcrush", "Transference"],
-      whyItWorks: "This build works because every source of power in it points back at the same two abilities: melee and grenade. Consecration and Knockout form the core loop, and Spirit of Severance plus Spirit of Contact turn every one of those melee hits into an explosion and a lightning jolt on top of the healing Knockout already provides. Seventh Seraph wasn't built with Stasis in mind \u2014 its 4-piece is written around \"destroying a construct,\" and Glacier Grenade's crystals happen to qualify, turning a grenade you're already throwing into a second detonation and heal source. Hunter's Journal reinforces both the weapon (Khvostov's three Auto Rifle-specific perks) and the ability loop (Solar Fulmination off Consecration's own Ignitions, Shieldcrush and Transference pouring energy back in) \u2014 there's rarely a moment where melee or grenade isn't ready.",
+      whyItWorks: "This build works because every source of power in it points back at the same two abilities: melee and grenade. Consecration and Knockout form the core loop, and Spirit of Severance plus Spirit of Contact turn every one of those melee hits into an explosion and a lightning jolt on top of the healing Knockout already provides. CODA generates the identical resources from a completely different trigger \u2014 weapon kills instead of ability use \u2014 and it lines up cleanly with the actual loadout: Khvostov (Kinetic) feeds melee energy off constant ad-clear, while Lotus-Eater and Commemoration (both Void) feed grenade energy. Hunter's Journal reinforces both the weapon (Khvostov's three Auto Rifle-specific perks) and the ability loop on top \u2014 there's rarely a moment where melee or grenade isn't ready.",
       tags: ["Ability Loop", "Add Clear", "Boss Damage", "Prismatic"]
     },
     {
