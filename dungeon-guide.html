@@ -84,6 +84,7 @@
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
 </footer>
 
+<script src="assets/game-terms.js"></script>
 <script src="assets/nav.js"></script>
 <script src="assets/dungeons-data.js"></script>
 <script src="assets/sets-data.js"></script>
@@ -114,13 +115,14 @@
   const encountersHtml = dungeon.encounters.length
     ? dungeon.encounters.map((e, i) => {
         if (e.objective || e.steps){
-          const stepsHtml = (e.steps || []).map(s => '<li>' + s + '</li>').join("");
+          const hl = window.GameTerms.highlight;
+          const stepsHtml = (e.steps || []).map(s => '<li>' + hl(s) + '</li>').join("");
           return '<div class="encounter-block">' +
             '<div class="encounter-head"><div class="encounter-num">' + (i + 1) + '</div><div class="encounter-title">' + e.name + '</div></div>' +
-            (e.objective ? '<div class="encounter-field"><span class="encounter-field-label">Objective</span>' + e.objective + '</div>' : '') +
-            (e.roles ? '<div class="encounter-field"><span class="encounter-field-label">Roles</span>' + e.roles + '</div>' : '') +
+            (e.objective ? '<div class="encounter-field"><span class="encounter-field-label">Objective</span>' + hl(e.objective) + '</div>' : '') +
+            (e.roles ? '<div class="encounter-field"><span class="encounter-field-label">Roles</span>' + hl(e.roles) + '</div>' : '') +
             (stepsHtml ? '<ol class="encounter-steps">' + stepsHtml + '</ol>' : '') +
-            (e.wipe ? '<div class="encounter-wipe"><span class="encounter-wipe-label">What wipes you</span>' + e.wipe + '</div>' : '') +
+            (e.wipe ? '<div class="encounter-wipe"><span class="encounter-wipe-label">What wipes you</span>' + hl(e.wipe) + '</div>' : '') +
           '</div>';
         }
         // Fallback for older, simpler encounter entries
