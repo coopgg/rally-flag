@@ -38,17 +38,17 @@ window.BuildsData = (function(){
         "Devour final blows restore half your health and extend Devour's own duration, and Feed the Void doubles that strength for Warlocks \u2014 so once it's rolling, staying aggressive is what keeps you alive, not a reason to back off.",
         "Actual Grandeur ties Super regen directly to Devour: Nova Bomb and weapon final blows while Devoured grant Super energy, and after casting Nova Bomb: Cataclysm you get a free follow-up Nova Bomb: Lance. Landing kills while Devoured is what gets Nova Bomb back faster.",
         "Void Renewal (artifact) keeps the breach supply going even after Power from Pain isn't the one triggering it \u2014 Void final blows while Devour is active have a chance to drop another breach. Supernova (artifact) then makes picking one of those breaches up empower your next Void hit into a wide weakening pulse, which loops straight back into the start of this whole chain.",
-        "Eutechnology isn't the centerpiece, but it's along for the same ride: Gift of the Ley Lines spawns a breach off rapid Void kills, and Techeun's Foresight triggers a detonation off your next Void weapon final blow after grabbing one \u2014 both fire constantly once Turncoat has a room weakened.",
+        "Eutechnology isn't the centerpiece, but it's along for the same ride: Gift of the Ley Lines spawns a breach off rapid Void kills, and Techeun's Foresight triggers a detonation off your next Void weapon final blow after grabbing one \u2014 both fire constantly once Turncoat has a room weakened. Served Cold (artifact) turns every one of those breach pickups into melee energy on top.",
         "Watch the Overwhelming Power timer \u2014 reload or stow Turncoat before it starts damaging you, then swap back in once Latent Power refills."
       ],
-      recommendedArtifactPerks: ["Power from Pain", "Void Renewal", "Supernova"],
+      recommendedArtifactPerks: ["Power from Pain", "The Thick of It", "Void Renewal", "Curative Orbs", "Total Carnage", "Supernova", "Served Cold"],
       whyItWorks: "Every piece here solves a problem for the piece next to it. Turncoat's Weaken is the best part of the gun but does nothing for your own survivability on its own \u2014 Power from Pain fixes that by turning Weakened kills straight into Devour, and Devour's own 50% heal (doubled by Feed the Void) is what makes playing aggressively with Turncoat sustainable instead of risky. Actual Grandeur then ties your Super regen to the exact thing Devour already has you doing \u2014 getting final blows \u2014 so Nova Bomb keeps coming back without a separate ability rotation to manage. The artifact and Eutechnology both run on Void breaches, and between Power from Pain, Void Renewal, and Eutechnology's own Gift of the Ley Lines, breaches show up constantly once the loop is moving \u2014 Supernova then spends each one on a weakening pulse that sets up the next kill. Nothing in this build is fighting for the same trigger; Weaken, Devour, Super regen, and breach generation all come from the same handful of kills.",
       tags: ["Weaken", "Devour", "Ad-Clear", "Boss Damage", "High Survivability"]
     },
     {
       title: "Ionic Overclock",
       slug: "ionic-overclock",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/93c52f4f-7219-4266-962b-e4cdee6db2f7",
       class: "Warlock",
       subclass: "Arc",
       tagline: "A self-feeding Ionic Trace loop that keeps Chaos Reach topped up and jolting everything downrange.",
@@ -74,7 +74,7 @@ window.BuildsData = (function(){
         "Every trace you collect also feeds Geomag Stabilizers' Close Enough, charging Chaos Reach faster, and Luminopotent's 2-piece speeds up Delicate Tomb's handling, reload, and vent while you're amplified so you're rarely not shooting.",
         "Slot the artifact's Amped Up and Shock and Awe mods and the loop reinforces itself: staying amplified longer means more jolts, and Arc final blows while amplified throw out an extra lightning burst that jolts even more targets."
       ],
-      recommendedArtifactPerks: ["Amped Up", "Thunderous Retort", "Shock and Awe", "Lightning Strikes Twice"],
+      recommendedArtifactPerks: ["Amped Up", "Thunderous Retort", "Shatter Orbs", "Targeting Autoloader", "Sustained Fire", "Shock and Awe", "Lightning Strikes Twice"],
       whyItWorks: "Every piece in this build either makes an Ionic Trace or spends one, so the loop never runs dry: Delicate Tomb seeds traces, Luminopotent's 4-piece refunds them on a jolt kill, and Geomag Stabilizers turns every trace you pick up into Chaos Reach energy. Thunderous Retort from the artifact then adds bonus Super damage on top, since staying amplified (which Amped Up extends) qualifies for the buff — so the same loop that keeps your super charged also makes it hit harder when you cast it.",
       tags: ["Ionic Trace", "Chaos Reach", "Ability Uptime", "Boss Damage"]
     },
@@ -86,11 +86,11 @@ window.BuildsData = (function(){
       subclass: "Prismatic",
       tagline: "A melee loop that keeps feeding itself — Consecration slams heal, hit harder, and refund the energy to do it again.",
       exoticArmor: {
-        name: "Stoicism (Spirit of Synthoceps + Spirit of Inmost Light)",
+        name: "Stoicism (Spirit of Severance + Spirit of Contact)",
         slot: "Class Item",
         itemHash: 266021826,
-        perkName: "Spirit of Synthoceps + Spirit of Inmost Light",
-        perkDesc: "Spirit of Synthoceps boosts melee damage while you're surrounded. Spirit of Inmost Light speeds up regeneration of whichever ability type you used most recently, so the whole kit keeps cycling."
+        perkName: "Spirit of Severance + Spirit of Contact",
+        perkDesc: "Spirit of Severance causes melee kills or finishers to release a damaging explosion from the target. Spirit of Contact causes powered melee hits to strike with lightning that jolts nearby enemies \u2014 both trigger off the same Consecration/Frenzied Blade swings this build already throws constantly."
       },
       exoticWeapon: {
         name: "Khvostov 7G-0X",
@@ -99,23 +99,24 @@ window.BuildsData = (function(){
         perkName: "The Right Choice",
         perkDesc: "Every 7th round in the magazine deals bonus damage and ricochets to a nearby target, clearing ads passively so you're not spending ability energy just to finish off stragglers between slams."
       },
-      armorSet: { name: "CODA", slug: "coda" },
+      armorSet: { name: "Seventh Seraph", slug: "seventh-seraph" },
       artifact: { name: "Hunter's Journal", slug: "hunters-journal" },
       loop: [
-        "Consecration launches you up and slams down, igniting the area — Knockout turns that same melee into instant healing on the kill.",
-        "Spirit of Synthoceps makes the slam hit harder whenever you're surrounded, and Spirit of Inmost Light speeds the recharge of whichever ability you just used, so the next slam is rarely far off.",
-        "CODA's 2-piece and 4-piece turn alternating Light, Dark, or Kinetic final blows into grenade or melee energy plus a window of damage resistance \u2014 a second, independent source of the exact fuel this build already runs on.",
-        "Khvostov handles ad clear between slams so ability energy never gets spent on chip damage, while Hunter's Journal's Shieldcrush and Transference perks pour still more melee and grenade energy back in while transcendent.",
+        "Consecration launches you up and slams down, igniting the area \u2014 Knockout turns that same melee into instant healing on the kill.",
+        "Spirit of Severance turns every melee kill or finisher into a damaging explosion, and Spirit of Contact adds lightning that jolts nearby enemies on the same swing \u2014 both trigger off Consecration and Frenzied Blade directly.",
+        "Glacier Grenade drops Stasis crystals on impact. Seventh Seraph's 4-piece, Rasputin's Reprisal, triggers off destroying a \"construct\" \u2014 which the game quietly classifies Stasis crystals as \u2014 so shattering one fires a Solar detonation that damages nearby combatants and heals allies.",
+        "Khvostov handles ad clear between slams so ability energy never gets spent on chip damage. Elemental Siphon, Sustained Fire, and Targeting Autoloader (artifact) all key off it being an Auto Rifle \u2014 Super energy, damage resistance, and reload/damage off the same ad-clear kills.",
+        "Solar Fulmination boosts the damage and radius of every Ignition Consecration causes, and Radiant Orbs applies to any Prismatic subclass, so any Orb pickup grants Radiant on top. Shieldcrush and Transference then pour more melee and grenade energy back in while Amplified/Radiant or Transcendent \u2014 which this build hits naturally by mixing a Solar melee with a Stasis grenade.",
         "Thundercrash closes out boss damage phases once the loop has you topped off."
       ],
-      recommendedArtifactPerks: ["Shieldcrush", "Transference", "Counter Energy"],
-      whyItWorks: "This build works because every source of power in it points back at the same two abilities: melee and grenade. Consecration and Knockout form the core loop, Synthoceps and Inmost Light accelerate it, and CODA's set bonus generates the identical resource from a completely different trigger (elemental final blows instead of ability use). Layer Hunter's Journal's ability-energy perks on top and there's rarely a moment where melee or grenade isn't ready \u2014 which is exactly why this is the current default endgame Titan loadout rather than a niche pick.",
+      recommendedArtifactPerks: ["Elemental Siphon", "Sustained Fire", "Targeting Autoloader", "Radiant Orbs", "Solar Fulmination", "Shieldcrush", "Transference"],
+      whyItWorks: "This build works because every source of power in it points back at the same two abilities: melee and grenade. Consecration and Knockout form the core loop, and Spirit of Severance plus Spirit of Contact turn every one of those melee hits into an explosion and a lightning jolt on top of the healing Knockout already provides. Seventh Seraph wasn't built with Stasis in mind \u2014 its 4-piece is written around \"destroying a construct,\" and Glacier Grenade's crystals happen to qualify, turning a grenade you're already throwing into a second detonation and heal source. Hunter's Journal reinforces both the weapon (Khvostov's three Auto Rifle-specific perks) and the ability loop (Solar Fulmination off Consecration's own Ignitions, Shieldcrush and Transference pouring energy back in) \u2014 there's rarely a moment where melee or grenade isn't ready.",
       tags: ["Ability Loop", "Add Clear", "Boss Damage", "Prismatic"]
     },
     {
       title: "Contagion Chain",
       slug: "contagion-chain",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/d80e02f9-d82e-4d10-9477-af305f4855cd",
       class: "Warlock",
       subclass: "Strand",
       tagline: "Poison that spreads itself \u2014 melee hits, gunfire, and every kill they cause all feed the same chain reaction.",
@@ -149,7 +150,7 @@ window.BuildsData = (function(){
     {
       title: "Marksman's Encore",
       slug: "marksmans-encore",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/d0aac745-abc3-4037-aa34-8c1e28ecf348",
       class: "Hunter",
       subclass: "Solar",
       tagline: "Two Golden Guns for the price of one \u2014 a helmet and a sniper that were designed to be worn together.",
@@ -182,7 +183,7 @@ window.BuildsData = (function(){
     {
       title: "Biotic Storm",
       slug: "biotic-storm",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/3a90d556-dc09-4cfb-a85b-9b96a7b90444",
       class: "Titan",
       subclass: "Stasis",
       tagline: "Slide into a melee and the ground turns to ice \u2014 shatter it and the whole room goes with it.",
@@ -217,7 +218,7 @@ window.BuildsData = (function(){
     {
       title: "Frozen Fists",
       slug: "frozen-fists",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/7dfc8ae4-129c-41ab-b817-21f7589cf15b",
       class: "Titan",
       subclass: "Stasis",
       tagline: "Solo version of Biotic Storm \u2014 Wormgod Caress trades the crowd-dependent buff for a melee damage ceiling that ramps with every kill.",
@@ -252,7 +253,7 @@ window.BuildsData = (function(){
     {
       title: "Endless Barrage",
       slug: "endless-barrage",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/b3826703-3420-4f36-a90e-d3f01ee7f8f9",
       class: "Hunter",
       subclass: "Solar",
       tagline: "Kill things to build your Super, use your Super to kill things, get your Super back almost instantly.",
@@ -287,7 +288,7 @@ window.BuildsData = (function(){
     {
       title: "Chain Ignition",
       slug: "chain-ignition",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/7c98c21a-9122-4689-a941-6ae8ab7937d8",
       class: "Warlock",
       subclass: "Solar",
       tagline: "Every Scorch tick and every Ignition hands back the melee energy to go start another one.",
@@ -321,9 +322,9 @@ window.BuildsData = (function(){
       tags: ["Ignition", "Scorch", "Ability Loop", "Solar"]
     },
     {
-      title: "Guided Tether",
-      slug: "guided-tether",
-      mobalyticsUrl: "",
+      title: "Guided Tangent",
+      slug: "guided-tangent",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/8d31b142-89ff-4047-86d7-ae55b67de81c",
       class: "Hunter",
       subclass: "Void",
       tagline: "Charge a bow on ad clear, tether the room, then turn every ring shot loose on the boss.",
@@ -349,19 +350,20 @@ window.BuildsData = (function(){
         "Keep firing Hierarchy through that same ring: every arrow becomes a homing seeker that hits harder the farther it travels, and your own precision hits keep guiding those seekers home.",
         "Orpheus Rig refunds Super energy for every target your tether caught and hands Moebius Quiver an extra volley plus longer duration, so the second tether comes back fast \u2014 fire it right before the first one's window closes to keep the weaken/suppress (and its damage bonus) covering the whole phase without a gap.",
         "Atheon's Memory's 4-piece, Collective Power, turns sustained damage while you're holding a subclass buff (Invisible off a dodge is the easy one to keep up here) into an Orb of Power \u2014 so the same rotation of ring shots is also feeding the team's Super economy.",
+        "Hierarchy of Needs is Solar and its seekers scorch on impact, so Implement of Curiosity's Fever and Chill turns those same precision hits into Radiant, and Radiant Shrapnel then turns sustained damage while Radiant \u2014 or a scorched kill \u2014 into more Solar projectiles on top of the seekers themselves.",
         "Keep firing Hierarchy through the ring until the damage phase ends."
       ],
-      recommendedArtifactPerks: ["Argent Quiver", "Semi-Auto Striker", "Elemental Coalescence"],
-      whyItWorks: "This build stacks three separate multipliers onto the same bow instead of one: Moebius Quiver's own damage bonus against tethered targets, the Guidance Ring's homing and distance-scaling seekers, and Orpheus Rig's extra volley and duration that keeps the tether covering the whole damage phase instead of half of it. Implement of Curiosity reinforces the neutral game around it \u2014 Argent Quiver turns every bow reload into a damage and reload buff, and Semi-Auto Striker builds Armor Charge off the same precision hits that are already charging the Guidance Ring, so the exact shots doing the damage are also building the artifact's own resource.",
+      recommendedArtifactPerks: ["Semi-Auto Striker", "Fever and Chill", "Elemental Coalescence", "That Fresh Bullets Smell", "Energy Acceleration", "Argent Quiver", "Radiant Shrapnel"],
+      whyItWorks: "This build stacks three separate multipliers onto the same bow instead of one: Moebius Quiver's own damage bonus against tethered targets, the Guidance Ring's homing and distance-scaling seekers, and Orpheus Rig's extra volley and duration that keeps the tether covering the whole damage phase instead of half of it. Implement of Curiosity reinforces every weapon in the loadout individually rather than just the neutral game: Semi-Auto Striker and Fever and Chill both key off Hierarchy of Needs' Solar precision hits, Energy Acceleration and That Fresh Bullets Smell both key off Mint Retrograde (a Kinetic micro-missile weapon), and Argent Quiver plus Radiant Shrapnel both reinforce Hierarchy's own reload and scorch mechanics. Every artifact slot ties back to a weapon actually in the loadout \u2014 nothing here is generic filler.",
       tags: ["Boss Damage", "Void", "Tether", "Precision"]
     },
     {
-      title: "Eternal Knighthawk",
-      slug: "eternal-knighthawk",
-      mobalyticsUrl: "",
+      title: "Double Retribution",
+      slug: "double-retribution",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/97587b2e-431b-436a-b4e2-9ba0a7fd2b0a",
       class: "Hunter",
       subclass: "Prismatic",
-      tagline: "The same Golden Gun/Still Hunt burst as the Solar version, plus a free invisibility loop Prismatic lets you bolt on for nothing.",
+      tagline: "The same Golden Gun/Still Hunt burst as the Solar version, plus a Strand decoy and a second Arc burst tool Prismatic lets you bolt on for nothing.",
       exoticArmor: {
         name: "Celestial Nighthawk",
         slot: "Helmet",
@@ -376,23 +378,24 @@ window.BuildsData = (function(){
         perkName: "Cayde's Retribution",
         perkDesc: "Precision hits and Orbs of Power charge up a built-in Golden Gun mode for this weapon. Wearing Celestial Nighthawk turns that charged shot into a single high-powered blast instead of three successive ones."
       },
-      armorSet: { name: "Reverie Dawn", slug: "reverie-dawn" },
+      armorSet: { name: "Atheon's Memory", slug: "atheons-memory" },
       artifact: { name: "Hunter's Journal", slug: "hunters-journal" },
       loop: [
         "Golden Gun on Prismatic fires precision rounds while Still Hunt charges its own built-in Golden Gun separately from precision hits and Orbs of Power \u2014 two burst-damage windows layered on top of each other instead of one.",
         "Celestial Nighthawk collapses both into a single overpowered shot instead of a 3-round burst. Targets it kills explode and refund Super energy, and precision final blows shave more time off the cooldown on top of that.",
-        "Between those windows, the Void aspect Stylish Executioner turns any elementally-debuffed kill \u2014 melee, grenade, whatever's on hand \u2014 into invisibility, and your next melee while invisible weakens the target. That's free crowd control and survivability Prismatic lets you take without giving up anything from the Solar side of the kit.",
-        "Reverie Dawn's Protective Wish kicks in automatically under pressure, and rapid final blows (which this build has no shortage of) end it early to cure you on demand instead of waiting out the timer.",
-        "Hunter's Journal's Sniper's Meditation stacks bonus sniper damage, stability, and reload on hit, and Incendiary Rifle Rounds scorches targets on Solar sniper precision hits \u2014 both landing on the exact same Still Hunt shots the build already revolves around."
+        "Between those windows, Threaded Specter turns activating your class ability (Marksman's Dodge) into a Strand decoy that pulls enemy attention and then detonates into Threadlings, while Snare Bomb suppresses whatever it hits \u2014 crowd control that doesn't touch your Super economy at all.",
+        "Ascension lets you consume your class ability energy mid-air to summon Arc Staff, amplifying nearby allies and jolting targets \u2014 a second burst tool that doesn't compete with Golden Gun for the same resource.",
+        "Atheon's Memory's 4-piece, Collective Power, turns sustained damage while holding any subclass buff into an Orb of Power \u2014 exactly the kind of DPS-phase payoff this build wants, since it's rarely without a buff active between Ascension's amplify and the general Prismatic buff economy. The 2-piece, Radiolaria Breach, then turns your next broken shield after an Orb pickup into a Health boost and a radiolaria burst \u2014 survivability that comes directly out of the same Orb loop.",
+        "M-17 Fast-Talker (Stasis, Kinetic) handles the space between Super windows, and Elemental Siphon turns its rapid kills into Solar pickups \u2014 since Golden Gun is Solar, collecting them feeds Super energy directly."
       ],
-      recommendedArtifactPerks: ["Sniper's Meditation", "Incendiary Rifle Rounds", "Radiant Orbs"],
-      whyItWorks: "The Nighthawk/Still Hunt core is the same developer-built interaction as the pure Solar version \u2014 wearing Nighthawk directly changes what Still Hunt's own charged shot does, which is rare even among iconic Destiny 2 combos. Running it on Prismatic instead of Solar Gunslinger doesn't cost anything: since Prismatic lets you mix an aspect from another subclass, Stylish Executioner rides along as pure upside, adding an invisibility/weaken loop for ad clear and survivability between damage windows that a pure Solar build simply doesn't have access to.",
+      recommendedArtifactPerks: ["Energy Diffusion Substrate", "Incendiary Rifle Rounds", "Elemental Siphon", "Solar Fulmination", "Void Hegemony", "Prismatic Transfer", "Sniper's Meditation"],
+      whyItWorks: "The Nighthawk/Still Hunt core is the same developer-built interaction as the pure Solar version \u2014 wearing Nighthawk directly changes what Still Hunt's own charged shot does, which is rare even among iconic Destiny 2 combos. Running it on Prismatic instead of Solar Gunslinger adds two things a pure Solar build can't have at once: Threaded Specter's aggro-pulling decoy plus Snare Bomb's suppress, giving crowd control and safety between damage windows, and Ascension as a second, resource-independent burst tool. Atheon's Memory is a deliberate pick for a DPS-centered build like this one \u2014 Collective Power turns the sustained damage of a boss phase directly into Orbs of Power, and Radiolaria Breach turns those same Orb pickups into survivability. Elemental Siphon closes the loop back to the Super \u2014 M-17's Kinetic kills become Solar pickups that feed Golden Gun directly, so the weapon doing your ad-clear is also charging the Super doing your boss damage.",
       tags: ["Boss Damage", "Prismatic", "Precision", "Invisibility"]
     },
     {
       title: "Skip Charge",
       slug: "skip-charge",
-      mobalyticsUrl: "",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/b25b8cea-47f1-46bf-bab3-6235aa7b3e44",
       class: "Hunter",
       subclass: "Arc",
       tagline: "Shinobu's Vow turns Skip Grenade into a self-fueling Bolt Charge loop, and Riskrunner mops up whatever the grenades don't.",
