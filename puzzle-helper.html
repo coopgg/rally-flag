@@ -363,6 +363,37 @@
     text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:-14px; margin-bottom:24px;
   }
 
+  /* ---------- Symbol wall (Salvation's Edge, Witness's Extra Chest) ---------- */
+  .sym-wall{
+    display:flex; justify-content:center; gap:14px; padding:28px 20px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:8px;
+    margin-bottom:24px; flex-wrap:wrap;
+  }
+  .sym-btn{
+    position:relative; width:84px; padding:0; cursor:pointer;
+    background:none; border:none; -webkit-appearance:none; appearance:none;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+  .sym-num{
+    position:absolute; top:-6px; left:-6px; width:22px; height:22px; border-radius:50%;
+    background:var(--panel); border:1px solid var(--accent-bright); color:var(--accent-bright);
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; z-index:2;
+  }
+  .sym-icon{
+    width:64px; height:64px; border-radius:8px; padding:12px; box-sizing:border-box;
+    background:rgba(10,8,14,0.5); border:1px solid var(--panel-border);
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .sym-icon img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .sym-btn:hover .sym-icon{ border-color:rgba(255,255,255,0.25); }
+  .sym-btn.set .sym-icon{ border-color:var(--accent-bright); background:var(--accent-dim); }
+  .sym-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.05em;
+    color:var(--text-dim); text-transform:uppercase; transition:color 0.15s ease;
+  }
+  .sym-btn.set .sym-label{ color:var(--accent-bright); }
+
   .no-tools{
     text-align:center; padding:60px 20px; color:var(--text-dim);
     font-family:'JetBrains Mono', monospace; font-size:14px;
@@ -828,6 +859,117 @@
         btn.classList.remove("set");
         btn.querySelector(".ld-flower-svg").outerHTML = flowerSvg("none", btn.dataset.num);
         btn.querySelector(".ld-flower-label").textContent = "Click to set";
+      });
+      clearStage();
+    });
+  }
+
+  // ---------- Symbol-select tool (Salvation's Edge, Witness's Extra Chest) ----------
+  const SYM_CYCLE = { none: "C", C: "S", S: "T", T: "none" };
+
+  function renderSymbolTool(tool){
+    const choices = {}; // positionNumber -> "C" | "S" | "T", absent = unset
+
+    section.innerHTML =
+      '<div class="tool-head">' +
+        '<div class="tool-title">' + tool.title + '</div>' +
+        '<a class="tool-raid-link" href="raid-guide.html?slug=' + tool.raidSlug + '">&larr; ' + tool.raidName + ' guide</a>' +
+      '</div>' +
+      (tool.bannerImage ? '<img class="tool-banner" src="' + tool.bannerImage + '" alt="' + tool.title + '">' : '') +
+      '<p class="tool-intro">' + tool.intro + '</p>' +
+      '<div class="ld-tool-wrap">' +
+        '<div class="ld-section-label">Reference wall</div>' +
+        '<div class="ld-reference-text">' + tool.referencePoint + '</div>' +
+        '<div class="sym-wall">' +
+          tool.positions.map(p =>
+            '<button class="sym-btn" type="button" data-num="' + p.number + '" data-shape="none">' +
+              '<span class="sym-num">' + p.number + '</span>' +
+              '<span class="sym-icon"></span>' +
+              '<span class="sym-label">Click to set</span>' +
+            '</button>'
+          ).join("") +
+        '</div>' +
+        '<div class="ld-wall-hint">Click each position to cycle Circle / Square / Triangle — match the third column from the left, bottom to top.</div>' +
+        '<div class="rune-stage" id="rune-stage"></div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All 5 rooms checked — you\'re set for this run.</div>' +
+        '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
+      '</div>';
+
+    const stage = document.getElementById("rune-stage");
+    const doneMsg = document.getElementById("rune-done-msg");
+    let currentIndex = 0;
+
+    function paintBtn(btn, shape){
+      const iconEl = btn.querySelector(".sym-icon");
+      const labelEl = btn.querySelector(".sym-label");
+      if (shape === "none"){
+        iconEl.innerHTML = "";
+        labelEl.textContent = "Click to set";
+        btn.classList.remove("set");
+      } else {
+        iconEl.innerHTML = '<img src="' + tool.icons[shape] + '" alt="' + VERITY_NAMES[shape] + '">';
+        labelEl.textContent = VERITY_NAMES[shape];
+        btn.classList.add("set");
+      }
+    }
+
+    section.querySelectorAll(".sym-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const num = Number(btn.dataset.num);
+        const next = SYM_CYCLE[btn.dataset.shape];
+        btn.dataset.shape = next;
+        if (next === "none") delete choices[num]; else choices[num] = next;
+        paintBtn(btn, next);
+        maybeLockIn();
+      });
+    });
+
+    function maybeLockIn(){
+      if (Object.keys(choices).length < tool.positions.length) { clearStage(); return; }
+      lockInStage();
+    }
+
+    function clearStage(){
+      stage.classList.remove("active");
+      stage.innerHTML = "";
+      doneMsg.classList.remove("show");
+    }
+
+    function lockInStage(){
+      currentIndex = 0;
+      stage.innerHTML = tool.positions.map((p, i) => {
+        const shape = choices[p.number];
+        const shapeName = VERITY_NAMES[shape];
+        return '<div class="rune-stage-row' + (i === 0 ? ' current' : '') + '" data-num="' + p.number + '">' +
+          '<div class="rune-row-main">' +
+            '<div class="rune-row-icon"><img src="' + tool.icons[shape] + '" alt="' + shapeName + '"></div>' +
+            '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + '</div>' +
+            '<button class="rune-next-btn" type="button">Next</button>' +
+          '</div>' +
+          '<div class="rune-row-detail">' + p.detailedLocation + ' If this room is active (glowing conductor plate), deposit ' + shapeName + '. If it shows “You are found lacking,” skip it — it\'s not active this run.</div>' +
+        '</div>';
+      }).join("");
+      stage.classList.add("active");
+      doneMsg.classList.remove("show");
+
+      const rows = stage.querySelectorAll(".rune-stage-row");
+      rows.forEach((row, i) => {
+        row.querySelector(".rune-next-btn").addEventListener("click", () => {
+          if (i !== currentIndex) return;
+          row.classList.remove("current");
+          row.classList.add("done");
+          currentIndex++;
+          if (rows[currentIndex]) rows[currentIndex].classList.add("current");
+          else doneMsg.classList.add("show");
+        });
+      });
+    }
+
+    document.getElementById("rune-reset-btn").addEventListener("click", () => {
+      Object.keys(choices).forEach(k => delete choices[k]);
+      section.querySelectorAll(".sym-btn").forEach(btn => {
+        btn.dataset.shape = "none";
+        paintBtn(btn, "none");
       });
       clearStage();
     });
