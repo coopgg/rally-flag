@@ -891,7 +891,7 @@
         '</div>' +
         '<div class="ld-wall-hint">Click each position to cycle Circle / Square / Triangle — match the third column from the left, bottom to top.</div>' +
         '<div class="rune-stage" id="rune-stage"></div>' +
-        '<div class="rune-stage-done-msg" id="rune-done-msg">All 5 rooms checked — you\'re set for this run.</div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All ' + tool.positions.length + ' rooms set — you\'re ready for this run.</div>' +
         '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
       '</div>';
 
@@ -946,7 +946,7 @@
             '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + '</div>' +
             '<button class="rune-next-btn" type="button">Next</button>' +
           '</div>' +
-          '<div class="rune-row-detail">' + p.detailedLocation + ' If this room is active (glowing conductor plate), deposit ' + shapeName + '. If it shows “You are found lacking,” skip it — it\'s not active this run.</div>' +
+          '<div class="rune-row-detail">' + p.detailedLocation + ' Deposit ' + shapeName + ' at the conductor here.</div>' +
         '</div>';
       }).join("");
       stage.classList.add("active");
