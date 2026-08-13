@@ -751,9 +751,9 @@
     const petalId = "ld-petal-" + uid;
     const orbId = "ld-orb-" + uid;
     const orbStops = color === "light"
-      ? '<stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#dfe6ff"/><stop offset="100%" stop-color="#8a9ad8"/>'
+      ? '<stop offset="0%" stop-color="#ffffff"/><stop offset="45%" stop-color="#f4f1fa"/><stop offset="80%" stop-color="#ddd4f0"/><stop offset="100%" stop-color="#b6a8d9"/>'
       : color === "dark"
-      ? '<stop offset="0%" stop-color="#8a2a2a"/><stop offset="55%" stop-color="#3a0c10"/><stop offset="100%" stop-color="#0a0203"/>'
+      ? '<stop offset="0%" stop-color="#f2cb70"/><stop offset="25%" stop-color="#9c7420"/><stop offset="60%" stop-color="#2c1f08"/><stop offset="100%" stop-color="#050302"/>'
       : '<stop offset="0%" stop-color="#3a3a42"/><stop offset="55%" stop-color="#232228"/><stop offset="100%" stop-color="#121116"/>';
     const petalOpacity = color === "none" ? "0.35" : "1";
     const petals = [0, 60, 120, 180, 240, 300].map(deg =>
@@ -762,9 +762,10 @@
     return '<svg class="ld-flower-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
       '<defs>' +
         '<radialGradient id="' + petalId + '" cx="50%" cy="35%" r="65%">' +
-          '<stop offset="0%" stop-color="#ffd8ea" stop-opacity="0.95"/>' +
-          '<stop offset="60%" stop-color="#c9b6f2" stop-opacity="0.8"/>' +
-          '<stop offset="100%" stop-color="#8f7fd6" stop-opacity="0.55"/>' +
+          '<stop offset="0%" stop-color="#eef3ff" stop-opacity="0.95"/>' +
+          '<stop offset="40%" stop-color="#c2cef7" stop-opacity="0.85"/>' +
+          '<stop offset="70%" stop-color="#a696e8" stop-opacity="0.7"/>' +
+          '<stop offset="100%" stop-color="#7c65c4" stop-opacity="0.5"/>' +
         '</radialGradient>' +
         '<radialGradient id="' + orbId + '" cx="38%" cy="35%" r="65%">' + orbStops + '</radialGradient>' +
       '</defs>' +
