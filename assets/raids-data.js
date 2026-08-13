@@ -442,6 +442,7 @@ window.RaidsData = (function(){
           wipe:"Missing the bomb detonation window during his wipe attack, or failing to reach the protective aura in time, both end the run — this is one of the longest fights in the game, so pace your ammo and your patience accordingly." }
       ] },
     { name:"Root of Nightmares", slug:"root-of-nightmares", armorSlugs:["nezarecs-nightmare"],
+      puzzleHelper:{ slug:"nezarec-extra-chest", title:"Nezarec's Extra Chest", blurb:"Note the reference wall's Light/Dark pattern at the start, then work out which orbs to connect in each of the raid's three hidden rooms." },
       summary:"Root of Nightmares runs almost entirely on one shared idea: building a network of glowing nodes by carrying a short-lived buff from one to the next. Once you understand that loop, every encounter in this raid is a variation on the same theme, just with a different twist bolted on.",
       encounters:[
         { name:"Cataclysm",

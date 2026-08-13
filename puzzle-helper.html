@@ -325,6 +325,57 @@
   .lr-btn:hover{ color:var(--text); border-color:rgba(255,255,255,0.25); }
   .lr-btn.selected{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); }
 
+  /* ---------- Light/Dark flower selector (Root of Nightmares) ---------- */
+  .ld-tool-wrap{ max-width:560px; margin:0 auto; }
+  .ld-section-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+  }
+  .ld-reference-text{
+    font-size:13.5px; color:var(--text-dim); line-height:1.65; text-align:left;
+    margin-bottom:28px;
+  }
+  .ld-position-row{
+    display:flex; align-items:center; gap:16px; padding:16px 18px 22px; margin-bottom:14px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px;
+  }
+  .ld-position-label{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--text); flex:1; }
+  .ld-position-label b{ color:var(--accent); margin-right:8px; }
+  .ld-buttons{ display:flex; gap:16px; flex-shrink:0; }
+  .ld-flower-btn{
+    position:relative; width:54px; height:54px; padding:0; cursor:pointer;
+    background:none; border:none; -webkit-appearance:none; appearance:none;
+  }
+  .ld-flower-petals{
+    position:absolute; inset:0; border-radius:50%;
+    background:conic-gradient(from 0deg, rgba(255,178,206,0.4), rgba(178,164,255,0.4), rgba(255,178,206,0.4));
+    filter:blur(3px); opacity:0.55; transition:opacity 0.15s ease;
+  }
+  .ld-flower-btn:hover .ld-flower-petals{ opacity:0.8; }
+  .ld-flower-btn.selected .ld-flower-petals{ opacity:1; filter:blur(4px); }
+  .ld-flower-ring{
+    position:absolute; inset:6px; border-radius:50%; border:1px solid var(--panel-border);
+    background:rgba(10,8,14,0.5); transition:border-color 0.15s ease;
+  }
+  .ld-flower-btn.selected .ld-flower-ring{ border-color:var(--accent-bright); }
+  .ld-flower-orb{ position:absolute; inset:17px; border-radius:50%; transition:box-shadow 0.15s ease; }
+  .ld-flower-btn[data-color="light"] .ld-flower-orb{
+    background:radial-gradient(circle at 38% 32%, #ffffff, #dfe6ff 55%, #97a6dd 100%);
+    box-shadow:0 0 6px 1px rgba(255,255,255,0.35);
+  }
+  .ld-flower-btn[data-color="light"].selected .ld-flower-orb{ box-shadow:0 0 12px 3px rgba(255,255,255,0.6); }
+  .ld-flower-btn[data-color="dark"] .ld-flower-orb{
+    background:radial-gradient(circle at 38% 32%, #7a2020, #34090c 60%, #0a0203 100%);
+    box-shadow:0 0 6px 1px rgba(150,30,30,0.4);
+  }
+  .ld-flower-btn[data-color="dark"].selected .ld-flower-orb{ box-shadow:0 0 12px 3px rgba(200,40,40,0.65); }
+  .ld-flower-label{
+    position:absolute; top:60px; left:50%; transform:translateX(-50%);
+    font-family:'JetBrains Mono', monospace; font-size:9.5px; letter-spacing:0.04em;
+    color:var(--text-dim); white-space:nowrap; text-transform:uppercase;
+  }
+  .ld-flower-btn.selected .ld-flower-label{ color:var(--accent-bright); }
+
   .no-tools{
     text-align:center; padding:60px 20px; color:var(--text-dim);
     font-family:'JetBrains Mono', monospace; font-size:14px;
@@ -664,6 +715,104 @@
     document.getElementById("rune-reset-btn").addEventListener("click", () => {
       Object.keys(choices).forEach(k => delete choices[k]);
       section.querySelectorAll(".lr-btn.selected").forEach(b => b.classList.remove("selected"));
+      clearStage();
+    });
+  }
+
+  // ---------- Light/Dark flower-select tool (Root of Nightmares) ----------
+  function renderLDTool(tool){
+    const choices = {}; // positionNumber -> "light" | "dark"
+
+    const positionRowsHtml = tool.positions.map(p =>
+      '<div class="ld-position-row" data-num="' + p.number + '">' +
+        '<div class="ld-position-label"><b>' + p.number + '</b>' + p.name + '</div>' +
+        '<div class="ld-buttons">' +
+          '<button class="ld-flower-btn" type="button" data-color="light">' +
+            '<span class="ld-flower-petals"></span><span class="ld-flower-ring"></span><span class="ld-flower-orb"></span>' +
+            '<span class="ld-flower-label">Light</span>' +
+          '</button>' +
+          '<button class="ld-flower-btn" type="button" data-color="dark">' +
+            '<span class="ld-flower-petals"></span><span class="ld-flower-ring"></span><span class="ld-flower-orb"></span>' +
+            '<span class="ld-flower-label">Darkness</span>' +
+          '</button>' +
+        '</div>' +
+      '</div>'
+    ).join("");
+
+    section.innerHTML =
+      '<div class="tool-head">' +
+        '<div class="tool-title">' + tool.title + '</div>' +
+        '<a class="tool-raid-link" href="raid-guide.html?slug=' + tool.raidSlug + '">&larr; ' + tool.raidName + ' guide</a>' +
+      '</div>' +
+      (tool.bannerImage ? '<img class="tool-banner" src="' + tool.bannerImage + '" alt="' + tool.title + '">' : '') +
+      '<p class="tool-intro">' + tool.intro + '</p>' +
+      '<div class="ld-tool-wrap">' +
+        '<div class="ld-section-label">Reference wall</div>' +
+        '<div class="ld-reference-text">' + tool.referencePoint + '</div>' +
+        positionRowsHtml +
+        '<div class="rune-stage" id="rune-stage"></div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found \u2014 you\'re set for this run.</div>' +
+        '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
+      '</div>';
+
+    const stage = document.getElementById("rune-stage");
+    const doneMsg = document.getElementById("rune-done-msg");
+    let currentIndex = 0;
+
+    section.querySelectorAll(".ld-position-row").forEach(row => {
+      const num = Number(row.dataset.num);
+      row.querySelectorAll(".ld-flower-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          choices[num] = btn.dataset.color;
+          row.querySelectorAll(".ld-flower-btn").forEach(b => b.classList.toggle("selected", b === btn));
+          maybeLockIn();
+        });
+      });
+    });
+
+    function maybeLockIn(){
+      if (Object.keys(choices).length < tool.positions.length) { clearStage(); return; }
+      lockInStage();
+    }
+
+    function clearStage(){
+      stage.classList.remove("active");
+      stage.innerHTML = "";
+      doneMsg.classList.remove("show");
+    }
+
+    function lockInStage(){
+      currentIndex = 0;
+      stage.innerHTML = tool.positions.map((p, i) => {
+        const color = choices[p.number];
+        const colorLabel = color === "light" ? "Light" : "Darkness";
+        return '<div class="rune-stage-row' + (i === 0 ? ' current' : '') + '" data-num="' + p.number + '">' +
+          '<div class="rune-row-main">' +
+            '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + ' \u2014 connect ' + colorLabel + '</div>' +
+            '<button class="rune-next-btn" type="button">Next</button>' +
+          '</div>' +
+          '<div class="rune-row-detail">' + p.detailedLocation + ' Connect every ' + colorLabel + ' orb in this room.</div>' +
+        '</div>';
+      }).join("");
+      stage.classList.add("active");
+      doneMsg.classList.remove("show");
+
+      const rows = stage.querySelectorAll(".rune-stage-row");
+      rows.forEach((row, i) => {
+        row.querySelector(".rune-next-btn").addEventListener("click", () => {
+          if (i !== currentIndex) return;
+          row.classList.remove("current");
+          row.classList.add("done");
+          currentIndex++;
+          if (rows[currentIndex]) rows[currentIndex].classList.add("current");
+          else doneMsg.classList.add("show");
+        });
+      });
+    }
+
+    document.getElementById("rune-reset-btn").addEventListener("click", () => {
+      Object.keys(choices).forEach(k => delete choices[k]);
+      section.querySelectorAll(".ld-flower-btn.selected").forEach(b => b.classList.remove("selected"));
       clearStage();
     });
   }
@@ -1379,6 +1528,7 @@
     section.setAttribute("data-tool", tool.slug);
     if (tool.type === "rune-select") renderRuneTool(tool);
     else if (tool.type === "lr-select") renderLRTool(tool);
+    else if (tool.type === "ld-select") renderLDTool(tool);
     else if (tool.type === "verity-solver") renderVerityTool(tool);
     else renderWishTool(tool);
   }

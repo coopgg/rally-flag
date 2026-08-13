@@ -115,6 +115,20 @@ window.PuzzleHelperData = (function(){
       ]
     },
     {
+      slug: "nezarec-extra-chest",
+      type: "ld-select",
+      raidSlug: "root-of-nightmares",
+      raidName: "Root of Nightmares",
+      title: "Nezarec's Extra Chest",
+      referencePoint: "the wall of three flowers you pass right as you enter the Pyramid, before the first encounter",
+      intro: "Right as you enter Root of Nightmares, a wall of three flowers shows a Light/Darkness pattern \u2014 note it fresh every run, since it resets if anyone leaves. That pattern tells you which color orbs to connect in three separate hidden rooms spread through the raid, in order. Get all three right and you'll see \u201cA great harvest awaits\u2026\u201d with a distinct audio cue; the bonus chest (a guaranteed red border weapon) spawns beside Nezarec's scythe once he's dead. Has to be a single continuous clear \u2014 leaving and coming back resets the reference pattern.",
+      positions: [
+        { number: 1, name: "Pyramid Interior (Right After Entering)", simpleLocation: "Inside the Pyramid structure, near the start", detailedLocation: "Shortly after entering the Pyramid, before the first encounter, there's a room bathed in light off the main path \u2014 the orbs for this position are inside." },
+        { number: 2, name: "Cross the Chasm (Between 2nd and 3rd Encounters)", simpleLocation: "Jumping puzzle between Scission and Macrocosm", detailedLocation: "About halfway through the jumping puzzle connecting the second and third encounters, look for a floating temple area off the beaten path. Head inside to find the orbs." },
+        { number: 3, name: "Final Approach (Just Before Nezarec)", simpleLocation: "Hidden room right before the boss room", detailedLocation: "In the branch-and-root climb just before the Nezarec fight, there's a hidden room reached off the main path \u2014 the last set of orbs is inside." }
+      ]
+    },
+    {
       slug: "verity-solver",
       type: "verity-solver",
       raidSlug: "salvations-edge",
