@@ -325,56 +325,43 @@
   .lr-btn:hover{ color:var(--text); border-color:rgba(255,255,255,0.25); }
   .lr-btn.selected{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); }
 
-  /* ---------- Light/Dark flower selector (Root of Nightmares) ---------- */
-  .ld-tool-wrap{ max-width:560px; margin:0 auto; }
+  /* ---------- Light/Dark flower wall (Root of Nightmares) ---------- */
+  .ld-tool-wrap{ max-width:640px; margin:0 auto; }
   .ld-section-label{
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
     color:var(--accent); text-transform:uppercase; margin-bottom:10px;
   }
   .ld-reference-text{
     font-size:13.5px; color:var(--text-dim); line-height:1.65; text-align:left;
-    margin-bottom:28px;
+    margin-bottom:24px;
   }
-  .ld-position-row{
-    display:flex; align-items:center; gap:16px; padding:16px 18px 22px; margin-bottom:14px;
-    background:var(--panel); border:1px solid var(--panel-border); border-radius:6px;
+  .ld-wall{
+    display:flex; justify-content:center; gap:20px; padding:32px 20px;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:8px;
+    margin-bottom:24px; flex-wrap:wrap;
   }
-  .ld-position-label{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--text); flex:1; }
-  .ld-position-label b{ color:var(--accent); margin-right:8px; }
-  .ld-buttons{ display:flex; gap:16px; flex-shrink:0; }
   .ld-flower-btn{
-    position:relative; width:54px; height:54px; padding:0; cursor:pointer;
+    position:relative; width:130px; padding:0; cursor:pointer;
     background:none; border:none; -webkit-appearance:none; appearance:none;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
   }
-  .ld-flower-petals{
-    position:absolute; inset:0; border-radius:50%;
-    background:conic-gradient(from 0deg, rgba(255,178,206,0.4), rgba(178,164,255,0.4), rgba(255,178,206,0.4));
-    filter:blur(3px); opacity:0.55; transition:opacity 0.15s ease;
+  .ld-flower-num{
+    position:absolute; top:-6px; left:-6px; width:22px; height:22px; border-radius:50%;
+    background:var(--panel); border:1px solid var(--accent-bright); color:var(--accent-bright);
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; z-index:2;
   }
-  .ld-flower-btn:hover .ld-flower-petals{ opacity:0.8; }
-  .ld-flower-btn.selected .ld-flower-petals{ opacity:1; filter:blur(4px); }
-  .ld-flower-ring{
-    position:absolute; inset:6px; border-radius:50%; border:1px solid var(--panel-border);
-    background:rgba(10,8,14,0.5); transition:border-color 0.15s ease;
-  }
-  .ld-flower-btn.selected .ld-flower-ring{ border-color:var(--accent-bright); }
-  .ld-flower-orb{ position:absolute; inset:17px; border-radius:50%; transition:box-shadow 0.15s ease; }
-  .ld-flower-btn[data-color="light"] .ld-flower-orb{
-    background:radial-gradient(circle at 38% 32%, #ffffff, #dfe6ff 55%, #97a6dd 100%);
-    box-shadow:0 0 6px 1px rgba(255,255,255,0.35);
-  }
-  .ld-flower-btn[data-color="light"].selected .ld-flower-orb{ box-shadow:0 0 12px 3px rgba(255,255,255,0.6); }
-  .ld-flower-btn[data-color="dark"] .ld-flower-orb{
-    background:radial-gradient(circle at 38% 32%, #7a2020, #34090c 60%, #0a0203 100%);
-    box-shadow:0 0 6px 1px rgba(150,30,30,0.4);
-  }
-  .ld-flower-btn[data-color="dark"].selected .ld-flower-orb{ box-shadow:0 0 12px 3px rgba(200,40,40,0.65); }
+  .ld-flower-svg{ width:130px; height:130px; transition:transform 0.15s ease, filter 0.15s ease; }
+  .ld-flower-btn:hover .ld-flower-svg{ transform:scale(1.04); }
+  .ld-flower-btn.set .ld-flower-svg{ filter:drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
   .ld-flower-label{
-    position:absolute; top:60px; left:50%; transform:translateX(-50%);
-    font-family:'JetBrains Mono', monospace; font-size:9.5px; letter-spacing:0.04em;
-    color:var(--text-dim); white-space:nowrap; text-transform:uppercase;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.05em;
+    color:var(--text-dim); text-transform:uppercase; transition:color 0.15s ease;
   }
-  .ld-flower-btn.selected .ld-flower-label{ color:var(--accent-bright); }
+  .ld-flower-btn.set .ld-flower-label{ color:var(--accent-bright); }
+  .ld-wall-hint{
+    text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:-14px; margin-bottom:24px;
+  }
 
   .no-tools{
     text-align:center; padding:60px 20px; color:var(--text-dim);
@@ -719,25 +706,38 @@
     });
   }
 
-  // ---------- Light/Dark flower-select tool (Root of Nightmares) ----------
-  function renderLDTool(tool){
-    const choices = {}; // positionNumber -> "light" | "dark"
-
-    const positionRowsHtml = tool.positions.map(p =>
-      '<div class="ld-position-row" data-num="' + p.number + '">' +
-        '<div class="ld-position-label"><b>' + p.number + '</b>' + p.name + '</div>' +
-        '<div class="ld-buttons">' +
-          '<button class="ld-flower-btn" type="button" data-color="light">' +
-            '<span class="ld-flower-petals"></span><span class="ld-flower-ring"></span><span class="ld-flower-orb"></span>' +
-            '<span class="ld-flower-label">Light</span>' +
-          '</button>' +
-          '<button class="ld-flower-btn" type="button" data-color="dark">' +
-            '<span class="ld-flower-petals"></span><span class="ld-flower-ring"></span><span class="ld-flower-orb"></span>' +
-            '<span class="ld-flower-label">Darkness</span>' +
-          '</button>' +
-        '</div>' +
-      '</div>'
+  // ---------- Light/Dark flower-wall tool (Root of Nightmares) ----------
+  function flowerSvg(color, uid){
+    const petalId = "ld-petal-" + uid;
+    const orbId = "ld-orb-" + uid;
+    const orbStops = color === "light"
+      ? '<stop offset="0%" stop-color="#ffffff"/><stop offset="55%" stop-color="#dfe6ff"/><stop offset="100%" stop-color="#8a9ad8"/>'
+      : color === "dark"
+      ? '<stop offset="0%" stop-color="#8a2a2a"/><stop offset="55%" stop-color="#3a0c10"/><stop offset="100%" stop-color="#0a0203"/>'
+      : '<stop offset="0%" stop-color="#3a3a42"/><stop offset="55%" stop-color="#232228"/><stop offset="100%" stop-color="#121116"/>';
+    const petalOpacity = color === "none" ? "0.35" : "1";
+    const petals = [0, 60, 120, 180, 240, 300].map(deg =>
+      '<ellipse cx="0" cy="-27" rx="13" ry="23" transform="rotate(' + deg + ')" fill="url(#' + petalId + ')"/>'
     ).join("");
+    return '<svg class="ld-flower-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' +
+        '<radialGradient id="' + petalId + '" cx="50%" cy="35%" r="65%">' +
+          '<stop offset="0%" stop-color="#ffd8ea" stop-opacity="0.95"/>' +
+          '<stop offset="60%" stop-color="#c9b6f2" stop-opacity="0.8"/>' +
+          '<stop offset="100%" stop-color="#8f7fd6" stop-opacity="0.55"/>' +
+        '</radialGradient>' +
+        '<radialGradient id="' + orbId + '" cx="38%" cy="35%" r="65%">' + orbStops + '</radialGradient>' +
+      '</defs>' +
+      '<g transform="translate(50,50)" opacity="' + petalOpacity + '">' + petals + '</g>' +
+      '<circle transform="translate(50,50)" r="15" fill="url(#' + orbId + ')"/>' +
+    '</svg>';
+  }
+
+  const LD_CYCLE = { none: "light", light: "dark", dark: "light" };
+  const LD_LABEL = { none: "Click to set", light: "Light", dark: "Darkness" };
+
+  function renderLDTool(tool){
+    const choices = {}; // positionNumber -> "light" | "dark", absent = unset
 
     section.innerHTML =
       '<div class="tool-head">' +
@@ -749,7 +749,16 @@
       '<div class="ld-tool-wrap">' +
         '<div class="ld-section-label">Reference wall</div>' +
         '<div class="ld-reference-text">' + tool.referencePoint + '</div>' +
-        positionRowsHtml +
+        '<div class="ld-wall">' +
+          tool.positions.map(p =>
+            '<button class="ld-flower-btn" type="button" data-num="' + p.number + '" data-color="none">' +
+              '<span class="ld-flower-num">' + p.number + '</span>' +
+              flowerSvg("none", p.number) +
+              '<span class="ld-flower-label">Click to set</span>' +
+            '</button>'
+          ).join("") +
+        '</div>' +
+        '<div class="ld-wall-hint">Click each flower to cycle Light / Darkness \u2014 match what you actually see on the wall.</div>' +
         '<div class="rune-stage" id="rune-stage"></div>' +
         '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found \u2014 you\'re set for this run.</div>' +
         '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
@@ -759,14 +768,16 @@
     const doneMsg = document.getElementById("rune-done-msg");
     let currentIndex = 0;
 
-    section.querySelectorAll(".ld-position-row").forEach(row => {
-      const num = Number(row.dataset.num);
-      row.querySelectorAll(".ld-flower-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          choices[num] = btn.dataset.color;
-          row.querySelectorAll(".ld-flower-btn").forEach(b => b.classList.toggle("selected", b === btn));
-          maybeLockIn();
-        });
+    section.querySelectorAll(".ld-flower-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const num = Number(btn.dataset.num);
+        const next = LD_CYCLE[btn.dataset.color];
+        btn.dataset.color = next;
+        choices[num] = next;
+        btn.classList.add("set");
+        btn.querySelector(".ld-flower-svg").outerHTML = flowerSvg(next, num);
+        btn.querySelector(".ld-flower-label").textContent = LD_LABEL[next];
+        maybeLockIn();
       });
     });
 
@@ -812,7 +823,12 @@
 
     document.getElementById("rune-reset-btn").addEventListener("click", () => {
       Object.keys(choices).forEach(k => delete choices[k]);
-      section.querySelectorAll(".ld-flower-btn.selected").forEach(b => b.classList.remove("selected"));
+      section.querySelectorAll(".ld-flower-btn").forEach(btn => {
+        btn.dataset.color = "none";
+        btn.classList.remove("set");
+        btn.querySelector(".ld-flower-svg").outerHTML = flowerSvg("none", btn.dataset.num);
+        btn.querySelector(".ld-flower-label").textContent = "Click to set";
+      });
       clearStage();
     });
   }
