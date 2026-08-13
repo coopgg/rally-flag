@@ -426,6 +426,41 @@ window.BuildsData = (function(){
       recommendedArtifactPerks: ["Trace Evidence", "The Thick of It", "Retinal Burn", "Weakened Clear", "Curative Orbs", "Arc Compounding", "Kinetic Impacts"],
       whyItWorks: "Nothing here is fighting over the same resource. Shinobu's Vow's New Tricks and the Spark of Ions/Discharge fragments both feed grenade energy from different triggers (grenade damage vs. Arc/Jolt kills), so Skip Grenade rarely goes on cooldown for long. That same grenade spam burns Armor Charge constantly, and Exodus Down turns that churn into passive healing and damage resistance instead of a resource you have to manage. The artifact perks lean on the exact same Armor Charge cycle \u2014 Retinal Burn spends it to Blind, Arc Compounding cashes that Blind in for bonus Arc damage, and Trace Evidence keeps the Armor Charge supply coming from kills you're already getting. Riskrunner sits on top as the answer for anything that survives the grenade-and-jolt phase, converting a little incoming Arc damage into chain lightning that clears whatever's left.",
       tags: ["Add-Clear", "Ability Spam", "Crowd Control", "Jolt"]
+    },
+    {
+      title: "Panic Weave",
+      slug: "panic-weave",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/a01a228b-e4b6-4982-8d1d-dafc0ab21b85",
+      class: "Hunter",
+      subclass: "Strand",
+      tagline: "Barrow-Dyad's Blight charge-up and Moirai's yo-yo Tangle catch run on top of a Sever/Unravel loop the artifact is already built to reward.",
+      exoticArmor: {
+        name: "Moirai",
+        slot: "Chest",
+        itemHash: 2647299044,
+        perkName: "Webcatcher",
+        perkDesc: "Threaded Spike can bounce to and detonate Tangles, then returns to you immediately instead of on its usual arc. Detonated Tangles are rewoven and retrieved, letting you throw them again. Catching Threaded Spike without a Tangle refunds extra melee energy."
+      },
+      exoticWeapon: {
+        name: "Barrow-Dyad",
+        weaponType: "Submachine Gun",
+        itemHash: 1481594633,
+        perkName: "Panic Response",
+        perkDesc: "Dealing damage builds a meter; reloading converts stored charge into seeking Blight projectiles loaded into the magazine. The weapon also auto-reloads passively at the cost of meter charge, so firing in bursts and letting the meter build outperforms holding the trigger down."
+      },
+      armorSet: { name: "Thunderhead", slug: "thunderhead" },
+      artifact: { name: "Tablet of Ruin", slug: "tablet-of-ruin" },
+      loop: [
+        "Slicewire Grenade bounces and releases whirling threads that Sever targets on contact \u2014 the same debuff Vile Weave, Horde Shuttle, and To Shreds (artifact) are all built around.",
+        "Ensnaring Slam consumes your class ability energy mid-air to suspend everything you land on, and Threaded Spike severs anything it bounces between on its way back to your hand.",
+        "Whirling Maelstrom turns every Tangle you destroy into a seeking mass of Strand fibers, and Moirai's Webcatcher lets Threaded Spike bounce to a Tangle, detonate it, and return instantly \u2014 rewoven and ready to throw again, refunding melee energy either way.",
+        "Unraveling Orbs (artifact) grants Unraveling Rounds off Orb pickups; Vile Weave severs anything your Tangles touch and cuts their cooldown when you pick one up; Horde Shuttle spawns Threadlings off Unraveled damage, and those Threadlings sever too. To Shreds turns sustained damage on a Severed target into more Unravel and grants nearby allies Woven Mail on the kill.",
+        "Thunderhead's 4-piece, Lethal Weave, grants grenade energy for defeating an Unraveled combatant \u2014 with Unraveling Orbs already applying Unravel constantly, Slicewire rarely sits on cooldown. The 2-piece adds point-blank damage resistance whenever a grenade goes off, which a bounce grenade triggers often.",
+        "Barrow-Dyad's Panic Response builds toward seeking Blight shots the whole time \u2014 fire in controlled bursts rather than holding the trigger, and let the meter fill before reloading to convert it. Qua-Vinctus IV and Lotus-Eater cover anything that survives the debuff chain, and Lotus-Eater's Special ammo pickups feed Gold From Lead a chance at extra Heavy ammo for Qua-Vinctus IV."
+      ],
+      recommendedArtifactPerks: ["Unraveling Orbs", "Elemental Siphon", "Vile Weave", "Horde Shuttle", "Gold From Lead", "To Shreds", "Elemental Supercharger"],
+      whyItWorks: "Nothing in this build is fighting for a different resource than anything else \u2014 Sever, Unravel, Tangles, and grenade energy all feed back into each other instead of running as separate systems. Slicewire severs on its own; Threaded Spike severs on its bounce and detonates Tangles for Whirling Maelstrom; the artifact rewards both Sever (To Shreds) and Unravel (Unraveling Orbs) directly; and Thunderhead turns Unraveled kills into more grenade energy, which means more Slicewire throws, more Sever, and the loop closes on itself. Moirai adds a second layer on top without asking for a different resource \u2014 Webcatcher's Tangle detonation and instant return both refund melee energy, keeping Threaded Spike (and therefore Sever) coming back as fast as Ensnaring Slam and Slicewire are generating Tangles to feed it.",
+      tags: ["Sever", "Unravel", "Tangle", "Strand", "Ad Clear"]
     }
   ];
 
