@@ -363,25 +363,28 @@
     text-align:center; font-size:12.5px; color:var(--text-dim); margin-top:-14px; margin-bottom:24px;
   }
 
-  /* ---------- Symbol wall (Salvation's Edge, Witness's Extra Chest) ---------- */
-  .sym-wall{
-    display:flex; justify-content:center; gap:14px; padding:28px 20px;
+  /* ---------- Symbol column (Salvation's Edge, Witness's Extra Chest) ---------- */
+  .sym-column{
+    display:flex; flex-direction:column-reverse; align-items:stretch; gap:8px;
+    padding:18px; max-width:260px; margin:0 auto 24px;
     background:var(--panel); border:1px solid var(--panel-border); border-radius:8px;
-    margin-bottom:24px; flex-wrap:wrap;
   }
   .sym-btn{
-    position:relative; width:84px; padding:0; cursor:pointer;
-    background:none; border:none; -webkit-appearance:none; appearance:none;
-    display:flex; flex-direction:column; align-items:center; gap:8px;
+    position:relative; width:100%; padding:6px 14px 6px 6px; cursor:pointer;
+    background:none; border:1px solid transparent; border-radius:8px;
+    -webkit-appearance:none; appearance:none;
+    display:flex; align-items:center; gap:12px; box-sizing:border-box;
+    transition:border-color 0.15s ease, background 0.15s ease;
   }
+  .sym-btn:hover{ background:rgba(255,255,255,0.03); }
   .sym-num{
-    position:absolute; top:-6px; left:-6px; width:22px; height:22px; border-radius:50%;
+    flex-shrink:0; width:22px; height:22px; border-radius:50%;
     background:var(--panel); border:1px solid var(--accent-bright); color:var(--accent-bright);
     font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
-    display:flex; align-items:center; justify-content:center; z-index:2;
+    display:flex; align-items:center; justify-content:center;
   }
   .sym-icon{
-    width:64px; height:64px; border-radius:8px; padding:12px; box-sizing:border-box;
+    flex-shrink:0; width:44px; height:44px; border-radius:8px; padding:8px; box-sizing:border-box;
     background:rgba(10,8,14,0.5); border:1px solid var(--panel-border);
     transition:border-color 0.15s ease, background 0.15s ease;
   }
@@ -389,10 +392,16 @@
   .sym-btn:hover .sym-icon{ border-color:rgba(255,255,255,0.25); }
   .sym-btn.set .sym-icon{ border-color:var(--accent-bright); background:var(--accent-dim); }
   .sym-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.05em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.03em;
     color:var(--text-dim); text-transform:uppercase; transition:color 0.15s ease;
   }
   .sym-btn.set .sym-label{ color:var(--accent-bright); }
+  .sym-group-head{ margin-top:4px; }
+  .sym-group-title{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:4px;
+  }
+  .sym-group-note{ font-size:12.5px; color:var(--text-dim); line-height:1.5; }
 
   .no-tools{
     text-align:center; padding:60px 20px; color:var(--text-dim);
@@ -878,9 +887,9 @@
       (tool.bannerImage ? '<img class="tool-banner" src="' + tool.bannerImage + '" alt="' + tool.title + '">' : '') +
       '<p class="tool-intro">' + tool.intro + '</p>' +
       '<div class="ld-tool-wrap">' +
-        '<div class="ld-section-label">Reference wall</div>' +
+        '<div class="ld-section-label">Reference column</div>' +
         '<div class="ld-reference-text">' + tool.referencePoint + '</div>' +
-        '<div class="sym-wall">' +
+        '<div class="sym-column">' +
           tool.positions.map(p =>
             '<button class="sym-btn" type="button" data-num="' + p.number + '" data-shape="none">' +
               '<span class="sym-num">' + p.number + '</span>' +
@@ -889,15 +898,12 @@
             '</button>'
           ).join("") +
         '</div>' +
-        '<div class="ld-wall-hint">Click each position to cycle Circle / Square / Triangle — match the third column from the left, bottom to top.</div>' +
+        '<div class="ld-wall-hint">Click each position to cycle Circle / Square / Triangle, bottom to top — match the third column from the left.</div>' +
         '<div class="rune-stage" id="rune-stage"></div>' +
-        '<div class="rune-stage-done-msg" id="rune-done-msg">All ' + tool.positions.length + ' rooms set — you\'re ready for this run.</div>' +
         '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
       '</div>';
 
     const stage = document.getElementById("rune-stage");
-    const doneMsg = document.getElementById("rune-done-msg");
-    let currentIndex = 0;
 
     function paintBtn(btn, shape){
       const iconEl = btn.querySelector(".sym-icon");
@@ -932,35 +938,64 @@
     function clearStage(){
       stage.classList.remove("active");
       stage.innerHTML = "";
-      doneMsg.classList.remove("show");
+    }
+
+    // Groups positions by their `chest` tag, preserving first-seen order, so a
+    // single reference column can drive two independent step-throughs (e.g.
+    // Witness's Extra Chest's red border rooms vs. its raid mod rooms).
+    // Positions without a `chest` tag fall into one unlabeled group, so this
+    // still works as a plain flat list for any future non-grouped tool.
+    function groupPositions(){
+      const order = [];
+      const map = {};
+      tool.positions.forEach(p => {
+        const key = p.chest || "_default";
+        if (!map[key]){ map[key] = []; order.push(key); }
+        map[key].push(p);
+      });
+      return order.map(key => ({ key, positions: map[key] }));
     }
 
     function lockInStage(){
-      currentIndex = 0;
-      stage.innerHTML = tool.positions.map((p, i) => {
-        const shape = choices[p.number];
-        const shapeName = VERITY_NAMES[shape];
-        return '<div class="rune-stage-row' + (i === 0 ? ' current' : '') + '" data-num="' + p.number + '">' +
-          '<div class="rune-row-main">' +
-            '<div class="rune-row-icon"><img src="' + tool.icons[shape] + '" alt="' + shapeName + '"></div>' +
-            '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + '</div>' +
-            '<button class="rune-next-btn" type="button">Next</button>' +
-          '</div>' +
-          '<div class="rune-row-detail">' + p.detailedLocation + ' Deposit ' + shapeName + ' at the conductor here.</div>' +
-        '</div>';
+      const groups = groupPositions();
+      stage.innerHTML = groups.map(g => {
+        const info = tool.chestNotes && tool.chestNotes[g.key];
+        const headHtml = info
+          ? '<div class="sym-group-head"><div class="sym-group-title">' + info.label + '</div><div class="sym-group-note">' + info.note + '</div></div>'
+          : "";
+        const rowsHtml = g.positions.map((p, i) => {
+          const shape = choices[p.number];
+          const shapeName = VERITY_NAMES[shape];
+          return '<div class="rune-stage-row' + (i === 0 ? ' current' : '') + '" data-num="' + p.number + '">' +
+            '<div class="rune-row-main">' +
+              '<div class="rune-row-icon"><img src="' + tool.icons[shape] + '" alt="' + shapeName + '"></div>' +
+              '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + '</div>' +
+              '<button class="rune-next-btn" type="button">Next</button>' +
+            '</div>' +
+            '<div class="rune-row-detail">' + p.detailedLocation + ' Deposit ' + shapeName + ' at the conductor here.</div>' +
+          '</div>';
+        }).join("");
+        return headHtml +
+          '<div class="rune-stage active sym-group-stage" data-group="' + g.key + '">' +
+            rowsHtml +
+            '<div class="rune-stage-done-msg" data-group-done="' + g.key + '">All set here — you\'re ready for this run.</div>' +
+          '</div>';
       }).join("");
       stage.classList.add("active");
-      doneMsg.classList.remove("show");
 
-      const rows = stage.querySelectorAll(".rune-stage-row");
-      rows.forEach((row, i) => {
-        row.querySelector(".rune-next-btn").addEventListener("click", () => {
-          if (i !== currentIndex) return;
-          row.classList.remove("current");
-          row.classList.add("done");
-          currentIndex++;
-          if (rows[currentIndex]) rows[currentIndex].classList.add("current");
-          else doneMsg.classList.add("show");
+      stage.querySelectorAll(".sym-group-stage").forEach(groupEl => {
+        const rows = groupEl.querySelectorAll(".rune-stage-row");
+        const doneEl = groupEl.querySelector("[data-group-done]");
+        let idx = 0;
+        rows.forEach((row, i) => {
+          row.querySelector(".rune-next-btn").addEventListener("click", () => {
+            if (i !== idx) return;
+            row.classList.remove("current");
+            row.classList.add("done");
+            idx++;
+            if (rows[idx]) rows[idx].classList.add("current");
+            else if (doneEl) doneEl.classList.add("show");
+          });
         });
       });
     }
