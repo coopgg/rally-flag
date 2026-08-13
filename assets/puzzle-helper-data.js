@@ -129,6 +129,23 @@ window.PuzzleHelperData = (function(){
       ]
     },
     {
+      slug: "witness-extra-chest",
+      type: "symbol-select",
+      raidSlug: "salvations-edge",
+      raidName: "Salvation's Edge",
+      title: "Witness's Extra Chest",
+      referencePoint: "the first enclosed room at the very start of the raid \u2014 columns of Resonance shapes on the wall. Read the third column from the left, bottom to top",
+      intro: "Right at the start of Salvation's Edge, before the first encounter, a wall shows columns of Resonance shapes \u2014 the third column from the left is the one that matters, read bottom to top as Room 1 through Room 5. Each of those 5 rooms is a real, fixed location spread across the whole raid, but only 3 of the 5 are actually active on any given run \u2014 you'll know because an active room has a glowing conductor plate, while an inactive one just shows an altar reading \"You are found lacking\" (skip those, nothing to do there). For every room that IS active, deposit the Resonance shape the column showed for that position. Get all three right in a single continuous clear and the bonus chest \u2014 a guaranteed red border weapon \u2014 spawns once the Witness is defeated.",
+      icons: { C: "puzzle-assets/SE_C.png", S: "puzzle-assets/SE_S.png", T: "puzzle-assets/SE_T.png" },
+      positions: [
+        { number: 1, name: "Room 1", simpleLocation: "Very start of the raid, in the first large open room", detailedLocation: "Right when you enter the large open room at the start, jump up a bit and follow the path to the left toward a large, well-lit doorway \u2014 that leads straight into Room 1." },
+        { number: 2, name: "Room 2", simpleLocation: "Also before the first encounter, end of the jumping puzzle", detailedLocation: "Also before the first encounter, at the end of the jumping puzzle. Push past the closed flight of stairs with Fanatics; right after, jump through the strange stairs down to the lower set, where a small hole leads into Room 2." },
+        { number: 3, name: "Room 3", simpleLocation: "Between the 1st and 2nd encounters", detailedLocation: "Between the first and second encounters. After riding the red elevator up, you'll cross large greenish-blue cubes \u2014 keep an eye on the right-side wall for a large, well-lit gap leading into Room 3." },
+        { number: 4, name: "Room 4", simpleLocation: "Between the 2nd and 3rd encounters", detailedLocation: "Between the second and third encounters. After crossing the outer scaffolding, jump to the upper-left platform instead of continuing right \u2014 Room 4 is on the wall opposite where you climbed up." },
+        { number: 5, name: "Room 5", simpleLocation: "Also before the 3rd encounter", detailedLocation: "Also before the third encounter. In the inner room with the rotting tree branches, jump up and to the left, then keep climbing until you reach the conductor plates \u2014 the last possible room." }
+      ]
+    },
+    {
       slug: "verity-solver",
       type: "verity-solver",
       raidSlug: "salvations-edge",

@@ -573,6 +573,7 @@ window.RaidsData = (function(){
           wipe:"Letting the Oversoul run out without destroying it wipes the whole team — always keep at least one Enlightened player free to handle it instead of spending every buff on swords or damage." }
       ] },
     { name:"Salvation's Edge", slug:"salvations-edge", armorSlugs:["promised"],
+      puzzleHelper:{ slug:"witness-extra-chest", title:"Witness's Extra Chest", blurb:"Note the reference column's shapes at the start, then check all 5 hidden rooms across the raid \u2014 deposit the right shape at whichever 3 turn out active." },
       summary:"Salvation's Edge is the final raid of the original Light and Darkness saga, and it plays like it — five long, intricate encounters that layer symbol logic, split teams, and shared timers on top of each other. It's widely considered one of the most mechanically demanding raids ever made, so take each encounter slowly the first time through.",
       encounters:[
         { name:"Substratum",
