@@ -86,6 +86,11 @@
   .xur-build-note a:hover{ text-decoration:underline; }
 
   /* --- Featured This Week --- */
+  .tw-subsection-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; margin:18px 0 10px;
+  }
+  .tw-subsection-label:first-of-type{ margin-top:0; }
   .featured-grid{
     display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
     gap:12px;
@@ -94,6 +99,12 @@
   .featured-kind{
     font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
     color:var(--accent); text-transform:uppercase; margin-bottom:6px;
+  }
+  .featured-always-badge{
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    font-weight:400; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--accent-bright); border:1px solid var(--accent); border-radius:999px;
+    padding:2px 8px; margin-left:6px; vertical-align:middle;
   }
   .featured-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:16px; color:var(--text); }
   .featured-set-label{
@@ -157,13 +168,19 @@
     <div class="tw-section-title">Featured This Week</div>
     <div class="tw-refresh-note" id="reset-countdown-note">Resets in —</div>
   </div>
-  <div id="featured-content"></div>
+  <div class="tw-subsection-label">Raids</div>
+  <div id="featured-raids-content"></div>
+  <div class="tw-subsection-label">Dungeons</div>
+  <div id="featured-dungeons-content"></div>
 
   <div class="tw-section-head">
     <div class="tw-section-title">Next Week<span class="tw-predicted-badge">Predicted</span></div>
     <div class="tw-refresh-note">Same rotation, one reset ahead</div>
   </div>
-  <div id="next-week-content"></div>
+  <div class="tw-subsection-label">Raids</div>
+  <div id="next-week-raids-content"></div>
+  <div class="tw-subsection-label">Dungeons</div>
+  <div id="next-week-dungeons-content"></div>
 
   <div class="tw-section-head">
     <div class="tw-section-title">Xûr — At the Tower</div>
@@ -202,8 +219,15 @@
   // Grasp of Avarice (position 4) + Sundered Doctrine (position 10) —
   // this exactly matched what was previously hand-maintained here too.
   // The Desert Perpetual and Equilibrium (the two newest raid/dungeon)
-  // aren't in D2RAD's tracked cycle yet, so they're left out here too.
+  // aren't in D2RAD's tracked cycle at all — not because they're missing
+  // data, but because Bungie always features the newest raid/dungeon of
+  // the season permanently, on top of the 2 rotating slots. Since this is
+  // the final content update, that pair is never going to change, so
+  // they're added back in below as permanently-featured entries rather
+  // than rotation candidates.
   // ---------------------------------------------------------------
+  const ALWAYS_FEATURED_RAID_SLUG = "the-desert-perpetual";
+  const ALWAYS_FEATURED_DUNGEON_SLUG = "equilibrium";
   const RAID_ROTATION_SLUGS = [
     "last-wish", "garden-of-salvation", "deep-stone-crypt", "vault-of-glass",
     "vow-of-the-disciple", "kings-fall", "root-of-nightmares", "crotas-end",
@@ -232,16 +256,16 @@
   }
 
   const FEATURED_THIS_WEEK = {
-    raids: slotRotationPick(RAID_ROTATION_SLUGS, RAID_SLOT_OFFSETS, currentWeekIndex()),
-    dungeons: slotRotationPick(DUNGEON_ROTATION_SLUGS, DUNGEON_SLOT_OFFSETS, currentWeekIndex())
+    raids: [ALWAYS_FEATURED_RAID_SLUG, ...slotRotationPick(RAID_ROTATION_SLUGS, RAID_SLOT_OFFSETS, currentWeekIndex())],
+    dungeons: [ALWAYS_FEATURED_DUNGEON_SLUG, ...slotRotationPick(DUNGEON_ROTATION_SLUGS, DUNGEON_SLOT_OFFSETS, currentWeekIndex())]
   };
   // Same rotation math, one week ahead — since the pattern is a fixed
   // deterministic cycle (not read from Bungie), next week's picks are
   // exactly as knowable as this week's. Still labeled "Predicted" in the
   // UI since it rests on D2RAD's reverse-engineered pattern holding.
   const FEATURED_NEXT_WEEK = {
-    raids: slotRotationPick(RAID_ROTATION_SLUGS, RAID_SLOT_OFFSETS, currentWeekIndex() + 1),
-    dungeons: slotRotationPick(DUNGEON_ROTATION_SLUGS, DUNGEON_SLOT_OFFSETS, currentWeekIndex() + 1)
+    raids: [ALWAYS_FEATURED_RAID_SLUG, ...slotRotationPick(RAID_ROTATION_SLUGS, RAID_SLOT_OFFSETS, currentWeekIndex() + 1)],
+    dungeons: [ALWAYS_FEATURED_DUNGEON_SLUG, ...slotRotationPick(DUNGEON_ROTATION_SLUGS, DUNGEON_SLOT_OFFSETS, currentWeekIndex() + 1)]
   };
 
   function msUntilNextReset(){
@@ -524,10 +548,11 @@
   }
 
   // ---------------- Featured This Week / Next Week (manual data, instant render) ----------------
-  function renderFeaturedCards(containerId, picks, isPrediction){
+  // One row per category (raids / dungeons) instead of one mixed grid —
+  // each row is always exactly 3: the always-featured newest activity
+  // plus the 2 rotating picks, which fits the 3-per-row card layout.
+  function renderCategoryCards(containerId, kind, items, hrefPrefix, isPrediction, alwaysFeaturedSlug){
     const contentEl = document.getElementById(containerId);
-    const raids = (window.RaidsData ? window.RaidsData.RAIDS : []).filter(r => picks.raids.includes(r.slug));
-    const dungeons = (window.DungeonsData ? window.DungeonsData.DUNGEONS : []).filter(d => picks.dungeons.includes(d.slug));
 
     const setsBySlug = {};
     (window.ArmorSetsData ? window.ArmorSetsData.SETS : []).forEach(s => setsBySlug[s.slug] = s);
@@ -539,9 +564,13 @@
     // "weapons we actually run" list, not a full drop table), so adding
     // that would mean guessing loot tables from memory rather than using
     // real data.
-    const cards = [];
-    raids.forEach(r => cards.push({ kind: "Raid", name: r.name, href: "raid-guide.html?slug=" + r.slug, armorSlugs: r.armorSlugs || [] }));
-    dungeons.forEach(d => cards.push({ kind: "Dungeon", name: d.name, href: "dungeon-guide.html?slug=" + d.slug, armorSlugs: d.armorSlugs || [] }));
+    const cards = items.map(item => ({
+      kind: kind,
+      name: item.name,
+      href: hrefPrefix + item.slug,
+      armorSlugs: item.armorSlugs || [],
+      alwaysFeatured: item.slug === alwaysFeaturedSlug
+    }));
 
     if (!cards.length){
       contentEl.innerHTML = '<div class="tw-status">Rotation slugs didn\u2019t match anything in raids-data.js/dungeons-data.js \u2014 check for a typo.</div>';
@@ -555,8 +584,9 @@
           const label = set ? set.name : slug;
           return '<a class="set-link" href="armor-set-bonuses.html?highlight=' + slug + '">' + label + ' \u2192</a>';
         }).join("");
+        const alwaysBadge = c.alwaysFeatured ? '<span class="featured-always-badge">Always Featured</span>' : '';
         return '<div class="featured-card panel-card' + (isPrediction ? ' predicted' : '') + '">' +
-          '<div class="featured-kind">' + c.kind + '</div>' +
+          '<div class="featured-kind">' + c.kind + alwaysBadge + '</div>' +
           '<div class="featured-name">' + c.name + '</div>' +
           (armorLinksHtml ? '<div class="featured-set-label">Armor Set</div><div class="set-links">' + armorLinksHtml + '</div>' : '') +
           '<a class="featured-link" href="' + c.href + '">View the guide \u2192</a>' +
@@ -565,9 +595,20 @@
     '</div>';
   }
 
+  function toEntries(slugs, list){
+    const bySlug = {};
+    list.forEach(item => bySlug[item.slug] = item);
+    return slugs.map(s => bySlug[s]).filter(Boolean);
+  }
+
   function renderFeatured(){
-    renderFeaturedCards("featured-content", FEATURED_THIS_WEEK, false);
-    renderFeaturedCards("next-week-content", FEATURED_NEXT_WEEK, true);
+    const raidList = window.RaidsData ? window.RaidsData.RAIDS : [];
+    const dungeonList = window.DungeonsData ? window.DungeonsData.DUNGEONS : [];
+
+    renderCategoryCards("featured-raids-content", "Raid", toEntries(FEATURED_THIS_WEEK.raids, raidList), "raid-guide.html?slug=", false, ALWAYS_FEATURED_RAID_SLUG);
+    renderCategoryCards("featured-dungeons-content", "Dungeon", toEntries(FEATURED_THIS_WEEK.dungeons, dungeonList), "dungeon-guide.html?slug=", false, ALWAYS_FEATURED_DUNGEON_SLUG);
+    renderCategoryCards("next-week-raids-content", "Raid", toEntries(FEATURED_NEXT_WEEK.raids, raidList), "raid-guide.html?slug=", true, ALWAYS_FEATURED_RAID_SLUG);
+    renderCategoryCards("next-week-dungeons-content", "Dungeon", toEntries(FEATURED_NEXT_WEEK.dungeons, dungeonList), "dungeon-guide.html?slug=", true, ALWAYS_FEATURED_DUNGEON_SLUG);
   }
 
   // ---------------- Xur ----------------
