@@ -461,6 +461,41 @@ window.BuildsData = (function(){
       recommendedArtifactPerks: ["Unraveling Orbs", "Elemental Siphon", "Vile Weave", "Horde Shuttle", "Gold From Lead", "To Shreds", "Elemental Supercharger"],
       whyItWorks: "Nothing in this build is fighting for a different resource than anything else \u2014 Sever, Unravel, Tangles, and grenade energy all feed back into each other instead of running as separate systems. Slicewire severs on its own; Threaded Spike severs on its bounce and detonates Tangles for Whirling Maelstrom; the artifact rewards both Sever (To Shreds) and Unravel (Unraveling Orbs) directly; and Thunderhead turns Unraveled kills into more grenade energy, which means more Slicewire throws, more Sever, and the loop closes on itself. Moirai adds a second layer on top without asking for a different resource \u2014 Webcatcher's Tangle detonation and instant return both refund melee energy, keeping Threaded Spike (and therefore Sever) coming back as fast as Ensnaring Slam and Slicewire are generating Tangles to feed it.",
       tags: ["Sever", "Unravel", "Tangle", "Strand", "Ad Clear"]
+    },
+    {
+      title: "One More Thing",
+      slug: "one-more-thing",
+      mobalyticsUrl: "https://mobalytics.gg/destiny-2/profile/coopgg-agudcg/builds/c986bc0b-e28b-4ce0-bdd3-cda62eb4f929",
+      class: "Titan",
+      subclass: "Arc",
+      tagline: "Armamentarium's grenade-only Demolitionist and Dead Messenger's Fundamentals mean three kills is enough to fully refill your grenades \u2014 and they hit like a rocket launcher.",
+      exoticArmor: {
+        name: "Armamentarium",
+        slot: "Chest",
+        itemHash: 3874247549,
+        perkName: "And Another Thing",
+        perkDesc: "Gain an additional grenade charge. Grenade final blows spawn an Orb of Power. Weapon final blows grant grenade energy. Activating your grenade ability reloads your equipped weapon from reserves \u2014 with no cooldown on the reload, unlike the standalone Demolitionist perk."
+      },
+      exoticWeapon: {
+        name: "Dead Messenger",
+        weaponType: "Grenade Launcher",
+        itemHash: 374313494,
+        perkName: "The Fundamentals",
+        perkDesc: "Fires three waves of energy that can all hit a single target instead of just one, dealing enormous single-shot damage. Gaining an elemental buff matching this weapon's affinity (Amplified, for Arc) grants bonus damage. Can also be built with a Demolitionist-style perk, stacking a third source of grenade energy on top of Armamentarium and CODA."
+      },
+      armorSet: { name: "CODA", slug: "coda" },
+      artifact: { name: "Slayer Baron Apothecary Satchel", slug: "slayer-baron-apothecary-satchel" },
+      loop: [
+        "CODA's 2-piece and 4-piece turn weapon final blows into ability energy based on element: Light-weapon (Arc, Solar, Void) kills grant grenade energy and stats, Darkness-or-Kinetic kills grant melee energy and stats. Alternating between the two also grants a 40% damage resistance window for a few seconds.",
+        "Dead Messenger (Arc, a Light weapon) feeds the grenade side of that loop, while Blast Furnace (Kinetic) feeds the melee side \u2014 landing a kill with each keeps the CODA resist window refreshed on top of the stat bonuses.",
+        "Armamentarium's And Another Thing grants a second grenade charge and refunds grenade energy off weapon final blows with no cooldown on its built-in reload \u2014 a cleaner version of Demolitionist stacked on top of CODA's own grenade-energy-on-kill.",
+        "Dead Messenger's Fundamentals turns any elemental buff matching its Arc affinity into bonus damage \u2014 Amplified (from Spark of Frequency or general Arc uptime) qualifies, so the weapon is regularly hitting close to rocket launcher damage numbers from a Special slot. Running Demolitionist on it stacks a third source of grenade energy on top of Armamentarium and CODA.",
+        "Touch of Thunder upgrades Pulse Grenade to periodically create Ionic Traces as it damages targets, scaling up in damage over time; Spark of Discharge adds more traces off Arc weapon final blows. Between three different grenade-energy sources and a steady stream of Ionic Traces, getting only three kills is often enough to fully recharge a grenade.",
+        "Slayer Baron's Curative Orbs heals a real amount (40 HP, not the \"small amount\" the tooltip claims) off every Ionic Trace, Orb, or Tangle collected \u2014 with traces this frequent, that's the build's main sustain. Trace Evidence adds more traces off rapid hits against Jolted or Blinded targets, and Spark of Shock keeps targets Jolted in the first place."
+      ],
+      recommendedArtifactPerks: ["Trace Evidence", "The Thick of It", "Total Carnage", "Curative Orbs", "Weakened Clear", "Arc Compounding", "Kinetic Impacts"],
+      whyItWorks: "Three separate systems all feed the same resource without competing for it: CODA generates grenade energy from weapon kills, Armamentarium generates it from weapon kills through a second, cooldown-free path, and Touch of Thunder generates a steady stream of Ionic Traces that refund ability energy across the board. None of these are mutually exclusive \u2014 every kill with Dead Messenger or Blast Furnace is doing multiple jobs at once. Dead Messenger's own damage is the other half of the build's identity: The Fundamentals turning Amplified uptime into bonus damage means a Special weapon is putting up numbers close to a rocket launcher, and that's before Demolitionist (on the catalyst-style perk slot) adds a third grenade-energy source on top of everything else already running.",
+      tags: ["Ability Loop", "Add-Clear", "Arc", "Grenade Spam"]
     }
   ];
 

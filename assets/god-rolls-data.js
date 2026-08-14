@@ -11,6 +11,20 @@
    ============================================================ */
 window.GodRollsData = (function(){
   const WEAPONS = [
+    { name:"Blast Furnace", slug:"blast-furnace",
+      itemHash: 52683113,
+      perkHashes: [3048246338, 3267421167, 1549370717, 1183436451, 2034764268, 622249644, 1523545668],
+      raidSlug: null, dungeonSlug: null,
+      note: "Kinetic pick for One More Thing \u2014 Kinetic Tremors satisfies CODA's Dark Polarity trigger while adding an AoE shockwave.",
+      buildTags: ["one-more-thing"],
+      pairing: null },
+    { name:"Hullabaloo", slug:"hullabaloo",
+      itemHash: 2449096504,
+      perkHashes: [373417387, 2108812838, 1720528630, 598607952, 2523469161, 3587454724, 1523545668],
+      raidSlug: null, dungeonSlug: null,
+      note: "Heavy pick for One More Thing \u2014 Arc, Voltshot + Chain Reaction is the single most popular roll on this weapon (23.88% of rolls).",
+      buildTags: ["one-more-thing"],
+      pairing: null },
     { name:"M-17 \"Fast Talker\"", slug:"m-17-fast-talker",
       itemHash: 1419158093,
       perkHashes: [3048246338, 226831738, 984655331, 2939589096, 4280607931, 622249644, 260490301],
