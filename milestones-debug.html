@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weekly Milestones Debug — Rally Flag (throwaway, not linked in nav)</title>
+<style>
+  body{ background:#0a0a0c; color:#e4e4e8; font-family:'JetBrains Mono', monospace; font-size:12px; padding:24px; }
+  h1{ font-size:16px; color:#8fc9ff; }
+  .note{ color:#999; margin-bottom:20px; max-width:760px; line-height:1.6; }
+  .status{ padding:6px 10px; border-radius:3px; display:inline-block; margin-bottom:14px; font-size:11px; }
+  .status.ok{ background:#1a2a3a; color:#7fbfff; }
+  .status.err{ background:#3a1a1a; color:#ff8080; }
+  .card{ margin-bottom:18px; border:1px solid #2c2c33; border-radius:4px; padding:16px; background:#111114; }
+  .card-head{ display:flex; gap:12px; align-items:flex-start; margin-bottom:10px; }
+  .card-head img{ width:44px; height:44px; object-fit:cover; border-radius:3px; flex-shrink:0; background:#000; }
+  .card-name{ font-size:14px; color:#e4e4e8; font-weight:bold; }
+  .card-hash{ color:#666; font-size:9.5px; }
+  .badge{ display:inline-block; padding:2px 7px; border-radius:999px; font-size:9.5px; margin-right:6px; margin-top:4px; }
+  .badge.weekly{ background:#1a2a3a; color:#7fbfff; }
+  .badge.daily{ background:#2a2a1a; color:#e0d080; }
+  .badge.special{ background:#2a1a3a; color:#c990ff; }
+  .badge.onetime{ background:#1a3a2a; color:#7fd9a0; }
+  .badge.tutorial{ background:#2a2a2a; color:#aaa; }
+  .badge.unknown{ background:#2a2a2a; color:#888; }
+  .desc{ color:#b8b8c0; line-height:1.55; margin:8px 0; }
+  .about{ color:#9a9aa5; line-height:1.55; margin:8px 0; padding-left:10px; border-left:2px solid #2c2c33; }
+  .dates{ color:#888; font-size:10.5px; margin:6px 0; }
+  .section-label{ color:#8fc9ff; font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; margin:12px 0 6px; }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:6px; }
+  .chip{ display:flex; align-items:center; gap:6px; background:#1a1a1f; border:1px solid #2c2c33; border-radius:3px; padding:4px 8px; }
+  .chip img{ width:20px; height:20px; object-fit:cover; border-radius:2px; background:#000; flex-shrink:0; }
+  .chip-name{ color:#d8d8e0; }
+  .chip-sub{ color:#777; font-size:9.5px; }
+  .empty{ color:#555; font-style:italic; }
+  .raw-toggle{ color:#666; cursor:pointer; font-size:10.5px; margin-top:10px; display:inline-block; }
+  .raw{ display:none; white-space:pre-wrap; background:#000; color:#8f8; padding:10px; border-radius:3px; margin-top:8px; max-height:300px; overflow:auto; font-size:10px; }
+  .raw.open{ display:block; }
+</style>
+</head>
+<body>
+
+<h1>Weekly Milestones — Full Debug Dump</h1>
+<p class="note">Pulls Bungie's public GetPublicMilestones endpoint (no login needed — same "just an API key" access as the Xur page) and resolves every milestone hash it returns: name/description from DestinyMilestoneDefinition, the "about" blurb from GetPublicMilestoneContent, plus any activities/modifiers/quests/vendors attached to it this week, all resolved to real names. Nothing filtered or categorized — point is to see the whole picture and figure out which hashes map to Vanguard, Crucible, vendors, etc. so we know what to automate FEATURED_THIS_WEEK and future section pages from. Click "raw json" on any card for the untouched API response. Delete once done.</p>
+
+<div id="status" class="status">Loading…</div>
+<div id="output"></div>
+
+<script src="assets/api-keys.js"></script>
+<script>
+(function(){
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const BUNGIE_ROOT = "https://www.bungie.net";
+
+  const MILESTONE_TYPE_LABELS = {
+    0: "Unknown", 1: "Tutorial", 2: "One-Time", 3: "Weekly", 4: "Daily", 5: "Special"
+  };
+  const MILESTONE_TYPE_CLASS = {
+    0: "unknown", 1: "tutorial", 2: "onetime", 3: "weekly", 4: "daily", 5: "special"
+  };
+
+  async function apiGet(path){
+    const res = await fetch(BUNGIE_ROOT + path, { headers: { "X-API-Key": BUNGIE_API_KEY } });
+    const data = await res.json();
+    if (!res.ok || data.ErrorCode !== 1){
+      const msg = (data && data.Message) || ("HTTP " + res.status);
+      throw new Error(msg);
+    }
+    return data.Response;
+  }
+
+  // Every resolver below is cached and called sequentially (not in
+  // parallel) — firing a burst of manifest lookups at once reliably
+  // 500s Bungie's API, learned the hard way on other pages.
+  const defCache = {};
+  async function fetchDef(type, hash){
+    const key = type + ":" + hash;
+    if (defCache[key] !== undefined) return defCache[key];
+    try {
+      const def = await apiGet("/Platform/Destiny2/Manifest/" + type + "/" + hash + "/");
+      defCache[key] = def;
+      return def;
+    } catch (err){
+      defCache[key] = null;
+      return null;
+    }
+  }
+
+  async function fetchMilestoneContent(hash){
+    try {
+      return await apiGet("/Platform/Destiny2/Milestones/" + hash + "/Content/");
+    } catch (err){
+      return null;
+    }
+  }
+
+  function iconUrl(displayProperties){
+    return (displayProperties && displayProperties.icon) ? BUNGIE_ROOT + displayProperties.icon : null;
+  }
+
+  function chipHtml(name, sub, icon){
+    return '<div class="chip">' +
+      (icon ? '<img src="' + icon + '" alt="">' : '') +
+      '<div><div class="chip-name">' + name + '</div>' + (sub ? '<div class="chip-sub">' + sub + '</div>' : '') + '</div>' +
+    '</div>';
+  }
+
+  let rawIdCounter = 0;
+
+  async function run(){
+    const statusEl = document.getElementById("status");
+    const outputEl = document.getElementById("output");
+    try {
+      const milestones = await apiGet("/Platform/Destiny2/Milestones/");
+      const hashes = Object.keys(milestones);
+
+      if (!hashes.length){
+        statusEl.className = "status err";
+        statusEl.textContent = "GetPublicMilestones returned an empty response.";
+        return;
+      }
+
+      statusEl.className = "status ok";
+      statusEl.textContent = "OK — " + hashes.length + " active milestone(s). Resolving names…";
+
+      const resolved = [];
+      for (const hash of hashes){
+        const live = milestones[hash];
+        const def = await fetchDef("DestinyMilestoneDefinition", hash);
+        const name = (def && def.displayProperties && def.displayProperties.name) || ("Unknown milestone (" + hash + ")");
+        resolved.push({ hash, live, def, name });
+      }
+      resolved.sort((a, b) => a.name.localeCompare(b.name));
+
+      outputEl.innerHTML = "";
+      let doneCount = 0;
+
+      for (const entry of resolved){
+        const { hash, live, def, name } = entry;
+        const displayProps = def && def.displayProperties;
+        const icon = iconUrl(displayProps);
+        const description = (displayProps && displayProps.description) || "";
+        const typeNum = def ? def.milestoneType : undefined;
+        const typeLabel = MILESTONE_TYPE_LABELS[typeNum] || "Unknown";
+        const typeClass = MILESTONE_TYPE_CLASS[typeNum] || "unknown";
+
+        const content = await fetchMilestoneContent(hash);
+        const about = content && content.about;
+        const tips = (content && content.tips) || [];
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        let html =
+          '<div class="card-head">' +
+            (icon ? '<img src="' + icon + '" alt="">' : '') +
+            '<div>' +
+              '<div class="card-name">' + name + '</div>' +
+              '<div class="card-hash">hash: ' + hash + '</div>' +
+              '<span class="badge ' + typeClass + '">' + typeLabel + '</span>' +
+            '</div>' +
+          '</div>';
+
+        if (description) html += '<div class="desc">' + description + '</div>';
+        if (about && about !== description) html += '<div class="about">' + about + '</div>';
+        if (tips.length) html += '<div class="about">Tips: ' + tips.join(" — ") + '</div>';
+
+        const dateBits = [];
+        if (live.startDate) dateBits.push("starts " + live.startDate);
+        if (live.endDate) dateBits.push("ends " + live.endDate);
+        if (typeof live.order === "number") dateBits.push("order " + live.order);
+        if (dateBits.length) html += '<div class="dates">' + dateBits.join(" · ") + '</div>';
+
+        // ---- activities (+ modifiers) ----
+        const activities = live.activities || [];
+        html += '<div class="section-label">Activities (' + activities.length + ')</div>';
+        if (!activities.length){
+          html += '<div class="empty">none this pull</div>';
+        } else {
+          html += '<div class="chip-row" id="acts-' + hash + '"></div>';
+        }
+
+        // ---- available quests ----
+        const quests = live.availableQuests || [];
+        html += '<div class="section-label">Available Quests (' + quests.length + ')</div>';
+        if (!quests.length){
+          html += '<div class="empty">none this pull</div>';
+        } else {
+          html += '<div class="chip-row" id="quests-' + hash + '"></div>';
+        }
+
+        // ---- vendors ----
+        const vendorHashes = live.vendorHashes || [];
+        html += '<div class="section-label">Vendors (' + vendorHashes.length + ')</div>';
+        if (!vendorHashes.length){
+          html += '<div class="empty">none this pull</div>';
+        } else {
+          html += '<div class="chip-row" id="vendors-' + hash + '"></div>';
+        }
+
+        const rawId = "raw-" + (rawIdCounter++);
+        html += '<span class="raw-toggle" data-target="' + rawId + '">▸ raw json</span>';
+        html += '<pre class="raw" id="' + rawId + '"></pre>';
+
+        card.innerHTML = html;
+        outputEl.appendChild(card);
+
+        const rawEl = document.getElementById(rawId);
+        rawEl.textContent = JSON.stringify(live, null, 2);
+        card.querySelector(".raw-toggle").addEventListener("click", (e) => {
+          rawEl.classList.toggle("open");
+          e.target.textContent = (e.target.textContent[0] === "▸" ? "▾" : "▸") + " raw json";
+        });
+
+        // Resolve + render activities. Many milestones (Nightfall especially)
+        // put the real per-difficulty activity + modifiers inside `variants`
+        // rather than directly on the activity entry, so resolve both.
+        async function resolveActivityChip(activityHash, modifierHashes, subPrefix){
+          const actDef = await fetchDef("DestinyActivityDefinition", activityHash);
+          const actName = (actDef && actDef.displayProperties && actDef.displayProperties.name) || ("Unknown (" + activityHash + ")");
+          const actIcon = actDef ? iconUrl(actDef.displayProperties) : null;
+
+          const modNames = [];
+          for (const modHash of (modifierHashes || [])){
+            const modDef = await fetchDef("DestinyActivityModifierDefinition", modHash);
+            modNames.push((modDef && modDef.displayProperties && modDef.displayProperties.name) || ("Unknown (" + modHash + ")"));
+          }
+          const sub = (subPrefix ? subPrefix + " — " : "") + (modNames.length ? "mods: " + modNames.join(", ") : "hash: " + activityHash);
+          return chipHtml(actName, sub, actIcon);
+        }
+
+        if (activities.length){
+          const actsEl = document.getElementById("acts-" + hash);
+          for (const act of activities){
+            if (act.activityHash){
+              actsEl.insertAdjacentHTML("beforeend", await resolveActivityChip(act.activityHash, act.modifierHashes, null));
+            }
+            for (const variant of (act.variants || [])){
+              actsEl.insertAdjacentHTML("beforeend", await resolveActivityChip(variant.activityHash, variant.modifierHashes, "variant"));
+            }
+          }
+        }
+
+        // Resolve + render available quests (quests are items)
+        if (quests.length){
+          const questsEl = document.getElementById("quests-" + hash);
+          for (const q of quests){
+            const itemHash = q.questItemHash;
+            const questDef = itemHash ? await fetchDef("DestinyInventoryItemDefinition", itemHash) : null;
+            const questName = (questDef && questDef.displayProperties && questDef.displayProperties.name) || ("Unknown (" + itemHash + ")");
+            const questIcon = questDef ? iconUrl(questDef.displayProperties) : null;
+            questsEl.insertAdjacentHTML("beforeend", chipHtml(questName, "hash: " + itemHash, questIcon));
+          }
+        }
+
+        // Resolve + render vendors
+        if (vendorHashes.length){
+          const vendorsEl = document.getElementById("vendors-" + hash);
+          for (const vHash of vendorHashes){
+            const vDef = await fetchDef("DestinyVendorDefinition", vHash);
+            const vName = (vDef && vDef.displayProperties && vDef.displayProperties.name) || ("Unknown (" + vHash + ")");
+            const vIcon = vDef ? iconUrl(vDef.displayProperties) : null;
+            vendorsEl.insertAdjacentHTML("beforeend", chipHtml(vName, "hash: " + vHash, vIcon));
+          }
+        }
+
+        doneCount++;
+        statusEl.textContent = "OK — resolved " + doneCount + "/" + resolved.length + " milestones";
+      }
+
+      statusEl.textContent = "OK — " + resolved.length + " active milestone(s), fully resolved";
+    } catch (err){
+      statusEl.className = "status err";
+      statusEl.textContent = "Error: " + err.message;
+    }
+  }
+
+  run();
+})();
+</script>
+
+</body>
+</html>
