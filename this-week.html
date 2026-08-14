@@ -113,6 +113,15 @@
   }
   .featured-link:hover{ text-decoration:underline; }
 
+  .featured-card.predicted{ border-style:dashed; opacity:0.82; }
+  .tw-predicted-badge{
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    font-weight:400; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--text-dimmer); border:1px solid var(--panel-border); border-radius:999px;
+    padding:3px 8px; margin-left:8px; vertical-align:middle;
+  }
+  #reset-countdown-note{ font-variant-numeric:tabular-nums; }
+
   .tw-countdown-wrap{
     text-align:center; padding:30px 20px;
   }
@@ -146,9 +155,15 @@
 <section>
   <div class="tw-section-head">
     <div class="tw-section-title">Featured This Week</div>
-    <div class="tw-refresh-note">Resets Tuesdays — rotates automatically, no manual updates</div>
+    <div class="tw-refresh-note" id="reset-countdown-note">Resets in —</div>
   </div>
   <div id="featured-content"></div>
+
+  <div class="tw-section-head">
+    <div class="tw-section-title">Next Week<span class="tw-predicted-badge">Predicted</span></div>
+    <div class="tw-refresh-note">Same rotation, one reset ahead</div>
+  </div>
+  <div id="next-week-content"></div>
 
   <div class="tw-section-head">
     <div class="tw-section-title">Xûr — At the Tower</div>
@@ -220,6 +235,36 @@
     raids: slotRotationPick(RAID_ROTATION_SLUGS, RAID_SLOT_OFFSETS, currentWeekIndex()),
     dungeons: slotRotationPick(DUNGEON_ROTATION_SLUGS, DUNGEON_SLOT_OFFSETS, currentWeekIndex())
   };
+  // Same rotation math, one week ahead — since the pattern is a fixed
+  // deterministic cycle (not read from Bungie), next week's picks are
+  // exactly as knowable as this week's. Still labeled "Predicted" in the
+  // UI since it rests on D2RAD's reverse-engineered pattern holding.
+  const FEATURED_NEXT_WEEK = {
+    raids: slotRotationPick(RAID_ROTATION_SLUGS, RAID_SLOT_OFFSETS, currentWeekIndex() + 1),
+    dungeons: slotRotationPick(DUNGEON_ROTATION_SLUGS, DUNGEON_SLOT_OFFSETS, currentWeekIndex() + 1)
+  };
+
+  function msUntilNextReset(){
+    const now = Date.now();
+    const currentWeekStart = RESET_EPOCH_UTC + Math.floor((now - RESET_EPOCH_UTC) / MS_PER_WEEK) * MS_PER_WEEK;
+    return (currentWeekStart + MS_PER_WEEK) - now;
+  }
+
+  function formatCountdown(ms){
+    const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const pad = n => String(n).padStart(2, "0");
+    return days + "d " + pad(hours) + "h " + pad(minutes) + "m " + pad(seconds) + "s";
+  }
+
+  function tickResetCountdown(){
+    const el = document.getElementById("reset-countdown-note");
+    if (!el) return;
+    el.textContent = "Resets in " + formatCountdown(msUntilNextReset());
+  }
 
   const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
   const BUNGIE_ROOT = "https://www.bungie.net";
@@ -478,11 +523,11 @@
     countdownTimer = setInterval(tick, 1000);
   }
 
-  // ---------------- Featured This Week (manual data, instant render) ----------------
-  function renderFeatured(){
-    const contentEl = document.getElementById("featured-content");
-    const raids = (window.RaidsData ? window.RaidsData.RAIDS : []).filter(r => FEATURED_THIS_WEEK.raids.includes(r.slug));
-    const dungeons = (window.DungeonsData ? window.DungeonsData.DUNGEONS : []).filter(d => FEATURED_THIS_WEEK.dungeons.includes(d.slug));
+  // ---------------- Featured This Week / Next Week (manual data, instant render) ----------------
+  function renderFeaturedCards(containerId, picks, isPrediction){
+    const contentEl = document.getElementById(containerId);
+    const raids = (window.RaidsData ? window.RaidsData.RAIDS : []).filter(r => picks.raids.includes(r.slug));
+    const dungeons = (window.DungeonsData ? window.DungeonsData.DUNGEONS : []).filter(d => picks.dungeons.includes(d.slug));
 
     const setsBySlug = {};
     (window.ArmorSetsData ? window.ArmorSetsData.SETS : []).forEach(s => setsBySlug[s.slug] = s);
@@ -499,7 +544,7 @@
     dungeons.forEach(d => cards.push({ kind: "Dungeon", name: d.name, href: "dungeon-guide.html?slug=" + d.slug, armorSlugs: d.armorSlugs || [] }));
 
     if (!cards.length){
-      contentEl.innerHTML = '<div class="tw-status">FEATURED_THIS_WEEK slugs didn\u2019t match anything in raids-data.js/dungeons-data.js \u2014 check for a typo.</div>';
+      contentEl.innerHTML = '<div class="tw-status">Rotation slugs didn\u2019t match anything in raids-data.js/dungeons-data.js \u2014 check for a typo.</div>';
       return;
     }
 
@@ -510,7 +555,7 @@
           const label = set ? set.name : slug;
           return '<a class="set-link" href="armor-set-bonuses.html?highlight=' + slug + '">' + label + ' \u2192</a>';
         }).join("");
-        return '<div class="featured-card panel-card">' +
+        return '<div class="featured-card panel-card' + (isPrediction ? ' predicted' : '') + '">' +
           '<div class="featured-kind">' + c.kind + '</div>' +
           '<div class="featured-name">' + c.name + '</div>' +
           (armorLinksHtml ? '<div class="featured-set-label">Armor Set</div><div class="set-links">' + armorLinksHtml + '</div>' : '') +
@@ -518,6 +563,11 @@
         '</div>';
       }).join("") +
     '</div>';
+  }
+
+  function renderFeatured(){
+    renderFeaturedCards("featured-content", FEATURED_THIS_WEEK, false);
+    renderFeaturedCards("next-week-content", FEATURED_NEXT_WEEK, true);
   }
 
   // ---------------- Xur ----------------
@@ -770,6 +820,8 @@
   }
 
   renderFeatured();
+  tickResetCountdown();
+  setInterval(tickResetCountdown, 1000);
   loadXur();
 })();
 </script>
