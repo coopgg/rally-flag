@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /xur-debug.html
+Disallow: /milestones-debug.html
+Allow: /
+
+Sitemap: https://rallyflag.gg/sitemap.xml

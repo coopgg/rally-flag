@@ -5,6 +5,17 @@
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dungeon Guide — Rally Flag</title>
+<meta name="description" content="Destiny 2 dungeon guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rally Flag">
+<meta property="og:title" content="Dungeon Guide">
+<meta property="og:description" content="Destiny 2 dungeon guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
+<meta property="og:url" content="https://rallyflag.gg/dungeon-guide.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Dungeon Guide">
+<meta name="twitter:description" content="Destiny 2 dungeon guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -102,6 +113,23 @@
 
   document.title = dungeon.name + " — Rally Flag";
   document.getElementById("dungeon-title").textContent = dungeon.name;
+
+  // Updates the static fallback meta/OG tags with the actual dungeon once
+  // it's known — helps crawlers that execute JS (Google) and keeps the
+  // tags consistent with the page if someone deep-links here. Non-JS
+  // social unfurl bots (Discord, etc.) still see the static generic
+  // fallback already in the <head>, since they never run this script.
+  function setMeta(selector, attr, value){
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+  const dungeonDesc = dungeon.summary ? (dungeon.summary.length > 160 ? dungeon.summary.slice(0, 157) + "…" : dungeon.summary) : ("Everything you need for the " + dungeon.name + " dungeon — encounters, armor set bonus, and puzzle solvers.");
+  setMeta('meta[name="description"]', "content", dungeonDesc);
+  setMeta('meta[property="og:title"]', "content", dungeon.name);
+  setMeta('meta[property="og:description"]', "content", dungeonDesc);
+  setMeta('meta[property="og:url"]', "content", "https://rallyflag.gg/dungeon-guide.html?slug=" + dungeon.slug);
+  setMeta('meta[name="twitter:title"]', "content", dungeon.name);
+  setMeta('meta[name="twitter:description"]', "content", dungeonDesc);
 
   const setsBySlug = {};
   window.ArmorSetsData.SETS.forEach(s => setsBySlug[s.slug] = s);
