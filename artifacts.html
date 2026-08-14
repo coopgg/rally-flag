@@ -85,10 +85,9 @@
 
   section{ max-width:1100px; margin:0 auto; padding:0 24px 90px; }
   .artifact-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(420px, 1fr));
-    gap:16px;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:16px;
   }
-  .artifact-card{ padding:24px; }
+  .artifact-card{ flex:0 1 420px; padding:24px; }
   .artifact-head{
     margin-bottom:6px; display:flex; align-items:flex-start; justify-content:space-between;
     gap:12px; cursor:pointer; user-select:none;

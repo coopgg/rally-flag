@@ -200,10 +200,9 @@
     color:var(--accent); text-transform:uppercase; margin:32px 0 14px; text-align:center;
   }
   .ft-player-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
-    gap:14px;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:14px;
   }
-  .ft-player-card{ padding:12px; text-align:center; }
+  .ft-player-card{ flex:0 1 150px; padding:12px; text-align:center; }
   .ft-player-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:13px; color:var(--text); }
   .ft-player-class{ font-size:10px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-bottom:8px; }
   .ft-player-emblem{ width:100%; border-radius:4px; display:block; margin-bottom:8px; }

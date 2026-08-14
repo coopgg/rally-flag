@@ -77,7 +77,7 @@
   .hud-set-link:hover, .hud-set-link:focus-visible{ color:var(--accent-bright); }
 
   /* ---------- Up next ---------- */
-  section{ max-width:1000px; margin:80px auto 0; padding:0 24px; }
+  section{ max-width:1000px; margin:80px auto 0; padding:0 24px 90px; }
   .next-grid{
     display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px;
   }
@@ -85,9 +85,7 @@
     padding:22px 20px; text-align:center;
   }
   .next-time{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer); margin-bottom:10px; }
-  .next-dest{ font-family:'Oswald', sans-serif; font-weight:600; font-size:19px; color:var(--text); margin-bottom:6px; }
-  .next-loot{ font-size:12px; color:var(--accent-bright); font-family:'JetBrains Mono', monospace; text-decoration:none; display:inline-block; border-bottom:1px solid transparent; transition: border-color 0.2s ease; }
-  .next-loot:hover, .next-loot:focus-visible{ border-color:var(--accent-bright); }
+  .next-dest{ font-family:'Oswald', sans-serif; font-weight:600; font-size:19px; color:var(--text); margin-bottom:14px; }
 </style>
 </head>
 <body data-nav-group="distortions">
@@ -153,7 +151,7 @@
       card.innerHTML =
         '<div class="next-time">' + D.fmtTime(slotStart) + '</div>' +
         '<div class="next-dest">' + dest.name + '</div>' +
-        '<a class="next-loot" href="armor-set-bonuses.html?highlight=' + dest.slug + '">' + dest.loot + '</a>';
+        '<a class="loot-pill" href="armor-set-bonuses.html?highlight=' + dest.slug + '">' + dest.loot + '</a>';
       nextGrid.appendChild(card);
     }
   }

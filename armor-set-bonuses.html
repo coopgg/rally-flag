@@ -75,12 +75,12 @@
   .clear-btn:hover{ color:var(--accent-bright); }
 
   /* ---------- Grid ---------- */
-  .grid-section{ max-width:1180px; margin:36px auto 0; padding:0 24px 80px; }
+  .grid-section{ max-width:1180px; margin:36px auto 0; padding:0 24px 90px; }
   .card-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
-    gap:14px;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:14px;
   }
   .set-card{
+    flex:0 1 300px;
     padding:22px 22px 20px;
     scroll-margin-top: 30px;
     transition: border-color 0.3s ease, background 0.3s ease;

@@ -36,10 +36,10 @@
     padding-bottom:10px; border-bottom:1px solid var(--panel-border);
   }
   .code-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
-    gap:10px;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
   }
   .code-link{
+    flex:0 1 230px;
     display:flex; align-items:center; gap:10px; padding:12px 14px;
     background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
     text-decoration:none; transition: all 0.15s ease;

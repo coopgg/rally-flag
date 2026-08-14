@@ -44,6 +44,7 @@ html,body{ margin:0; padding:0; }
    OS's system UI font instead of the site's actual typefaces. */
 button, input, select, textarea{ font-family: inherit; }
 body{
+  min-height:100vh;
   background:
     radial-gradient(ellipse 900px 500px at 50% -10%, var(--accent-dim), transparent 60%),
     var(--bg);
@@ -188,6 +189,15 @@ h1.title{
   border-radius:16px;
   box-shadow: 0 4px 14px -6px rgba(0,0,0,0.3);
 }
+
+/* ---------- Loot / reward pill (links out to armor-set-bonuses.html) ---------- */
+.loot-pill{
+  display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px;
+  text-decoration:none; color:var(--accent-bright); border:1px solid var(--panel-border);
+  background:var(--accent-dim); padding:6px 14px; border-radius:999px;
+  transition: all 0.15s ease;
+}
+.loot-pill:hover, .loot-pill:focus-visible{ border-color:var(--accent-bright); }
 
 /* ---------- Footer ---------- */
 footer{
