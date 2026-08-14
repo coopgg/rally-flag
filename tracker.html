@@ -53,7 +53,16 @@
   }
   .sector-name{
     font-family:'Oswald', sans-serif; font-weight:600; font-size:18px; color:var(--text);
+    margin-bottom:14px;
   }
+  .armor-pill{
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px;
+    text-decoration:none; color:var(--accent-bright); border:1px solid var(--panel-border);
+    background:var(--accent-dim); padding:6px 14px; border-radius:999px;
+    transition: all 0.15s ease;
+  }
+  .armor-pill:hover, .armor-pill:focus-visible{ border-color:var(--accent-bright); }
+  .armor-pill::before{ content:"Tier 5 \2192  "; color:var(--text-dimmer); }
 </style>
 </head>
 <body data-nav-group="tracker">
@@ -94,16 +103,19 @@
   const DAILY_RESET_EPOCH_UTC = Date.UTC(2026, 7, 15, 17, 0, 0); // confirmed day — this is day 0
   const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
+  // Master-difficulty Lost Sectors drop that planet's Tier 5 "Destination"
+  // armor set (same sets tracked in armor-set-bonuses.html) — the set is
+  // fixed per planet, not per individual sector.
   const LOST_SECTOR_CYCLES = [
-    { planet: "Cosmodrome",   sectors: ["Veles Labyrinth", "Exodus Garden 2A"] },
-    { planet: "Dreaming City", sectors: ["Aphelion's Rest", "Bay of Drowned Wishes", "Chamber of Starlight"] },
-    { planet: "EDZ",          sectors: ["Scavenger's Den", "Excavation Site XII", "Skydock IV", "The Quarry"] },
-    { planet: "Europa",       sectors: ["Concealed Void", "Bunker E15", "Perdition"] },
-    { planet: "Moon",         sectors: ["K1 Revelation", "K1 Crew Quarters", "K1 Logistics", "K1 Communion"] },
-    { planet: "Neomuna",      sectors: ["Thrilladrome", "Hydroponics Delta", "Gilded Precept"] },
-    { planet: "Nessus",       sectors: ["The Conflux"] },
-    { planet: "Pale Heart",   sectors: ["The Broken Deep", "The Blooming Deep", "The Forgotten Deep"] },
-    { planet: "Throne World", sectors: ["Metamorphosis", "Sepulcher", "Extraction"] }
+    { planet: "Cosmodrome",   sectors: ["Veles Labyrinth", "Exodus Garden 2A"], armorName: "Seventh Seraph", armorSlug: "seventh-seraph" },
+    { planet: "Dreaming City", sectors: ["Aphelion's Rest", "Bay of Drowned Wishes", "Chamber of Starlight"], armorName: "Reverie Dawn", armorSlug: "reverie-dawn" },
+    { planet: "EDZ",          sectors: ["Scavenger's Den", "Excavation Site XII", "Skydock IV", "The Quarry"], armorName: "Wildwood", armorSlug: "wildwood" },
+    { planet: "Europa",       sectors: ["Concealed Void", "Bunker E15", "Perdition"], armorName: "Crystocrene", armorSlug: "crystocrene" },
+    { planet: "Moon",         sectors: ["K1 Revelation", "K1 Crew Quarters", "K1 Logistics", "K1 Communion"], armorName: "Dreambane", armorSlug: "dreambane" },
+    { planet: "Neomuna",      sectors: ["Thrilladrome", "Hydroponics Delta", "Gilded Precept"], armorName: "Thunderhead", armorSlug: "thunderhead" },
+    { planet: "Nessus",       sectors: ["The Conflux"], armorName: "Exodus Down", armorSlug: "exodus-down" },
+    { planet: "Pale Heart",   sectors: ["The Broken Deep", "The Blooming Deep", "The Forgotten Deep"], armorName: "First Ascent", armorSlug: "first-ascent" },
+    { planet: "Throne World", sectors: ["Metamorphosis", "Sepulcher", "Extraction"], armorName: "Veritas", armorSlug: "veritas" }
   ];
 
   function mod(n, m){
@@ -118,7 +130,9 @@
     const idx = dayIndex();
     return LOST_SECTOR_CYCLES.map(entry => ({
       planet: entry.planet,
-      sector: entry.sectors[mod(idx, entry.sectors.length)]
+      sector: entry.sectors[mod(idx, entry.sectors.length)],
+      armorName: entry.armorName,
+      armorSlug: entry.armorSlug
     }));
   }
 
@@ -147,6 +161,7 @@
       '<div class="sector-card panel-card">' +
         '<div class="sector-planet">' + entry.planet + '</div>' +
         '<div class="sector-name">' + entry.sector + '</div>' +
+        '<a class="armor-pill" href="armor-set-bonuses.html?highlight=' + entry.armorSlug + '">' + entry.armorName + '</a>' +
       '</div>'
     ).join("");
   }
