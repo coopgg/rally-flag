@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow">
-<title>Weekly Milestones Debug — Rally Flag (throwaway, not linked in nav)</title>
+<title>API Debug — Rally Flag (throwaway, not linked in nav)</title>
 <style>
   body{ background:#0a0a0c; color:#e4e4e8; font-family:'JetBrains Mono', monospace; font-size:12px; padding:24px; }
   h1{ font-size:16px; color:#8fc9ff; }
@@ -36,15 +36,29 @@
   .raw-toggle{ color:#666; cursor:pointer; font-size:10.5px; margin-top:10px; display:inline-block; }
   .raw{ display:none; white-space:pre-wrap; background:#000; color:#8f8; padding:10px; border-radius:3px; margin-top:8px; max-height:300px; overflow:auto; font-size:10px; }
   .raw.open{ display:block; }
+  h2{ font-size:14px; color:#8fc9ff; margin:36px 0 4px; border-top:1px solid #2c2c33; padding-top:24px; }
+  h2:first-of-type{ border-top:none; padding-top:0; margin-top:24px; }
+  .badge.available{ background:#1a3a2a; color:#7fd9a0; }
+  .badge.unavailable{ background:#3a1a1a; color:#ff8080; }
+  .vendor-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px; }
 </style>
 </head>
 <body>
 
-<h1>Weekly Milestones — Full Debug Dump</h1>
-<p class="note">Pulls Bungie's public GetPublicMilestones endpoint (no login needed — same "just an API key" access as the Xur page) and resolves every milestone hash it returns: name/description from DestinyMilestoneDefinition, the "about" blurb from GetPublicMilestoneContent, plus any activities/modifiers/quests/vendors attached to it this week, all resolved to real names. Nothing filtered or categorized — point is to see the whole picture and figure out which hashes map to Vanguard, Crucible, vendors, etc. so we know what to automate FEATURED_THIS_WEEK and future section pages from. Click "raw json" on any card for the untouched API response. Delete once done.</p>
+<h1>Bungie API — Full Debug Dump</h1>
+<p class="note">Everything we've probed from Bungie's public (no-OAuth, API-key-only) endpoints, in one page instead of scattered across chat history. Two sections: Weekly Milestones (raids, quests, activities) and Vendors (which NPCs we can and can't get live sale data for anonymously). Click "raw json" on any card for the untouched API response. Delete once done.</p>
+
+<h2>Weekly Milestones</h2>
+<p class="note">Pulls Bungie's public GetPublicMilestones endpoint and resolves every milestone hash it returns: name/description from DestinyMilestoneDefinition, the "about" blurb from GetPublicMilestoneContent, plus any activities/modifiers/quests/vendors attached to it this week, all resolved to real names. Nothing filtered or categorized — point is to see the whole picture and figure out which hashes map to Vanguard, Crucible, vendors, etc. so we know what to automate FEATURED_THIS_WEEK and future section pages from.</p>
 
 <div id="status" class="status">Loading…</div>
 <div id="output"></div>
+
+<h2>Vendors</h2>
+<p class="note">DestinyVendorDefinition (name/icon/location) resolves fine for anyone with just an API key — confirmed below. Live <em>sale</em> data is different: Bungie's anonymous Vendors endpoint only ever returns Xûr, no matter which vendor you ask for — confirmed by testing directly, not assumed. Every other vendor needs a signed-in character context (OAuth) to see what they're actually selling this week.</p>
+
+<div id="vendor-status" class="status">Loading…</div>
+<div id="vendor-output"></div>
 
 <script src="assets/api-keys.js"></script>
 <script>
@@ -275,7 +289,92 @@
     }
   }
 
+  // ---------------- Vendors ----------------
+  // Every known NPC vendor hash we've confirmed resolves correctly via
+  // DestinyVendorDefinition (verified live against the real site's
+  // origin, since the API key is origin-locked and this page can't hit
+  // Bungie directly from a local dev server).
+  const KNOWN_VENDORS = {
+    "Xûr": "2190858386",
+    "Zavala": "69482069",
+    "Shaxx": "3603221665",
+    "Banshee-44": "672118013",
+    "Ada-1": "350061650",
+    "Saint-14": "765357505",
+    "Drifter": "248695599",
+    "Devrim Kay": "396892126",
+    "Master Rahool": "2255782930",
+    "Amanda Holliday": "460529231",
+    "Ikora Rey": "1976548992"
+  };
+
+  async function runVendors(){
+    const statusEl = document.getElementById("vendor-status");
+    const outputEl = document.getElementById("vendor-output");
+    try {
+      // One single anonymous call — confirmed by direct testing that the
+      // response never changes no matter which vendor hash you ask for
+      // via ?filter=, so there's no point calling it once per vendor.
+      let liveVendorHashes = [];
+      let saleCategoryNames = [];
+      try {
+        const vendorsResp = await apiGet("/Platform/Destiny2/Vendors/?components=Vendors,VendorCategories,VendorSales");
+        liveVendorHashes = (vendorsResp.vendors && vendorsResp.vendors.data) ? Object.keys(vendorsResp.vendors.data) : [];
+        for (const vh of liveVendorHashes){
+          const catsRaw = (vendorsResp.categories && vendorsResp.categories.data && vendorsResp.categories.data[vh] && vendorsResp.categories.data[vh].categories) || [];
+          const vDef = await fetchDef("DestinyVendorDefinition", vh);
+          const catNames = (vDef && vDef.displayCategories || []).map(c => c.displayProperties && c.displayProperties.name).filter(Boolean);
+          saleCategoryNames = catNames;
+        }
+      } catch (err){
+        // anonymous Vendors call itself failing entirely is still useful info
+        saleCategoryNames = [];
+      }
+
+      statusEl.className = "status ok";
+      statusEl.textContent = "OK — checked " + Object.keys(KNOWN_VENDORS).length + " known vendors";
+
+      outputEl.innerHTML = '<div class="vendor-grid" id="vendor-grid"></div>';
+      const grid = document.getElementById("vendor-grid");
+
+      for (const [label, hash] of Object.entries(KNOWN_VENDORS)){
+        const vDef = await fetchDef("DestinyVendorDefinition", hash);
+        const name = (vDef && vDef.displayProperties && vDef.displayProperties.name) || label;
+        const icon = vDef ? iconUrl(vDef.displayProperties) : null;
+        const isLive = liveVendorHashes.includes(hash);
+
+        const card = document.createElement("div");
+        card.className = "card";
+        let html =
+          '<div class="card-head">' +
+            (icon ? '<img src="' + icon + '" alt="">' : '') +
+            '<div>' +
+              '<div class="card-name">' + name + '</div>' +
+              '<div class="card-hash">hash: ' + hash + '</div>' +
+              '<span class="badge ' + (isLive ? "available" : "unavailable") + '">' +
+                (isLive ? "Live sales: available anonymously" : "Live sales: needs OAuth") +
+              '</span>' +
+            '</div>' +
+          '</div>';
+
+        if (isLive && saleCategoryNames.length){
+          html += '<div class="section-label">Sale Categories This Pull</div>';
+          html += '<div class="chip-row">' + saleCategoryNames.map(n => chipHtml(n, null, null)).join("") + '</div>';
+        } else if (!isLive){
+          html += '<div class="desc">Definition (name/icon/location) resolves fine — it\'s only the live inventory that\'s locked behind a signed-in character context.</div>';
+        }
+
+        card.innerHTML = html;
+        grid.appendChild(card);
+      }
+    } catch (err){
+      statusEl.className = "status err";
+      statusEl.textContent = "Error: " + err.message;
+    }
+  }
+
   run();
+  runVendors();
 })();
 </script>
 
