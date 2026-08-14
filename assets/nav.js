@@ -108,6 +108,44 @@
     );
   }
 
+  // Installs the manifest/icons/service worker on every page that loads
+  // this file, so there's a single place to maintain "installable app"
+  // behavior instead of duplicating <head> tags across every HTML file.
+  function setupPWA(){
+    const head = document.head;
+
+    const manifestLink = document.createElement("link");
+    manifestLink.rel = "manifest";
+    manifestLink.href = "manifest.json";
+    head.appendChild(manifestLink);
+
+    const themeColor = document.createElement("meta");
+    themeColor.name = "theme-color";
+    themeColor.content = "#07080a";
+    head.appendChild(themeColor);
+
+    const appleCapable = document.createElement("meta");
+    appleCapable.name = "apple-mobile-web-app-capable";
+    appleCapable.content = "yes";
+    head.appendChild(appleCapable);
+
+    const appleTitle = document.createElement("meta");
+    appleTitle.name = "apple-mobile-web-app-title";
+    appleTitle.content = "Rally Flag";
+    head.appendChild(appleTitle);
+
+    const appleIcon = document.createElement("link");
+    appleIcon.rel = "apple-touch-icon";
+    appleIcon.href = "assets/icon-192.png";
+    head.appendChild(appleIcon);
+
+    if ("serviceWorker" in navigator){
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch(() => {});
+      });
+    }
+  }
+
   function buildNav(){
     const activeGroup = document.body.getAttribute("data-nav-group") || "";
     const container = document.getElementById("site-nav");
@@ -166,6 +204,7 @@
     });
   }
 
+  setupPWA();
   buildNav();
   applyTheme(getStoredTheme());
   applyMode(getStoredMode());

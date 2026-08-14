@@ -1,0 +1,14 @@
+{
+  "name": "Rally Flag",
+  "short_name": "Rally Flag",
+  "description": "A companion site for Destiny 2 — live Distortion tracking, the full armor set bonus database, guides, and god rolls, all in one place.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#07080a",
+  "theme_color": "#07080a",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
