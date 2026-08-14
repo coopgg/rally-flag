@@ -28,6 +28,19 @@
   .info-body p:last-child{ margin-bottom:0; }
   .info-body strong{ color:var(--text); }
 
+  .twitch-player-wrap{
+    position:relative; width:100%; aspect-ratio:16/9; border-radius:8px; overflow:hidden;
+    background:#000; border:1px solid var(--panel-border); margin-top:20px;
+  }
+  .twitch-player-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .twitch-links{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+  .twitch-link{
+    font-size:12.5px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
+    text-decoration:none; background:var(--accent-dim); border:1px solid var(--panel-border);
+    padding:8px 14px; border-radius:999px; transition: border-color 0.2s ease;
+  }
+  .twitch-link:hover, .twitch-link:focus-visible{ border-color:var(--accent-bright); }
+
   .faq-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; }
   @media (max-width:640px){ .faq-grid{ grid-template-columns:1fr; } }
   .faq-card{ padding:22px; }
@@ -63,6 +76,24 @@
     <div class="info-body">
       <p>We're a small stream team that got tired of digging through the same handful of sites every raid night, so we started building the tool we actually wanted.</p>
       <p>Everything here comes from our own playtime and our own runs — the rolls we chase, the builds we actually use, the puzzle solutions we've verified ourselves. When we're not sure about a mechanic, we don't guess. We test it, or we leave it out until we can.</p>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <div class="info-label">Watch Live</div>
+    <div class="info-body">
+      <p>We stream while we build and play this stuff — pull up the player below to watch live, or catch a past broadcast on Twitch.</p>
+    </div>
+    <div class="twitch-player-wrap">
+      <iframe
+        src="https://player.twitch.tv/?channel=coopgg__&parent=rallyflag.gg&parent=coopgg.github.io&parent=localhost&autoplay=false&muted=true"
+        allowfullscreen
+        scrolling="no">
+      </iframe>
+    </div>
+    <div class="twitch-links">
+      <a class="twitch-link" href="https://www.twitch.tv/coopgg__" target="_blank" rel="noopener">Watch on Twitch →</a>
+      <a class="twitch-link" href="https://www.twitch.tv/coopgg__/videos?filter=archives&sort=time" target="_blank" rel="noopener">Past Broadcasts →</a>
     </div>
   </div>
 
