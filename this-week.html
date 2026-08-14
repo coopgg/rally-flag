@@ -146,7 +146,7 @@
 <section>
   <div class="tw-section-head">
     <div class="tw-section-title">Featured This Week</div>
-    <div class="tw-refresh-note">Resets Tuesdays — update FEATURED_THIS_WEEK below when it flips</div>
+    <div class="tw-refresh-note">Resets Tuesdays — rotates automatically, no manual updates</div>
   </div>
   <div id="featured-content"></div>
 
@@ -171,16 +171,45 @@
 <script>
 (function(){
   // ---------------------------------------------------------------
-  // Bungie's public API doesn't give a clean, reliable signal for
-  // which raids/dungeons are "featured" this week (checked the raw
-  // milestone data — it's not consistent enough to auto-detect
-  // safely). Same pattern as Distortions' rotation-data.js: this is
-  // a small manually-maintained list. Update the slugs below each
-  // Tuesday reset to match Bungie's actual rotator.
+  // Bungie's public API doesn't give a clean "these 2 are featured"
+  // signal — checked GetPublicMilestones directly and every raid gets
+  // an identically-shaped weekly challenge simultaneously (King's Fall,
+  // Crota's End, etc. all live at once, same date range, no distinguishing
+  // field), and dungeons don't appear in Milestones at all. So instead of
+  // a Bungie-derived pick, this rotates through the full list ourselves,
+  // deterministically, aligned to Destiny's actual weekly reset — no
+  // manual updates, ever. Pantheon is left out of the raid pool since
+  // it's already its own rotating multi-raid activity, not a normal raid.
   // ---------------------------------------------------------------
+  const RAID_ROTATION_SLUGS = [
+    "last-wish", "garden-of-salvation", "deep-stone-crypt", "vault-of-glass",
+    "vow-of-the-disciple", "kings-fall", "root-of-nightmares", "crotas-end",
+    "salvations-edge", "the-desert-perpetual"
+  ];
+  const DUNGEON_ROTATION_SLUGS = [
+    "shattered-throne", "pit-of-heresy", "prophecy", "grasp-of-avarice",
+    "duality", "spire-of-the-watcher", "ghosts-of-the-deep", "warlords-ruin",
+    "vespers-host", "sundered-doctrine", "equilibrium"
+  ];
+  const RESET_EPOCH_UTC = Date.UTC(2024, 0, 2, 17, 0, 0); // any past Tuesday 17:00 UTC works as the anchor
+  const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
+
+  function currentWeekIndex(){
+    return Math.floor((Date.now() - RESET_EPOCH_UTC) / MS_PER_WEEK);
+  }
+
+  function weeklyRotationPick(slugs, count){
+    const week = currentWeekIndex();
+    const picks = [];
+    for (let i = 0; i < count; i++){
+      picks.push(slugs[(week * count + i) % slugs.length]);
+    }
+    return picks;
+  }
+
   const FEATURED_THIS_WEEK = {
-    raids: ["vow-of-the-disciple", "last-wish"],
-    dungeons: ["sundered-doctrine", "grasp-of-avarice"]
+    raids: weeklyRotationPick(RAID_ROTATION_SLUGS, 2),
+    dungeons: weeklyRotationPick(DUNGEON_ROTATION_SLUGS, 2)
   };
 
   const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
