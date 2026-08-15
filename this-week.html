@@ -711,6 +711,10 @@
         let lastCostHtml = ""; // reused for the class-item fallback below — every item in this category costs the same 41 Strange Coin, so no need to re-fetch the currency icon separately
         for (const saleItem of itemsInCat){
           const itemDef = await fetchItemDef(saleItem.itemHash);
+          // Vehicles (e.g. exotic Sparrows like The Xûrfboard) show up in this
+          // category too but aren't gear — skip by the resolved type name,
+          // not by item name, so any future vehicle offer gets excluded too.
+          if (itemDef.typeName === "Vehicle") continue;
           let costHtml = "";
           if (saleItem.costs && saleItem.costs.length){
             const cost = saleItem.costs[0];
