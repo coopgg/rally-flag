@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>This Week — Rally Flag</title>
+<title>This Week - Rally Flag</title>
 <meta name="description" content="This week's featured raid and dungeon, and Xûr's current wares.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rally Flag">
@@ -175,7 +175,7 @@
 <section>
   <div class="tw-section-head">
     <div class="tw-section-title">Featured This Week</div>
-    <div class="tw-refresh-note" id="reset-countdown-note">Resets in —</div>
+    <div class="tw-refresh-note" id="reset-countdown-note">Resets in --</div>
   </div>
   <div class="tw-subsection-label">Raids</div>
   <div id="featured-raids-content"></div>
@@ -192,15 +192,15 @@
   <div id="next-week-dungeons-content"></div>
 
   <div class="tw-section-head">
-    <div class="tw-section-title">Xûr — At the Tower</div>
+    <div class="tw-section-title">Xûr at the Tower</div>
     <div class="tw-refresh-note" id="xur-refresh-note"></div>
   </div>
-  <div id="xur-content"><div class="tw-status">Loading\u2026</div></div>
+  <div id="xur-content"><div class="tw-status">Loading...</div></div>
 </section>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
-  <p>Pulled live from Bungie's public API on page load. If something looks off or missing, it's likely a Bungie-side data gap rather than a bug here \u2014 let us know either way.</p>
+  <p>Pulled live from Bungie's public API on page load. If something looks off or missing, it's likely a Bungie-side data gap rather than a bug here, so let us know either way.</p>
 </footer>
 
 <script src="assets/nav.js"></script>
@@ -530,10 +530,10 @@
 
     container.innerHTML =
       '<div class="tw-countdown-wrap">' +
-        '<div class="tw-countdown-label">X\u00fbr has left the Tower \u2014 he\u2019ll return in</div>' +
-        '<div class="tw-countdown-digits" id="xur-countdown-digits">\u2014</div>' +
+        '<div class="tw-countdown-label">X\u00fbr has left the Tower. Returns in</div>' +
+        '<div class="tw-countdown-digits" id="xur-countdown-digits">--</div>' +
         '<div class="tw-countdown-arrival">Arrives ' + formatDate(arrivalIso) + '</div>' +
-        (isEstimate ? '<div class="tw-countdown-note">Bungie didn\u2019t give us a live refresh time this pull, so this is an estimate based on his usual Friday reset \u2014 not a guaranteed figure.</div>' : '') +
+        (isEstimate ? '<div class="tw-countdown-note">Bungie didn\u2019t give us a live refresh time this pull, so this is an estimate based on his usual Friday reset, not a guaranteed figure.</div>' : '') +
       '</div>';
 
     const digitsEl = document.getElementById("xur-countdown-digits");
@@ -582,7 +582,7 @@
     }));
 
     if (!cards.length){
-      contentEl.innerHTML = '<div class="tw-status">Rotation slugs didn\u2019t match anything in raids-data.js/dungeons-data.js \u2014 check for a typo.</div>';
+      contentEl.innerHTML = '<div class="tw-status">Rotation slugs didn\u2019t match anything in raids-data.js/dungeons-data.js. Check for a typo.</div>';
       return;
     }
 
@@ -658,7 +658,7 @@
 
       const saleList = Object.values(saleItems);
       if (!saleList.length){
-        contentEl.innerHTML = '<div class="tw-status">He\u2019s here, but no sale data came back \u2014 try refreshing in a bit.</div>';
+        contentEl.innerHTML = '<div class="tw-status">He\u2019s here, but no sale data came back. Try refreshing in a bit.</div>';
         return;
       }
 
@@ -866,7 +866,7 @@
       }
 
       if (!contentEl.children.length){
-        contentEl.innerHTML = '<div class="tw-status">Couldn\u2019t find either strange-offers category this pull \u2014 Bungie may have renamed them, or he\u2019s not selling anything in them right now.</div>';
+        contentEl.innerHTML = '<div class="tw-status">Couldn\u2019t find either strange-offers category this pull. Bungie may have renamed them, or he\u2019s not selling anything in them right now.</div>';
       }
     } catch (err){
       contentEl.innerHTML = '<div class="tw-status tw-error">Couldn\u2019t load Xur\u2019s inventory: ' + err.message + '</div>';

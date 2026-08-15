@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow">
-<title>API Debug — Rally Flag (throwaway, not linked in nav)</title>
+<title>API Debug - Rally Flag (throwaway, not linked in nav)</title>
 <style>
   body{ background:#0a0a0c; color:#e4e4e8; font-family:'JetBrains Mono', monospace; font-size:12px; padding:24px; }
   h1{ font-size:16px; color:#8fc9ff; }
@@ -45,17 +45,17 @@
 </head>
 <body>
 
-<h1>Bungie API — Full Debug Dump</h1>
+<h1>Bungie API: Full Debug Dump</h1>
 <p class="note">Everything we've probed from Bungie's public (no-OAuth, API-key-only) endpoints, in one page instead of scattered across chat history. Two sections: Weekly Milestones (raids, quests, activities) and Vendors (which NPCs we can and can't get live sale data for anonymously). Click "raw json" on any card for the untouched API response. Delete once done.</p>
 
 <h2>Weekly Milestones</h2>
-<p class="note">Pulls Bungie's public GetPublicMilestones endpoint and resolves every milestone hash it returns: name/description from DestinyMilestoneDefinition, the "about" blurb from GetPublicMilestoneContent, plus any activities/modifiers/quests/vendors attached to it this week, all resolved to real names. Nothing filtered or categorized — point is to see the whole picture and figure out which hashes map to Vanguard, Crucible, vendors, etc. so we know what to automate FEATURED_THIS_WEEK and future section pages from.</p>
+<p class="note">Pulls Bungie's public GetPublicMilestones endpoint and resolves every milestone hash it returns: name/description from DestinyMilestoneDefinition, the "about" blurb from GetPublicMilestoneContent, plus any activities/modifiers/quests/vendors attached to it this week, all resolved to real names. Nothing filtered or categorized. The point is to see the whole picture and figure out which hashes map to Vanguard, Crucible, vendors, etc. so we know what to automate FEATURED_THIS_WEEK and future section pages from.</p>
 
 <div id="status" class="status">Loading…</div>
 <div id="output"></div>
 
 <h2>Vendors</h2>
-<p class="note">DestinyVendorDefinition (name/icon/location) resolves fine for anyone with just an API key — confirmed below. Live <em>sale</em> data is different: Bungie's anonymous Vendors endpoint only ever returns Xûr, no matter which vendor you ask for — confirmed by testing directly, not assumed. Every other vendor needs a signed-in character context (OAuth) to see what they're actually selling this week.</p>
+<p class="note">DestinyVendorDefinition (name/icon/location) resolves fine for anyone with just an API key, confirmed below. Live <em>sale</em> data is different: Bungie's anonymous Vendors endpoint only ever returns Xûr, no matter which vendor you ask for, confirmed by testing directly, not assumed. Every other vendor needs a signed-in character context (OAuth) to see what they're actually selling this week.</p>
 
 <div id="vendor-status" class="status">Loading…</div>
 <div id="vendor-output"></div>
@@ -135,7 +135,7 @@
       }
 
       statusEl.className = "status ok";
-      statusEl.textContent = "OK — " + hashes.length + " active milestone(s). Resolving names…";
+      statusEl.textContent = "OK: " + hashes.length + " active milestone(s). Resolving names…";
 
       const resolved = [];
       for (const hash of hashes){
@@ -177,7 +177,7 @@
 
         if (description) html += '<div class="desc">' + description + '</div>';
         if (about && about !== description) html += '<div class="about">' + about + '</div>';
-        if (tips.length) html += '<div class="about">Tips: ' + tips.join(" — ") + '</div>';
+        if (tips.length) html += '<div class="about">Tips: ' + tips.join(" · ") + '</div>';
 
         const dateBits = [];
         if (live.startDate) dateBits.push("starts " + live.startDate);
@@ -239,7 +239,7 @@
             const modDef = await fetchDef("DestinyActivityModifierDefinition", modHash);
             modNames.push((modDef && modDef.displayProperties && modDef.displayProperties.name) || ("Unknown (" + modHash + ")"));
           }
-          const sub = (subPrefix ? subPrefix + " — " : "") + (modNames.length ? "mods: " + modNames.join(", ") : "hash: " + activityHash);
+          const sub = (subPrefix ? subPrefix + " · " : "") + (modNames.length ? "mods: " + modNames.join(", ") : "hash: " + activityHash);
           return chipHtml(actName, sub, actIcon);
         }
 
@@ -279,10 +279,10 @@
         }
 
         doneCount++;
-        statusEl.textContent = "OK — resolved " + doneCount + "/" + resolved.length + " milestones";
+        statusEl.textContent = "OK: resolved " + doneCount + "/" + resolved.length + " milestones";
       }
 
-      statusEl.textContent = "OK — " + resolved.length + " active milestone(s), fully resolved";
+      statusEl.textContent = "OK: " + resolved.length + " active milestone(s), fully resolved";
     } catch (err){
       statusEl.className = "status err";
       statusEl.textContent = "Error: " + err.message;
@@ -332,7 +332,7 @@
       }
 
       statusEl.className = "status ok";
-      statusEl.textContent = "OK — checked " + Object.keys(KNOWN_VENDORS).length + " known vendors";
+      statusEl.textContent = "OK: checked " + Object.keys(KNOWN_VENDORS).length + " known vendors";
 
       outputEl.innerHTML = '<div class="vendor-grid" id="vendor-grid"></div>';
       const grid = document.getElementById("vendor-grid");
@@ -361,7 +361,7 @@
           html += '<div class="section-label">Sale Categories This Pull</div>';
           html += '<div class="chip-row">' + saleCategoryNames.map(n => chipHtml(n, null, null)).join("") + '</div>';
         } else if (!isLive){
-          html += '<div class="desc">Definition (name/icon/location) resolves fine — it\'s only the live inventory that\'s locked behind a signed-in character context.</div>';
+          html += '<div class="desc">Definition (name/icon/location) resolves fine; it\'s only the live inventory that\'s locked behind a signed-in character context.</div>';
         }
 
         card.innerHTML = html;

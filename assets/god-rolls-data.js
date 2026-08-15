@@ -15,21 +15,21 @@ window.GodRollsData = (function(){
       itemHash: 52683113,
       perkHashes: [3048246338, 3267421167, 1549370717, 1183436451, 2034764268, 622249644, 1523545668],
       raidSlug: null, dungeonSlug: null,
-      note: "Kinetic pick for One More Thing \u2014 Kinetic Tremors satisfies CODA's Dark Polarity trigger while adding an AoE shockwave.",
+      note: "Kinetic pick for One More Thing: Kinetic Tremors satisfies CODA's Dark Polarity trigger while adding an AoE shockwave.",
       buildTags: ["one-more-thing"],
       pairing: null },
     { name:"Hullabaloo", slug:"hullabaloo",
       itemHash: 2449096504,
       perkHashes: [373417387, 2108812838, 1720528630, 598607952, 2523469161, 3587454724, 1523545668],
       raidSlug: null, dungeonSlug: null,
-      note: "Heavy pick for One More Thing \u2014 Arc, Voltshot + Chain Reaction is the single most popular roll on this weapon (23.88% of rolls).",
+      note: "Heavy pick for One More Thing (Arc). Voltshot + Chain Reaction is the single most popular roll on this weapon (23.88% of rolls).",
       buildTags: ["one-more-thing"],
       pairing: null },
     { name:"M-17 \"Fast Talker\"", slug:"m-17-fast-talker",
       itemHash: 1419158093,
       perkHashes: [3048246338, 226831738, 984655331, 2939589096, 4280607931, 622249644, 260490301],
       raidSlug: null, dungeonSlug: null,
-      note: "Kinetic pick for Double Retribution \u2014 Stasis, stays Kinetic-slot per the Strand/Stasis rule.",
+      note: "Kinetic pick for Double Retribution (Stasis), stays Kinetic-slot per the Strand/Stasis rule.",
       buildTags: ["double-retribution"],
       pairing: null },
     { name:"Rufus's Fury", slug:"rufuss-fury",
@@ -43,7 +43,7 @@ window.GodRollsData = (function(){
       itemHash: 3814261872,
       perkHashes: [2860123632, 1709045111, 65604327, 4065965131, 1043703792, 3513245618],
       raidSlug: null, dungeonSlug: null,
-      note: "Heavy pick for Ionic Overclock \u2014 Arc.",
+      note: "Heavy pick for Ionic Overclock (Arc).",
       buildTags: ["ionic-overclock"],
       pairing: null },
     { name:"Chroma Rush", slug:"chroma-rush",
@@ -57,7 +57,7 @@ window.GodRollsData = (function(){
       itemHash: 412251536,
       perkHashes: [3048246338, 3267421167, 1409206216, 2675184851, 734193227],
       raidSlug: null, dungeonSlug: null,
-      note: "Heavy pick for Marksman's Encore \u2014 Solar.",
+      note: "Heavy pick for Marksman's Encore (Solar).",
       buildTags: ["marksmans-encore"],
       pairing: null },
     { name:"Wendigo GL3", slug:"wendigo-gl3",
@@ -71,14 +71,14 @@ window.GodRollsData = (function(){
       itemHash: 3654744298,
       perkHashes: [3048246338, 1065371964, 1926441324, 2896748467, 716643564, 758092021, 1523545668],
       raidSlug: "vault-of-glass", dungeonSlug: null,
-      note: "Heavy pick for Weakened Prey \u2014 Void.",
+      note: "Heavy pick for Weakened Prey (Void).",
       buildTags: ["weakened-prey"],
       pairing: null },
     { name:"VS Velocity Baton", slug:"vs-velocity-baton",
       itemHash: 2452936816,
       perkHashes: [373417387, 2108812838, 2541826827, 1926441324, 4232410959, 882794620, 325500297],
       raidSlug: null, dungeonSlug: null,
-      note: "Energy pick for Contagion Chain \u2014 Void, Special ammo.",
+      note: "Energy pick for Contagion Chain (Void, Special ammo).",
       buildTags: ["contagion-chain"],
       pairing: null },
     { name:"Lost Signal", slug:"lost-signal",
@@ -113,14 +113,14 @@ window.GodRollsData = (function(){
       itemHash: 924095500,
       perkHashes: [373417387, 1065371964, 2541826827, 1926441324, 2223800157, 3587454724, 1523545668],
       raidSlug: null, dungeonSlug: null,
-      note: "Energy pick for Perpetual Slam and Panic Weave. This is the base S29 version (itemHash 924095500) \u2014 there's also an \\\"Upgraded\\\" craftable variant with a different hash; make sure you're tracking the one you actually run.",
+      note: "Energy pick for Perpetual Slam and Panic Weave. This is the base S29 version (itemHash 924095500); there's also an \\\"Upgraded\\\" craftable variant with a different hash, so make sure you're tracking the one you actually run.",
       buildTags: ["perpetual-slam", "panic-weave"],
       pairing: null },
     { name:"Qua-Vinctus IV", slug:"qua-vinctus-iv",
       itemHash: 4176551594,
       perkHashes: [111235976, 3267421167, 102912326, 2896748467, 4236235115, 3513245618, 1523545668],
       raidSlug: null, dungeonSlug: null,
-      note: "Heavy pick for Contagion Chain and Panic Weave \u2014 Strand, but stays in the Power slot since only Special/Primary Strand and Stasis weapons move to Kinetic.",
+      note: "Heavy pick for Contagion Chain and Panic Weave (Strand), but stays in the Power slot since only Special/Primary Strand and Stasis weapons move to Kinetic.",
       buildTags: ["contagion-chain", "panic-weave"],
       pairing: null },
     { name:"LIONFISH-4FR", slug:"lionfish-4fr",
@@ -131,7 +131,7 @@ window.GodRollsData = (function(){
       buildTags: ["weakened-prey", "Stasis Freeze", "Add Clear"],
       pairing: {
         armorSlug: "crystocrene",
-        note: "A Stasis Fusion Rifle built around Chill Clip's slow-into-freeze loop — pairs naturally with any Stasis build leaning on freeze uptime (Hunter's Renewal Grasps, Titan's Cryosthesia 77K). Crystocrene's own 'build Frost Armor while out of combat' identity makes it a thematically snug armor match, even without direct mechanical overlap."
+        note: "A Stasis Fusion Rifle built around Chill Clip's slow-into-freeze loop, pairing naturally with any Stasis build leaning on freeze uptime (Hunter's Renewal Grasps, Titan's Cryosthesia 77K). Crystocrene's own 'build Frost Armor while out of combat' identity makes it a thematically snug armor match, even without direct mechanical overlap."
       } },
     { name:"Ribbontail", slug:"ribbontail",
       itemHash: 3576134513,
@@ -141,7 +141,7 @@ window.GodRollsData = (function(){
       buildTags: ["endless-barrage", "Strand Threadling", "Add Clear"],
       pairing: {
         armorSlug: "flain",
-        note: "A Strand Trace Rifle that fits a sustained add-clear build — Warlock's Weaver's Trance or Hunter's Threadrunner both make good use of a steady stream of Strand kills. Flain (Sundered Doctrine) is a strong armor pairing since its whole kit revolves around spawning and sustaining off Threadlings."
+        note: "A Strand Trace Rifle that fits a sustained add-clear build: Warlock's Weaver's Trance or Hunter's Threadrunner both make good use of a steady stream of Strand kills. Flain (Sundered Doctrine) is a strong armor pairing since its whole kit revolves around spawning and sustaining off Threadlings."
       } },
     { name:"Action Item", slug:"action-item",
       itemHash: 527989828,
@@ -151,7 +151,7 @@ window.GodRollsData = (function(){
       buildTags: ["Stasis Freeze", "Add Clear"],
       pairing: {
         armorSlug: "crystocrene",
-        note: "Same Stasis-into-freeze idea as LIONFISH-4FR — stacking Frost Armor from a Stasis fragment loadout alongside this weapon's freeze uptime makes for a tanky ad-clear loop. Crystocrene pairs thematically here as well."
+        note: "Same Stasis-into-freeze idea as LIONFISH-4FR: stacking Frost Armor from a Stasis fragment loadout alongside this weapon's freeze uptime makes for a tanky ad-clear loop. Crystocrene pairs thematically here as well."
       } },
     { name:"Festival Flight", slug:"festival-flight",
       itemHash: 4019651319,
@@ -171,7 +171,7 @@ window.GodRollsData = (function(){
       buildTags: ["guided-tangent", "Strand Threadling", "Add Clear"],
       pairing: {
         armorSlug: "flain",
-        note: "Similar Strand synergy story to Ribbontail and Festival Flight — Hatchling turns this into a Threadling machine on top of an already-strong neutral game. Pairs well with Flain or any dedicated Threadling-focused Warlock build."
+        note: "Similar Strand synergy story to Ribbontail and Festival Flight: Hatchling turns this into a Threadling machine on top of an already-strong neutral game. Pairs well with Flain or any dedicated Threadling-focused Warlock build."
       } },
     { name:"Tinasha's Mastery", slug:"tinashas-mastery",
       itemHash: 247984828,
@@ -181,7 +181,7 @@ window.GodRollsData = (function(){
       buildTags: ["Stasis Freeze", "PvE Endgame"],
       pairing: {
         armorSlug: "crystocrene",
-        note: "Another Chill Clip carrier — its PvE identity is all about freeze uptime feeding into a Stasis super or shatter-focused build. Crystocrene rounds out the loadout if you're leaning into a full Stasis theme."
+        note: "Another Chill Clip carrier: its PvE identity is all about freeze uptime feeding into a Stasis super or shatter-focused build. Crystocrene rounds out the loadout if you're leaning into a full Stasis theme."
       } },
     { name:"Reckless Oracle", slug:"reckless-oracle",
       itemHash: 4158265643,
@@ -191,7 +191,7 @@ window.GodRollsData = (function(){
       buildTags: ["Flexible", "Add Clear"],
       pairing: {
         armorSlug: null,
-        note: "A flexible add-clear primary that isn't tied to a specific element, so it slots into almost any loadout as a reliable default. No obvious single armor pairing here like the rest of the list — this one's really about what exotic and subclass you're already running."
+        note: "A flexible add-clear primary that isn't tied to a specific element, so it slots into almost any loadout as a reliable default. No obvious single armor pairing here like the rest of the list; this one's really about what exotic and subclass you're already running."
       } },
     { name:"Osteo Striga", slug:"osteo-striga",
       itemHash: 46524085,
@@ -201,7 +201,7 @@ window.GodRollsData = (function(){
       buildTags: ["Necrotic Grip", "Poison"],
       pairing: {
         armorSlug: null,
-        note: "The classic pairing here is Necrotic Grip on Warlock — poison procs spread between enemies through your melee, turning this into one of the best add-clear tools in the game. No armor set on this site fits since that's an Exotic piece, not a Legendary set bonus, but it's worth calling out anyway."
+        note: "The classic pairing here is Necrotic Grip on Warlock: poison procs spread between enemies through your melee, turning this into one of the best add-clear tools in the game. No armor set on this site fits since that's an Exotic piece, not a Legendary set bonus, but it's worth calling out anyway."
       } },
     { name:"Commemoration", slug:"commemoration",
       itemHash: 4230965989,
@@ -211,7 +211,7 @@ window.GodRollsData = (function(){
       buildTags: ["guided-tangent", "perpetual-slam", "Sustained Fire", "Damage Stacking"],
       pairing: {
         armorSlug: null,
-        note: "Killing Tally is doing the real work on this roll: weapon kills build up to 3 stacks for up to +30% PvE damage, but stowing or reloading wipes them, so this rewards staying on target with Commemoration rather than swapping weapons mid-fight. Arrowhead Brake and Accurized Rounds keep recoil and range in check to make that sustained trigger time easier. No specific armor or build synergy here \u2014 it's a strong general-purpose add-clear/DPS Machine Gun rather than something built around a particular ability loop."
+        note: "Killing Tally is doing the real work on this roll: weapon kills build up to 3 stacks for up to +30% PvE damage, but stowing or reloading wipes them, so this rewards staying on target with Commemoration rather than swapping weapons mid-fight. Arrowhead Brake and Accurized Rounds keep recoil and range in check to make that sustained trigger time easier. No specific armor or build synergy here: it's a strong general-purpose add-clear/DPS Machine Gun rather than something built around a particular ability loop."
       } },
     { name:"Hezen Vengeance", slug:"hezen-vengeance",
       itemHash: 2265407516,
@@ -221,7 +221,7 @@ window.GodRollsData = (function(){
       buildTags: ["biotic-storm", "frozen-fists", "double-retribution", "Boss Damage", "Solar"],
       pairing: {
         armorSlug: "aion-adapter",
-        note: "A Solar Aggressive Frame Rocket Launcher from Vault of Glass, carrying the Timelost Magazine origin trait that doubles its magazine and reloads from reserves for a while after your Super ends — built for a damage-rotation playstyle. AION Adapter is a fitting armor pairing since its own 2-piece triggers directly off Rocket Launcher (or Grenade Launcher, or micro-missile) final blows, regardless of subclass or element."
+        note: "A Solar Aggressive Frame Rocket Launcher from Vault of Glass, carrying the Timelost Magazine origin trait that doubles its magazine and reloads from reserves for a while after your Super ends, which is built for a damage-rotation playstyle. AION Adapter is a fitting armor pairing since its own 2-piece triggers directly off Rocket Launcher (or Grenade Launcher, or micro-missile) final blows, regardless of subclass or element."
       } },
     { name:"Threat Level", slug:"threat-level",
       itemHash: 1523151869,
@@ -231,38 +231,38 @@ window.GodRollsData = (function(){
       buildTags: ["Kinetic", "Boss Damage"],
       pairing: {
         armorSlug: null,
-        note: "A Kinetic Rapid-Fire shotgun from Pantheon, popular for its Cascade Point and All-Star combination. This one's real pairing isn't an armor set but an artifact — Encrypted Data Disk's Kinetic Synthesis and Kinetic Rupture perks are built around sustained Kinetic weapon damage, and a Kinetic shotgun getting rapid hits off feeds both directly."
+        note: "A Kinetic Rapid-Fire shotgun from Pantheon, popular for its Cascade Point and All-Star combination. This one's real pairing isn't an armor set but an artifact: Encrypted Data Disk's Kinetic Synthesis and Kinetic Rupture perks are built around sustained Kinetic weapon damage, and a Kinetic shotgun getting rapid hits off feeds both directly."
       } },
     { name:"Conspiracy (Honed)", slug:"conspiracy-honed",
       itemHash: 4062069077,
       perkHashes: [1840239774, 807993149, 1546637391, 3078487919, 2957461671, 471689728],
       raidSlug: null, dungeonSlug: null,
-      note: "Drops from the Equilibrium dungeon (Renegades) — not yet on the Dungeons page, so no guide link here.",
+      note: "Drops from the Equilibrium dungeon (Renegades), not yet on the Dungeons page, so no guide link here.",
       buildTags: ["Stasis", "Heat Weapon", "Boss Damage"],
       pairing: {
         armorSlug: "aion-renewal",
-        note: "A Stasis Dynamic (Heat) Sniper Rifle from the Equilibrium dungeon — venting heat between shots lets it chain damage without the usual sniper reload downtime. AION Renewal is a natural pairing since it's the Stasis-flavored version of the Rocket/Grenade Launcher speed-boost set, and its 4-piece specifically triggers off being slowed by a Stasis effect, which this weapon's own element can set up on you or nearby allies."
+        note: "A Stasis Dynamic (Heat) Sniper Rifle from the Equilibrium dungeon: venting heat between shots lets it chain damage without the usual sniper reload downtime. AION Renewal is a natural pairing since it's the Stasis-flavored version of the Rocket/Grenade Launcher speed-boost set, and its 4-piece specifically triggers off being slowed by a Stasis effect, which this weapon's own element can set up on you or nearby allies."
       } },
     { name:"Refurbished A-499", slug:"refurbished-a499",
       itemHash: 3661051060,
       perkHashes: [839105230, 3142289711, 588594999, 3764420437, 4280607931, 905637376],
       altRoll: { itemHash: 593808239, perkHashes: [3048246338, 3267421167, 4116820839, 3528046508, 4280607931, 882794620] },
       raidSlug: null, dungeonSlug: null,
-      note: "Light.gg tracks this weapon under a couple of different item hashes (it even has its own \"Compare Entity Versions\" page) — same weapon, different drop/roll-pool versions. Use the alternate roll toggle above to flip between them.",
+      note: "Light.gg tracks this weapon under a couple of different item hashes (it even has its own \"Compare Entity Versions\" page): same weapon, different drop/roll-pool versions. Use the alternate roll toggle above to flip between them.",
       buildTags: ["Kinetic", "Boss Damage", "Heavy Sniper"],
       pairing: {
         armorSlug: null,
-        note: "The first Legendary Heavy-slot Sniper Rifle in the game — a single-shot 'Disruption' archetype round that can one-shot most targets outright. It's a specialist boss/champion-deletion pick rather than something built around a specific armor synergy, so it slots in as a damage-phase swap alongside whatever exotic and subclass are already doing the heavy lifting."
+        note: "The first Legendary Heavy-slot Sniper Rifle in the game, a single-shot 'Disruption' archetype round that can one-shot most targets outright. It's a specialist boss/champion-deletion pick rather than something built around a specific armor synergy, so it slots in as a damage-phase swap alongside whatever exotic and subclass are already doing the heavy lifting."
       } },
     { name:"Duty Bound", slug:"duty-bound",
       itemHash: 260532765,
       perkHashes: [3048246338, 1783397184, 3914874605, 288411554, 2223800157, 3513245618],
       raidSlug: null, dungeonSlug: null,
-      note: "A Kinetic Adaptive Frame Auto Rifle reprised in Renegades, obtained from Pinnacle Ops Portal activities — its first meaningful refresh since 2022. It carries a 41-round base magazine, which matters for perks that pay off in a longer mag.",
+      note: "A Kinetic Adaptive Frame Auto Rifle reprised in Renegades, obtained from Pinnacle Ops Portal activities; this is its first meaningful refresh since 2022. It carries a 41-round base magazine, which matters for perks that pay off in a longer mag.",
       buildTags: ["Kinetic", "Add Clear"],
       pairing: {
         armorSlug: null,
-        note: "No specific armor synergy called out here — this is a strong general-purpose Kinetic primary rather than a build-defining piece. A Fourth Time's the Charm plus Triple Tap roll turns precision hits into near-constant reload refunds given how large the base magazine already is; Bewildering Burst plus Onslaught leans harder into sustained add clear instead."
+        note: "No specific armor synergy called out here: this is a strong general-purpose Kinetic primary rather than a build-defining piece. A Fourth Time's the Charm plus Triple Tap roll turns precision hits into near-constant reload refunds given how large the base magazine already is; Bewildering Burst plus Onslaught leans harder into sustained add clear instead."
       } },
     { name:"Prosecutor", slug:"prosecutor",
       itemHash: 1091550016,
@@ -272,7 +272,7 @@ window.GodRollsData = (function(){
       buildTags: ["Arc", "Add Clear", "Precision"],
       pairing: {
         armorSlug: null,
-        note: "Dragonfly plus Rolling Storm is the PvE pick — Dragonfly turns precision kills into Arc explosions, and Rolling Storm feeds those explosions into priming Bolt Charge for an Arc-ability-heavy loadout. For PvP, Zen Moment plus Target Lock rewards accurate, sustained-fire duels rather than burst damage."
+        note: "Dragonfly plus Rolling Storm is the PvE pick: Dragonfly turns precision kills into Arc explosions, and Rolling Storm feeds those explosions into priming Bolt Charge for an Arc-ability-heavy loadout. For PvP, Zen Moment plus Target Lock rewards accurate, sustained-fire duels rather than burst damage."
       } }
   ];
 

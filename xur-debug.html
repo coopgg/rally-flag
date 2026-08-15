@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="robots" content="noindex, nofollow">
-<title>Xur Full Inventory Debug — Rally Flag (throwaway, not linked in nav)</title>
+<title>Xur Full Inventory Debug - Rally Flag (throwaway, not linked in nav)</title>
 <style>
   body{ background:#0b0700; color:#e8e2d4; font-family:'JetBrains Mono', monospace; font-size:12px; padding:24px; }
   h1{ font-size:16px; color:#f0a830; }
@@ -25,7 +25,7 @@
 </head>
 <body>
 
-<h1>Xur — Full Unfiltered Inventory Debug</h1>
+<h1>Xur: Full Unfiltered Inventory Debug</h1>
 <p class="note">Shows every category Bungie's API actually returns for Xur this pull, with real category names and every item resolved (name/type/class), nothing filtered out. Point of this page is to see the whole picture before deciding what goes on this-week.html. Delete once done.</p>
 
 <div id="status" class="status">Loading…</div>
@@ -79,7 +79,7 @@
 
       if (!vendorEntry){
         statusEl.className = "status err";
-        statusEl.textContent = "Xur vendor entry not present this pull — he may not be active right now.";
+        statusEl.textContent = "Xur vendor entry not present this pull. He may not be active right now.";
         return;
       }
 
@@ -103,7 +103,7 @@
       saleList.forEach(item => { bySaleIndex[item.vendorItemIndex] = item; });
 
       statusEl.className = "status ok";
-      statusEl.textContent = "OK — " + categoriesRaw.length + " categories, " + saleList.length + " total sale items";
+      statusEl.textContent = "OK: " + categoriesRaw.length + " categories, " + saleList.length + " total sale items";
 
       outputEl.innerHTML = "";
       for (const cat of categoriesRaw){

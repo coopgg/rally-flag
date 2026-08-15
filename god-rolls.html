@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>God Rolls — Rally Flag</title>
+<title>God Rolls - Rally Flag</title>
 <meta name="description" content="The weapon rolls that have earned a permanent spot in our loadouts.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rally Flag">
@@ -200,11 +200,11 @@
 <div class="hero">
   <div class="eyebrow">Destiny 2 Database</div>
   <h1 class="title">God Rolls</h1>
-  <p class="subtitle">What we actually run and why — the rolls that have earned a permanent spot in our loadouts.</p>
+  <p class="subtitle">What we actually run and why: the rolls that have earned a permanent spot in our loadouts.</p>
 </div>
 
 <div class="disclosure panel-card">
-  These aren't community popularity stats. What's here is <strong>our own personal picks from our own playtime</strong>: the rolls we've actually chased and use, not a claim that they're the objectively best for everyone. Your mileage — and your subclass, your playstyle, your favorite activity — may vary.
+  These aren't community popularity stats. What's here is <strong>our own personal picks from our own playtime</strong>: the rolls we've actually chased and use, not a claim that they're the objectively best for everyone. Your mileage (and your subclass, your playstyle, your favorite activity) may vary.
 </div>
 
 <div class="controls">
@@ -212,7 +212,7 @@
     <div class="search-box">
       <input type="text" id="search-input" placeholder="Search weapons or perks…" autocomplete="off">
     </div>
-    <div class="result-count"><strong id="count-num">—</strong> weapons</div>
+    <div class="result-count"><strong id="count-num">…</strong> weapons</div>
     <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
   </div>
 
@@ -418,7 +418,7 @@
       badgesEl.innerHTML = badgesHtml;
     } catch (err){
       console.warn("Weapon fetch failed for " + weapon.name + ":", err.message);
-      document.getElementById("meta-" + weapon.slug).innerHTML = '<span class="load-error">Live data unavailable \u2014 check console</span>';
+      document.getElementById("meta-" + weapon.slug).innerHTML = '<span class="load-error">Live data unavailable, check console</span>';
     }
 
     // Perks, fetched independently so one bad hash doesn't hide the rest
@@ -433,7 +433,7 @@
         '</div>';
       }
       console.warn("Perk fetch failed for " + weapon.name + " (hash " + roll.perkHashes[i] + "):", r.reason.message);
-      return '<div class="perk-chip"><div class="perk-chip-name">Hash ' + roll.perkHashes[i] + ' failed \u2014 check console</div></div>';
+      return '<div class="perk-chip"><div class="perk-chip-name">Hash ' + roll.perkHashes[i] + ' failed, check console</div></div>';
     }).join("");
     perksEl.innerHTML = chipsHtml;
   }

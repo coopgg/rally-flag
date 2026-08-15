@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tracker — Rally Flag</title>
-<meta name="description" content="Live status board for Destiny 2's daily and rotating content — starting with today's World Lost Sectors across every planet.">
+<title>Tracker - Rally Flag</title>
+<meta name="description" content="Live status board for Destiny 2's daily and rotating content: starting with today's World Lost Sectors across every planet.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rally Flag">
 <meta property="og:title" content="Tracker">
-<meta property="og:description" content="Live status board for Destiny 2's daily and rotating content — starting with today's World Lost Sectors across every planet.">
+<meta property="og:description" content="Live status board for Destiny 2's daily and rotating content: starting with today's World Lost Sectors across every planet.">
 <meta property="og:url" content="https://rallyflag.gg/tracker.html">
 <meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Tracker">
-<meta name="twitter:description" content="Live status board for Destiny 2's daily and rotating content — starting with today's World Lost Sectors across every planet.">
+<meta name="twitter:description" content="Live status board for Destiny 2's daily and rotating content: starting with today's World Lost Sectors across every planet.">
 <meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,7 +64,7 @@
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Live Status</div>
   <h1 class="title">Tracker</h1>
-  <p class="subtitle">A running board for the stuff that changes every day — pick a category below. Starting with World Lost Sectors, more incoming.</p>
+  <p class="subtitle">A running board for the stuff that changes every day. Pick a category below. Starting with World Lost Sectors, more incoming.</p>
   <div class="view-pills" id="view-pills">
     <a href="?view=lost-sectors" class="view-pill" data-view="lost-sectors">Lost Sectors</a>
   </div>
@@ -79,7 +79,7 @@
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
-  <p>World Lost Sector rotation is community-observed and reverse-engineered from independently repeating per-planet cycles — verify against your in-game Director if something looks off.</p>
+  <p>World Lost Sector rotation is community-observed and reverse-engineered from independently repeating per-planet cycles. Verify against your in-game Director if something looks off.</p>
 </footer>
 
 <script src="assets/nav.js"></script>
@@ -169,7 +169,7 @@
   function setMeta(view){
     const meta = VIEW_META[view];
     if (!meta) return;
-    document.title = meta.title + " — Rally Flag";
+    document.title = meta.title + " - Rally Flag";
     const url = "https://rallyflag.gg/tracker.html?view=" + view;
     const set = (selector, attr, value) => {
       const el = document.querySelector(selector);

@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dungeon Guide — Rally Flag</title>
-<meta name="description" content="Destiny 2 dungeon guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
+<title>Dungeon Guide - Rally Flag</title>
+<meta name="description" content="Destiny 2 dungeon guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rally Flag">
 <meta property="og:title" content="Dungeon Guide">
-<meta property="og:description" content="Destiny 2 dungeon guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
+<meta property="og:description" content="Destiny 2 dungeon guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
 <meta property="og:url" content="https://rallyflag.gg/dungeon-guide.html">
 <meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Dungeon Guide">
-<meta name="twitter:description" content="Destiny 2 dungeon guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
+<meta name="twitter:description" content="Destiny 2 dungeon guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every dungeon.">
 <meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -81,7 +81,7 @@
 
 <div class="hero" id="hero">
   <div class="eyebrow">Destiny 2 · Dungeon Guide</div>
-  <h1 class="title" id="dungeon-title">—</h1>
+  <h1 class="title" id="dungeon-title">…</h1>
   <div class="subnav">
     <a href="guides.html">Overview</a>
     <a href="raids.html">Raids</a>
@@ -111,7 +111,7 @@
     return;
   }
 
-  document.title = dungeon.name + " — Rally Flag";
+  document.title = dungeon.name + " - Rally Flag";
   document.getElementById("dungeon-title").textContent = dungeon.name;
 
   // Updates the static fallback meta/OG tags with the actual dungeon once
@@ -123,7 +123,7 @@
     const el = document.querySelector(selector);
     if (el) el.setAttribute(attr, value);
   }
-  const dungeonDesc = dungeon.summary ? (dungeon.summary.length > 160 ? dungeon.summary.slice(0, 157) + "…" : dungeon.summary) : ("Everything you need for the " + dungeon.name + " dungeon — encounters, armor set bonus, and puzzle solvers.");
+  const dungeonDesc = dungeon.summary ? (dungeon.summary.length > 160 ? dungeon.summary.slice(0, 157) + "…" : dungeon.summary) : ("Everything you need for the " + dungeon.name + " dungeon: encounters, armor set bonus, and puzzle solvers.");
   setMeta('meta[name="description"]', "content", dungeonDesc);
   setMeta('meta[property="og:title"]', "content", dungeon.name);
   setMeta('meta[property="og:description"]', "content", dungeonDesc);

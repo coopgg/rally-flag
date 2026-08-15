@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Artifacts — Rally Flag</title>
+<title>Artifacts - Rally Flag</title>
 <meta name="description" content="Every seasonal artifact and what its mods actually do, organized by tier.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rally Flag">
@@ -368,9 +368,9 @@
         '</div>' +
         '<div class="tag-row">' + tagsHtml(artifact.elements || []) + artifact.weaponTagsHtml + '</div>' +
         '<div class="artifact-body">' +
-          tierHtml(artifact.perks, 1, "\u2014 fills any slot") +
-          tierHtml(artifact.perks, 2, "\u2014 last 5 slots only") +
-          tierHtml(artifact.perks, 3, "\u2014 max 2 slots") +
+          tierHtml(artifact.perks, 1, "(fills any slot)") +
+          tierHtml(artifact.perks, 2, "(last 5 slots only)") +
+          tierHtml(artifact.perks, 3, "(max 2 slots)") +
         '</div>';
 
       const head = card.querySelector(".artifact-head");

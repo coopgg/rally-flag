@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Puzzle Helper — Rally Flag</title>
-<meta name="description" content="Interactive lookup tools for raid and dungeon secrets — Wish Wall codes, Oracle callouts, and more.">
+<title>Puzzle Helper - Rally Flag</title>
+<meta name="description" content="Interactive lookup tools for raid and dungeon secrets: Wish Wall codes, Oracle callouts, and more.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rally Flag">
 <meta property="og:title" content="Puzzle Helper">
-<meta property="og:description" content="Interactive lookup tools for raid and dungeon secrets — Wish Wall codes, Oracle callouts, and more.">
+<meta property="og:description" content="Interactive lookup tools for raid and dungeon secrets: Wish Wall codes, Oracle callouts, and more.">
 <meta property="og:url" content="https://rallyflag.gg/puzzle-helper.html">
 <meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Puzzle Helper">
-<meta name="twitter:description" content="Interactive lookup tools for raid and dungeon secrets — Wish Wall codes, Oracle callouts, and more.">
+<meta name="twitter:description" content="Interactive lookup tools for raid and dungeon secrets: Wish Wall codes, Oracle callouts, and more.">
 <meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -425,7 +425,7 @@
 <div class="hero">
   <div class="eyebrow">Destiny 2 Database</div>
   <h1 class="title">Puzzle Helper</h1>
-  <p class="subtitle">Interactive lookup tools for raid and dungeon puzzle mechanics — pick a tool below.</p>
+  <p class="subtitle">Interactive lookup tools for raid and dungeon puzzle mechanics. Pick a tool below.</p>
 </div>
 
 <div class="tool-picker" id="tool-picker"></div>
@@ -572,7 +572,7 @@
         '<div class="rune-picker-grid" id="rune-picker-grid"></div>' +
         '<div class="rune-picker-hint" id="rune-picker-hint">Pick exactly 3 runes.</div>' +
         '<div class="rune-stage" id="rune-stage"></div>' +
-        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found \u2014 you\'re set for this run.</div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found. You\'re set for this run.</div>' +
         '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
       '</div>';
 
@@ -612,7 +612,7 @@
         c.classList.toggle("disabled", selected.length >= 3 && !isSelected);
       });
       hint.textContent = selected.length === 3
-        ? "3 selected \u2014 locked in below."
+        ? "3 selected, locked in below."
         : "Pick exactly 3 runes (" + selected.length + "/3 selected).";
     }
 
@@ -688,7 +688,7 @@
         '<div class="lr-reference-text">' + tool.referencePoint + '</div>' +
         pairRowsHtml +
         '<div class="rune-stage" id="rune-stage"></div>' +
-        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found \u2014 you\'re set for this run.</div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found. You\'re set for this run.</div>' +
         '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
       '</div>';
 
@@ -808,9 +808,9 @@
             '</button>'
           ).join("") +
         '</div>' +
-        '<div class="ld-wall-hint">Click each flower to cycle Light / Darkness \u2014 match what you actually see on the wall.</div>' +
+        '<div class="ld-wall-hint">Click each flower to cycle Light / Darkness, matching what you actually see on the wall.</div>' +
         '<div class="rune-stage" id="rune-stage"></div>' +
-        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found \u2014 you\'re set for this run.</div>' +
+        '<div class="rune-stage-done-msg" id="rune-done-msg">All 3 found. You\'re set for this run.</div>' +
         '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
       '</div>';
 
@@ -849,7 +849,7 @@
         const colorLabel = color === "light" ? "Light" : "Darkness";
         return '<div class="rune-stage-row' + (i === 0 ? ' current' : '') + '" data-num="' + p.number + '">' +
           '<div class="rune-row-main">' +
-            '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + ' \u2014 connect ' + colorLabel + '</div>' +
+            '<div class="rune-row-name"><b>' + p.number + '</b>' + p.simpleLocation + ': connect ' + colorLabel + '</div>' +
             '<button class="rune-next-btn" type="button">Next</button>' +
           '</div>' +
           '<div class="rune-row-detail">' + p.detailedLocation + ' Connect every ' + colorLabel + ' orb in this room.</div>' +
@@ -908,7 +908,7 @@
             '</button>'
           ).join("") +
         '</div>' +
-        '<div class="ld-wall-hint">Click each position to cycle Circle / Square / Triangle, bottom to top — match the third column from the left.</div>' +
+        '<div class="ld-wall-hint">Click each position to cycle Circle / Square / Triangle, bottom to top, matching the third column from the left.</div>' +
         '<div class="rune-stage" id="rune-stage"></div>' +
         '<button class="rune-reset-btn" id="rune-reset-btn" type="button">Reset</button>' +
       '</div>';
@@ -988,7 +988,7 @@
         return headHtml +
           '<div class="rune-stage active sym-group-stage" data-group="' + g.key + '">' +
             rowsHtml +
-            '<div class="rune-stage-done-msg" data-group-done="' + g.key + '">All set here — you\'re ready for this run.</div>' +
+            '<div class="rune-stage-done-msg" data-group-done="' + g.key + '">All set here, you\'re ready for this run.</div>' +
           '</div>';
       }).join("");
       stage.classList.add("active");
@@ -1348,14 +1348,14 @@
         '<button type="button" class="verity-subtab" data-panel="fireteam">Fireteam Fashion</button>' +
       '</div>' +
       '<div id="verity-solver-panel">' +
-      '<label class="verity-master-label"><input type="checkbox" id="verity-master-toggle"> Master challenge (Varied Geometry) \u2014 find a round-2 solution using different final shapes than usual</label>' +
+      '<label class="verity-master-label"><input type="checkbox" id="verity-master-toggle"> Master challenge (Varied Geometry): find a round-2 solution using different final shapes than usual</label>' +
       '<div class="verity-wrap">' +
         '<div class="verity-section-label">Inside callouts</div>' +
-        '<div class="verity-hint">Click the shape each Inside player calls out, Left to Right. Once two are set, the third fills in automatically \u2014 there are only three shapes and no repeats.</div>' +
+        '<div class="verity-hint">Click the shape each Inside player calls out, Left to Right. Once two are set, the third fills in automatically, since there are only three shapes and no repeats.</div>' +
         '<div class="verity-lanes" id="verity-inside">' +
           LANES.map((lane, i) =>
             '<div class="verity-lane" data-lane="' + i + '">' +
-              '<div class="verity-lane-label">' + lane + ' \u2014 Inside</div>' +
+              '<div class="verity-lane-label">' + lane + ' (Inside)</div>' +
               '<div class="verity-shape-row">' +
                 VERITY_SHAPES.map(s => verityImgBtn(icons, s)).join("") +
               '</div>' +
@@ -1364,12 +1364,12 @@
           ).join("") +
         '</div>' +
 
-        '<div class="verity-section-label">Outside statues \u2014 what you see right now</div>' +
+        '<div class="verity-section-label">Outside statues: what you see right now</div>' +
         '<div class="verity-hint">For each statue, click the 3D shape you currently see.</div>' +
         '<div class="verity-lanes" id="verity-outside">' +
           LANES.map((lane, i) =>
             '<div class="verity-lane" data-lane="' + i + '">' +
-              '<div class="verity-lane-label">' + lane + ' \u2014 Outside</div>' +
+              '<div class="verity-lane-label">' + lane + ' (Outside)</div>' +
               '<div class="verity-outside-rows">' +
                 '<div class="verity-shape-row">' + VERITY_3D_ROW1.map(s => verityImgBtn(icons, s)).join("") + '</div>' +
                 '<div class="verity-shape-row">' + VERITY_3D_ROW2.map(s => verityImgBtn(icons, s)).join("") + '</div>' +
@@ -1588,7 +1588,7 @@
         const alt = findAlternateTarget(insideHeld);
         if (!alt){
           solutionEl.classList.add("active");
-          solutionEl.innerHTML = '<div class="verity-already-solved">No alternate shape set exists for this setup \u2014 play this round with the normal solution instead.</div>';
+          solutionEl.innerHTML = '<div class="verity-already-solved">No alternate shape set exists for this setup. Play this round with the normal solution instead.</div>';
           return;
         }
         targetState = alt;
@@ -1598,16 +1598,16 @@
       const solveResult = solveVerity(startState, targetState);
       solutionEl.classList.add("active");
       if (!solveResult){
-        solutionEl.innerHTML = '<div class="verity-already-solved">Couldn\u2019t find a solution \u2014 double check the shapes you entered.</div>';
+        solutionEl.innerHTML = '<div class="verity-already-solved">Couldn\u2019t find a solution. Double check the shapes you entered.</div>';
         return;
       }
       const solution = solveResult.path;
       if (solution.length === 0){
-        solutionEl.innerHTML = '<div class="verity-already-solved">Already correct \u2014 no swaps needed.</div>';
+        solutionEl.innerHTML = '<div class="verity-already-solved">Already correct, no swaps needed.</div>';
         return;
       }
       const equalDistWarning = solveResult.equalDistribution ? "" :
-        '<div class="verity-ogre-tip verity-warning">Heads up: this sequence deposits into the same statue twice in a row somewhere below. Equal Distribution also counts Inside\u2019s deposits, so time this step so an Inside deposit lands in between \u2014 no shorter Outside-only sequence avoids it here.</div>';
+        '<div class="verity-ogre-tip verity-warning">Heads up: this sequence deposits into the same statue twice in a row somewhere below. Equal Distribution also counts Inside\u2019s deposits, so time this step so an Inside deposit lands in between. No shorter Outside-only sequence avoids it here.</div>';
       // Flatten into individual pickup actions first, so an Ogre-kill step
       // can be inserted at the right point — Outside only gets 3 Knights
       // per cycle before needing to kill the Ogre for 3 more.
@@ -1690,7 +1690,7 @@
       });
 
       solutionEl.innerHTML =
-        '<div class="verity-section-label">Solution \u2014 ' + solution.length + (solution.length === 1 ? " swap" : " swaps") + ' (' + pickups.length + ' pickups)</div>' +
+        '<div class="verity-section-label">Solution: ' + solution.length + (solution.length === 1 ? " swap" : " swaps") + ' (' + pickups.length + ' pickups)</div>' +
         '<div class="verity-hint">Each deposit only works at a statue that already holds that exact shape. Once both halves of a swap are down, the other component at each statue trades places automatically.</div>' +
         '<div class="verity-solution-steps">' + rows.join("") + '</div>' +
         equalDistWarning;

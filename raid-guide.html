@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raid Guide — Rally Flag</title>
-<meta name="description" content="Destiny 2 raid guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
+<title>Raid Guide - Rally Flag</title>
+<meta name="description" content="Destiny 2 raid guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Rally Flag">
 <meta property="og:title" content="Raid Guide">
-<meta property="og:description" content="Destiny 2 raid guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
+<meta property="og:description" content="Destiny 2 raid guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
 <meta property="og:url" content="https://rallyflag.gg/raid-guide.html">
 <meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raid Guide">
-<meta name="twitter:description" content="Destiny 2 raid guides — encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
+<meta name="twitter:description" content="Destiny 2 raid guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
 <meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -123,7 +123,7 @@
 
 <div class="hero" id="hero">
   <div class="eyebrow">Destiny 2 · Raid Guide</div>
-  <h1 class="title" id="raid-title">—</h1>
+  <h1 class="title" id="raid-title">…</h1>
   <div class="subnav">
     <a href="guides.html">Overview</a>
     <a href="raids.html" class="active">Raids</a>
@@ -153,7 +153,7 @@
     return;
   }
 
-  document.title = raid.name + " — Rally Flag";
+  document.title = raid.name + " - Rally Flag";
   document.getElementById("raid-title").textContent = raid.name;
 
   // Updates the static fallback meta/OG tags with the actual raid once it's
@@ -165,7 +165,7 @@
     const el = document.querySelector(selector);
     if (el) el.setAttribute(attr, value);
   }
-  const raidDesc = raid.summary ? (raid.summary.length > 160 ? raid.summary.slice(0, 157) + "…" : raid.summary) : ("Everything you need for the " + raid.name + " raid — encounters, armor set bonus, and puzzle solvers.");
+  const raidDesc = raid.summary ? (raid.summary.length > 160 ? raid.summary.slice(0, 157) + "…" : raid.summary) : ("Everything you need for the " + raid.name + " raid: encounters, armor set bonus, and puzzle solvers.");
   setMeta('meta[name="description"]', "content", raidDesc);
   setMeta('meta[property="og:title"]', "content", raid.name);
   setMeta('meta[property="og:description"]', "content", raidDesc);
@@ -190,13 +190,13 @@
           const mapHtml = e.mapImage
             ? '<div class="encounter-map"><img src="' + e.mapImage.url + '" alt="' + e.name + ' encounter map" loading="lazy">' +
               '<div class="encounter-map-credit">' + e.mapImage.credit +
-              (e.mapImage.creditUrl ? ' — <a href="' + e.mapImage.creditUrl + '" target="_blank" rel="noopener">original post</a>' : '') +
+              (e.mapImage.creditUrl ? ' · <a href="' + e.mapImage.creditUrl + '" target="_blank" rel="noopener">original post</a>' : '') +
               '</div></div>'
             : '';
           const secondaryMapHtml = e.secondaryMapImage
             ? '<div class="encounter-map"><img src="' + e.secondaryMapImage.url + '" alt="' + e.name + ' encounter map variant" loading="lazy">' +
               '<div class="encounter-map-credit">' + e.secondaryMapImage.credit +
-              (e.secondaryMapImage.creditUrl ? ' — <a href="' + e.secondaryMapImage.creditUrl + '" target="_blank" rel="noopener">original post</a>' : '') +
+              (e.secondaryMapImage.creditUrl ? ' · <a href="' + e.secondaryMapImage.creditUrl + '" target="_blank" rel="noopener">original post</a>' : '') +
               '</div></div>'
             : '';
           const strategyHtml = e.strategyImage
