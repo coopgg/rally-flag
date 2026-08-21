@@ -3,7 +3,7 @@
    Every page includes this file and a `<div id="site-nav"></div>`
    right after the opening <body> tag. Set `<body data-nav-group="...">`
    to control which top-level nav link is marked active:
-     "distortions" | "setbonuses" | "guides" | "godrolls" | "artifacts" | "builds" | "puzzlehelper" | "codes" | "tracker"
+     "distortions" | "setbonuses" | "guides" | "godrolls" | "artifacts" | "builds" | "puzzlehelper" | "codes" | "tracker" | "vendors" | "debug"
 
    Theme (element) and mode (dark/light) are stored in localStorage
    so they persist across every page on the site, not just the one
@@ -16,18 +16,51 @@
   const STORAGE_THEME_KEY = "rallyflag_theme";
   const STORAGE_MODE_KEY = "rallyflag_mode";
 
-  const NAV_ITEMS = [
-    { label: "This Week", href: "this-week.html", group: "thisweek" },
-    { label: "Guides", href: "guides.html", group: "guides" },
-    { label: "Puzzle Helper", href: "puzzle-helper.html", group: "puzzlehelper" },
-    { label: "Tracker", href: "tracker.html", group: "tracker" },
-    { label: "Distortions", href: "distortions.html", group: "distortions" },
-    { label: "Builds", href: "builds.html", group: "builds" },
-    { label: "God Rolls", href: "god-rolls.html", group: "godrolls" },
-    { label: "Armor Sets", href: "armor-set-bonuses.html", group: "setbonuses" },
-    { label: "Artifacts", href: "artifacts.html", group: "artifacts" },
-    { label: "Codes", href: "codes.html", group: "codes" }
+  // Grouped (rather than one flat list) once the link count grew past
+  // ~10 — same labeled-section treatment the Appearance panel already
+  // uses (.nav-menu-section/.nav-menu-section-label), reused here for
+  // visual consistency between the two dropdown panels.
+  const NAV_SECTIONS = [
+    {
+      label: "Live",
+      items: [
+        { label: "This Week", href: "this-week.html", group: "thisweek" },
+        { label: "Tracker", href: "tracker.html", group: "tracker" },
+        { label: "Vendors", href: "vendors.html", group: "vendors" },
+        { label: "Distortions", href: "distortions.html", group: "distortions" }
+      ]
+    },
+    {
+      label: "Loadouts",
+      items: [
+        { label: "Builds", href: "builds.html", group: "builds" },
+        { label: "God Rolls", href: "god-rolls.html", group: "godrolls" },
+        { label: "Armor Sets", href: "armor-set-bonuses.html", group: "setbonuses" },
+        { label: "Artifacts", href: "artifacts.html", group: "artifacts" }
+      ]
+    },
+    {
+      label: "Reference",
+      items: [
+        { label: "Guides", href: "guides.html", group: "guides" },
+        { label: "Puzzle Helper", href: "puzzle-helper.html", group: "puzzlehelper" },
+        { label: "Codes", href: "codes.html", group: "codes" }
+      ]
+    }
   ];
+  // Debug tools (debug.html and the throwaway/noindexed API test pages
+  // it links to) only exist on the dev site. Hidden by hostname rather
+  // than deleted so this exact file can ship to prod unmodified — no
+  // manual "strip the Debug section" step at promotion time.
+  if (window.location.hostname !== "rallyflag.gg"){
+    NAV_SECTIONS.push({
+      label: "Debug",
+      items: [
+        { label: "🐞 Debug", href: "debug.html", group: "debug" }
+      ]
+    });
+  }
+  const NAV_ITEMS = NAV_SECTIONS.flatMap(section => section.items);
 
   const BUNGIE_ROOT = "https://www.bungie.net";
 
@@ -105,8 +138,51 @@
           '<div class="nav-menu-section-label">Subclass Theme</div>' +
           '<div class="element-grid">' + swatchesHtml + '</div>' +
         '</div>' +
+        '<div class="nav-menu-section" id="nav-auth-section"></div>' +
       '</div>'
     );
+  }
+
+  // Loads assets/api-keys.js and assets/oauth.js on demand so pages don't
+  // have to remember to include them just to get the sign-in widget in
+  // the menu — same "one place to maintain" idea as setupPWA() below.
+  // Skips a script that's already on the page (several pages include
+  // api-keys.js themselves for their own Bungie API calls).
+  function loadScript(src){
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  function ensureAuthReady(){
+    const apiKeysReady = window.RallyFlagAPI ? Promise.resolve() : loadScript("assets/api-keys.js");
+    return apiKeysReady
+      .then(() => window.RallyFlagAuth ? Promise.resolve() : loadScript("assets/oauth.js"));
+  }
+
+  function renderAuthSection(){
+    const section = document.getElementById("nav-auth-section");
+    if (!section || !window.RallyFlagAuth) return;
+
+    if (RallyFlagAuth.isSignedIn()){
+      const name = RallyFlagAuth.getDisplayName() || "Signed in";
+      section.innerHTML =
+        '<div class="nav-menu-section-label">Bungie.net</div>' +
+        '<div class="nav-auth-signed-in">' +
+          '<span class="nav-auth-name" title="' + name + '">' + name + '</span>' +
+          '<button class="nav-auth-signout" id="nav-auth-signout">Sign out</button>' +
+        '</div>';
+      document.getElementById("nav-auth-signout").addEventListener("click", () => RallyFlagAuth.signOut());
+    } else {
+      section.innerHTML =
+        '<div class="nav-menu-section-label">Bungie.net</div>' +
+        '<button class="nav-auth-btn" id="nav-auth-signin">Sign in with Bungie.net</button>';
+      document.getElementById("nav-auth-signin").addEventListener("click", () => RallyFlagAuth.signIn());
+    }
   }
 
   // Installs the manifest/icons/service worker on every page that loads
@@ -152,9 +228,22 @@
     const container = document.getElementById("site-nav");
     if (!container) return;
 
-    const linksHtml = NAV_ITEMS.map(item =>
-      '<a href="' + item.href + '"' + (item.group === activeGroup ? ' class="active"' : '') + '>' + item.label + '</a>'
-    ).join("");
+    // Each section is a <details>, all sharing one `name` — browsers
+    // auto-collapse the others whenever one opens, so the menu can't
+    // stack up into a long scroll of every link at once. The section
+    // holding the current page starts open; everything else starts
+    // collapsed to just its label.
+    const linksHtml = NAV_SECTIONS.map(section => {
+      const hasActive = section.items.some(item => item.group === activeGroup);
+      return (
+        '<details class="nav-menu-section" name="nav-links-accordion"' + (hasActive ? " open" : "") + '>' +
+          '<summary class="nav-menu-section-label">' + section.label + '</summary>' +
+          section.items.map(item =>
+            '<a href="' + item.href + '"' + (item.group === activeGroup ? ' class="active"' : '') + '>' + item.label + '</a>'
+          ).join("") +
+        '</details>'
+      );
+    }).join("");
 
     container.innerHTML =
       '<nav class="site-nav">' +
@@ -209,4 +298,9 @@
   buildNav();
   applyTheme(getStoredTheme());
   applyMode(getStoredMode());
+
+  ensureAuthReady().then(() => {
+    renderAuthSection();
+    RallyFlagAuth.onChange(renderAuthSection);
+  }).catch(() => {});
 })();

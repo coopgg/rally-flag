@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendors - Rally Flag</title>
+<meta name="description" content="Live Vanguard, Eververse, Ada-1, and Xûr inventory, pulled from your own signed-in Destiny 2 character.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rally Flag">
+<meta property="og:title" content="Vendors">
+<meta property="og:description" content="Live Vanguard, Eververse, Ada-1, and Xûr inventory, pulled from your own signed-in Destiny 2 character.">
+<meta property="og:url" content="https://rallyflag.gg/vendors.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vendors">
+<meta name="twitter:description" content="Live Vanguard, Eververse, Ada-1, and Xûr inventory, pulled from your own signed-in Destiny 2 character.">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+  section.vend-section{ max-width:1080px; margin:40px auto 0; padding:0 24px 90px; }
+
+  .vend-signin-card{
+    max-width:560px; margin:36px auto 0; padding:26px 28px; text-align:center;
+  }
+  .vend-signin-card p{ color:var(--text-dim); font-size:14px; line-height:1.6; margin-bottom:18px; }
+  .vend-signin-btn{
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:700;
+    color:#0b0700; background:var(--accent-bright); border:1px solid var(--accent-bright);
+    padding:10px 22px; border-radius:999px; cursor:pointer; text-decoration:none; display:inline-block;
+  }
+  .vend-signin-btn:hover{ opacity:0.9; }
+  .vend-signed-in-note{
+    text-align:center; font-family:'JetBrains Mono', monospace; font-size:12px;
+    color:var(--text-dimmer); margin:22px auto 0;
+  }
+  .vend-signed-in-note a{ color:var(--accent-bright); text-decoration:none; cursor:pointer; }
+  .vend-signed-in-note a:hover{ text-decoration:underline; }
+
+  .vend-view{ display:none; }
+  .vend-view.active{ display:block; }
+
+  .vend-category-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase; margin:28px 0 12px;
+    padding-bottom:8px; border-bottom:1px solid var(--panel-border);
+  }
+  .vend-category-label:first-child{ margin-top:0; }
+
+  /* Per-class armor groups collapse by default — most players only care
+     about their own class, and there can be up to 4 of these stacked
+     under one vendor. Weapons stay always-expanded (a plain label+grid,
+     not one of these), since that group applies to everyone. */
+  .vend-category-collapsible{ margin:0; }
+  .vend-category-collapsible:first-child{ margin-top:0; }
+  .vend-category-collapsible summary.vend-category-label{
+    cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between;
+  }
+  .vend-category-collapsible summary.vend-category-label::-webkit-details-marker{ display:none; }
+  .vend-category-chevron{ font-size:11px; transition:transform 0.15s ease; }
+  .vend-category-collapsible[open] .vend-category-chevron{ transform:rotate(90deg); }
+
+  .vend-grid{ display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
+  .vend-card{ flex:0 1 250px; padding:14px; }
+  .vend-card-top{ display:flex; gap:12px; align-items:center; }
+  .vend-icon{
+    width:52px; height:52px; border-radius:4px; overflow:hidden; flex-shrink:0;
+    background:rgba(0,0,0,0.4);
+  }
+  .vend-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .vend-info{ min-width:0; }
+  .vend-name{
+    font-family:'Oswald', sans-serif; font-weight:600; font-size:13.5px; color:var(--text);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .vend-type{ font-size:11px; color:var(--text-dimmer); margin-top:2px; }
+  .vend-cost{
+    margin-top:6px; font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--accent-bright);
+  }
+  .vend-tag{
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    letter-spacing:0.04em; text-transform:uppercase; padding:3px 8px; border-radius:999px;
+    border:1px solid var(--accent); color:var(--accent-bright); margin-top:8px;
+  }
+
+  .vend-perks-row{ display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+  .vend-perk-chip{
+    display:flex; align-items:center; gap:4px; font-family:'JetBrains Mono', monospace;
+    font-size:9.5px; color:var(--text-dim); background:rgba(255,255,255,0.05);
+    border:1px solid var(--panel-border); border-radius:999px; padding:2px 7px 2px 3px;
+  }
+  .vend-perk-chip img{ width:14px; height:14px; border-radius:2px; }
+
+  /* Weapon/armor cards: Stats / Perks pill-tabs, DIM-style stat bars +
+     perk grid — same rendering as api-debug.html's Vendor/Item Hash
+     Lookup, just tabbed instead of always-stacked to keep these smaller
+     250px cards clean. */
+  .vend-roll-tabs{ display:flex; gap:6px; margin-top:10px; }
+  .vend-roll-tab{
+    font-family:'JetBrains Mono', monospace; font-size:9.5px; text-transform:uppercase;
+    letter-spacing:0.04em; color:var(--text-dim); background:rgba(255,255,255,0.05);
+    border:1px solid var(--panel-border); border-radius:999px; padding:3px 10px;
+    cursor:pointer; transition: all 0.15s ease;
+  }
+  .vend-roll-tab:hover{ color:var(--text); }
+  .vend-roll-tab.active{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); font-weight:700; }
+  .vend-roll-tab-panel{ display:none; margin-top:10px; }
+  .vend-roll-tab-panel.active{ display:block; }
+  .vend-stat-bar-row{ margin-bottom:6px; }
+  .vend-stat-bar-head{
+    display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace;
+    font-size:10px; color:var(--text-dim); margin-bottom:2px;
+  }
+  .vend-stat-bar-head .val{ color:var(--text); }
+  .vend-stat-bar-track{ height:4px; border-radius:2px; background:rgba(255,255,255,0.08); overflow:hidden; }
+  .vend-stat-bar-fill{ height:100%; background:var(--text-dim); border-radius:2px; }
+  .vend-empty-note{ font-size:10.5px; color:var(--text-dimmer); font-style:italic; }
+
+  .vend-recoil-compass-wrap{ display:flex; }
+  .vend-recoil-compass{ width:32px; height:16px; }
+
+  .vend-perk-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+  .vend-perk-grid-col{ display:flex; flex-direction:column; gap:5px; }
+  .vend-perk-icon{
+    width:28px; height:28px; object-fit:cover; border-radius:4px; background:#000;
+    border:1px solid var(--panel-border); display:block;
+  }
+  .vend-perk-icon-empty{ background:rgba(255,255,255,0.05); }
+  .vend-perk-icon.equipped{ border-color:var(--accent-bright); box-shadow:0 0 0 1px var(--accent-bright); }
+
+  .vend-archetype-chip{ display:flex; align-items:center; gap:6px; margin-top:8px; }
+  .vend-archetype-chip img{ width:20px; height:20px; border-radius:3px; object-fit:cover; background:#000; }
+  .vend-archetype-chip .name{
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:600; color:var(--text);
+  }
+
+  .tw-status{
+    text-align:center; padding:30px 20px; color:var(--text-dimmer);
+    font-family:'JetBrains Mono', monospace; font-size:13px;
+  }
+  .tw-status.tw-error{ color:#ff8f8f; }
+
+  .tw-countdown-wrap{ text-align:center; padding:30px 20px; }
+  .tw-countdown-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--text-dimmer); text-transform:uppercase; margin-bottom:14px;
+  }
+  .tw-countdown-digits{
+    font-family:'JetBrains Mono', monospace; font-weight:700; font-size:34px;
+    color:var(--accent-bright); letter-spacing:0.02em;
+  }
+  .tw-countdown-arrival{ font-size:13px; color:var(--text-dim); margin-top:12px; }
+  .tw-countdown-note{
+    font-size:11px; color:var(--text-dimmer); margin-top:6px; max-width:420px;
+    margin-left:auto; margin-right:auto; line-height:1.5;
+  }
+  .vend-departure-note{
+    text-align:center; font-family:'JetBrains Mono', monospace; font-size:13px;
+    color:var(--text-dim); margin-bottom:24px;
+  }
+  .vend-departure-note .clock{ color:var(--accent-bright); font-weight:700; }
+  .vend-build-note{
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--panel-border);
+    font-size:11.5px; color:var(--text-dim);
+  }
+  .vend-build-note a{ color:var(--accent-bright); text-decoration:none; }
+  .vend-build-note a:hover{ text-decoration:underline; }
+</style>
+</head>
+<body data-nav-group="vendors">
+
+<div id="site-nav"></div>
+
+<div class="hero">
+  <div class="eyebrow">Destiny 2 · Live Vendors</div>
+  <h1 class="title">Vendors</h1>
+  <p class="subtitle">Live inventory for Vanguard, Eververse, Ada-1, and Xûr, pulled from your own signed-in character. None of this is available anonymously.</p>
+  <div class="subnav" id="vend-pills"></div>
+</div>
+
+<div id="vend-signin-gate" class="vend-signin-card panel-card">
+  <p>Bungie's public API only ever hands back a basic anonymous listing for Xûr, and nothing at all for the other three. Seeing what's actually for sale needs a signed-in character context, so this page needs your Bungie.net login. We only ever read your inventory, nothing here can buy, equip, or change anything on your account.</p>
+  <a href="#" id="vend-signin-btn" class="vend-signin-btn">Sign in with Bungie.net</a>
+</div>
+
+<div id="vend-signed-in-note" class="vend-signed-in-note"></div>
+
+<div id="view-vanguard" class="vend-view">
+  <section class="vend-section">
+    <div id="vanguard-status" class="tw-status">Loading…</div>
+    <div id="vanguard-output"></div>
+  </section>
+</div>
+
+<div id="view-eververse" class="vend-view">
+  <section class="vend-section">
+    <div id="eververse-status" class="tw-status">Loading…</div>
+    <div id="eververse-output"></div>
+  </section>
+</div>
+
+<div id="view-ada-1" class="vend-view">
+  <section class="vend-section">
+    <div class="vend-category-label">Shaders</div>
+    <div id="ada1-status" class="tw-status">Loading…</div>
+    <div id="ada1-output"></div>
+  </section>
+</div>
+
+<div id="view-xur" class="vend-view">
+  <section class="vend-section">
+    <div id="xur-status" class="tw-status">Loading…</div>
+    <div id="xur-output"></div>
+  </section>
+</div>
+
+<footer>
+  <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
+  <p>Pulled live from Bungie's API on page load, in the context of whichever Bungie.net account you sign in with. Sign out any time from the appearance menu in the top nav.</p>
+</footer>
+
+<script src="assets/api-keys.js"></script>
+<script src="assets/oauth.js"></script>
+<script src="assets/builds-data.js"></script>
+<script src="assets/nav.js"></script>
+<script>
+(function(){
+  const BUNGIE_API_KEY = window.RallyFlagAPI.BUNGIE_API_KEY;
+  const BUNGIE_ROOT = "https://www.bungie.net";
+
+  // ---------------- manifest def cache ----------------
+  // Two layers: an in-memory map for this page load, and a persisted
+  // localStorage copy so a repeat visit doesn't re-fetch definitions that
+  // essentially never change (item/stat names, icons). Earlier versions of
+  // this fetch were fully sequential to avoid hammering Bungie's API, which
+  // made a full pull take a minute-plus; a small bounded concurrency (via
+  // mapWithConcurrency below) turned out to be safe in practice and is a
+  // large part of the actual speedup, with the persisted cache making
+  // every visit after the first one near-instant for anything already seen.
+  const defCache = {};
+  const DEF_CACHE_PREFIX = "rallyflag_defcache_v1:";
+  const DEF_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+  function loadPersistedDef(key){
+    try {
+      const raw = localStorage.getItem(DEF_CACHE_PREFIX + key);
+      if (!raw) return undefined;
+      const parsed = JSON.parse(raw);
+      if (Date.now() - parsed.ts > DEF_CACHE_TTL_MS) return undefined;
+      return parsed.data;
+    } catch (e){
+      return undefined;
+    }
+  }
+  function savePersistedDef(key, data){
+    try {
+      localStorage.setItem(DEF_CACHE_PREFIX + key, JSON.stringify({ data, ts: Date.now() }));
+    } catch (e){
+      // Quota exceeded or storage disabled — in-memory cache still covers this page load.
+    }
+  }
+
+  async function fetchDef(type, hash){
+    const key = type + ":" + hash;
+    if (defCache[key] !== undefined) return defCache[key];
+    const persisted = loadPersistedDef(key);
+    if (persisted !== undefined){
+      defCache[key] = persisted;
+      return persisted;
+    }
+    try {
+      const res = await fetch(BUNGIE_ROOT + "/Platform/Destiny2/Manifest/" + type + "/" + hash + "/", {
+        headers: { "X-API-Key": BUNGIE_API_KEY }
+      });
+      const data = await res.json();
+      const result = (data.ErrorCode === 1) ? data.Response : null;
+      defCache[key] = result;
+      if (result !== null) savePersistedDef(key, result);
+      return result;
+    } catch (e){
+      defCache[key] = null;
+      return null;
+    }
+  }
+
+  // Runs `fn` over `items` with at most `limit` in flight at once, instead
+  // of either one-at-a-time (slow) or all-at-once (risks rate-limiting).
+  // Order of `results` matches `items`, regardless of completion order.
+  async function mapWithConcurrency(items, limit, fn){
+    const results = new Array(items.length);
+    let next = 0;
+    async function worker(){
+      while (next < items.length){
+        const i = next++;
+        results[i] = await fn(items[i], i);
+      }
+    }
+    await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+    return results;
+  }
+
+  function iconUrl(displayProperties){
+    return (displayProperties && displayProperties.icon) ? (BUNGIE_ROOT + displayProperties.icon) : null;
+  }
+
+  async function authedApiGet(path){
+    const res = await RallyFlagAuth.authedFetch(path);
+    const data = await res.json();
+    if (!res.ok || data.ErrorCode !== 1){
+      throw new Error((data && data.Message) || ("HTTP " + res.status));
+    }
+    return data.Response;
+  }
+
+  const CHARACTER_CLASS_LABELS = { 0: "Titan", 1: "Hunter", 2: "Warlock" };
+
+  // Every vendor call below queries all characters, not just the most
+  // recently played one — an already-owned item drops off one
+  // character's sale list while remaining purchasable on another, a
+  // real bug this site hit while investigating Eververse and Xur.
+  async function resolveAllCharacters(){
+    const memberships = await authedApiGet("/Platform/User/GetMembershipsForCurrentUser/");
+    const destinyMemberships = memberships.destinyMemberships || [];
+    if (!destinyMemberships.length) throw new Error("This Bungie account has no linked Destiny 2 platform.");
+    const primary = destinyMemberships.find(m => m.membershipId === memberships.primaryMembershipId) || destinyMemberships[0];
+
+    const profile = await authedApiGet("/Platform/Destiny2/" + primary.membershipType + "/Profile/" + primary.membershipId + "/?components=200");
+    const characters = (profile.characters && profile.characters.data) || {};
+    const characterList = Object.keys(characters).map(id => ({
+      characterId: id,
+      classLabel: CHARACTER_CLASS_LABELS[characters[id].classType] || "Unknown"
+    }));
+    if (!characterList.length) throw new Error("No characters found on this account's primary membership.");
+
+    return { membershipType: primary.membershipType, membershipId: primary.membershipId, characters: characterList };
+  }
+
+  function costSignature(costs){
+    return (costs || []).map(c => c.itemHash + ":" + c.quantity).sort().join(",");
+  }
+
+  async function costChipsHtml(costs){
+    if (!costs || !costs.length) return "Free";
+    const parts = await mapWithConcurrency(costs, 5, async (cost) => {
+      const costDef = await fetchDef("DestinyInventoryItemDefinition", cost.itemHash);
+      const costName = (costDef && costDef.displayProperties && costDef.displayProperties.name) || ("Unknown (" + cost.itemHash + ")");
+      return cost.quantity + " " + costName;
+    });
+    return parts.join(", ");
+  }
+
+  function itemCardHtml(name, icon, typeName, costText, tagText, extraHtml){
+    return (
+      '<div class="vend-card panel-card">' +
+        '<div class="vend-card-top">' +
+          '<div class="vend-icon">' + (icon ? '<img src="' + icon + '" alt="">' : '') + '</div>' +
+          '<div class="vend-info">' +
+            '<div class="vend-name">' + name + '</div>' +
+            (typeName ? '<div class="vend-type">' + typeName + '</div>' : '') +
+            '<div class="vend-cost">' + costText + '</div>' +
+          '</div>' +
+        '</div>' +
+        (tagText ? '<div class="vend-tag">' + tagText + '</div>' : '') +
+        (extraHtml || "") +
+      '</div>'
+    );
+  }
+
+  // Per-class armor group, collapsed by default (see .vend-category-collapsible).
+  function appendCollapsibleCategory(outputEl, label, cardsHtml){
+    const details = document.createElement("details");
+    details.className = "vend-category-collapsible";
+    details.innerHTML =
+      '<summary class="vend-category-label">' + label + '<span class="vend-category-chevron">&#9656;</span></summary>' +
+      '<div class="vend-grid">' + cardsHtml.join("") + '</div>';
+    outputEl.appendChild(details);
+  }
+
+  // Universal placeholder plugs that sit in every piece of armor's sockets
+  // regardless of roll — an empty mod/tuning slot, the default (unselected)
+  // shader/ornament, and the "insert to upgrade" prompt. None of these say
+  // anything about this specific item, unlike an actual archetype perk
+  // (Grenadier, Specialist, Bulwark, etc.) or a socketed mod.
+  function isJunkSocketPlug(name){
+    if (/^empty .*socket$/i.test(name)) return true;
+    if (/^(default shader|upgrade armor|default ornament)$/i.test(name)) return true;
+    if (/^kill tracker$/i.test(name)) return true;
+    if (/^tier \d+:/i.test(name)) return true;
+    return false;
+  }
+
+  // Archetype (armor) / Frame (weapon) socket categories — same evidence
+  // as api-debug.html: a fixed, non-swappable, isVisible:false socket
+  // carrying the one defining trait (Powerhouse, Demolitionist, a
+  // sword's Frame, etc.), confirmed against real raw JSON.
+  const ARCHETYPE_SOCKET_CATEGORY_HASH = 3154740035;
+  const WEAPON_FRAME_CATEGORY_HASH = 3956125808;
+  function isArchetypeCategory(categoryHash){
+    return categoryHash === ARCHETYPE_SOCKET_CATEGORY_HASH || categoryHash === WEAPON_FRAME_CATEGORY_HASH;
+  }
+
+  // Weapon perk/noise socket categories — same evidence as api-debug.html.
+  const WEAPON_PERKS_CATEGORY_HASH = 4241085061;    // barrel/mag/perk 1/perk 2 — always kept
+  const WEAPON_MOD_TIER_CATEGORY_HASH = 2048875504; // same universal mod pool armor's tier slot uses — always excluded
+  const WEAPON_COSMETICS_MIXED_CATEGORY_HASH = 2685412949; // Origin Trait mixed with Ornaments — dropped entirely, by request
+  function isNoiseSocketCategory(name){
+    if (!name) return false;
+    return /mods?\b|cosmetics?|shaders?|ornaments?|trackers?/i.test(name);
+  }
+  function isExcludedSocket(categoryHash, label, plugCount){
+    if (categoryHash === WEAPON_PERKS_CATEGORY_HASH) return false;
+    if (categoryHash === WEAPON_MOD_TIER_CATEGORY_HASH) return true;
+    if (categoryHash === WEAPON_COSMETICS_MIXED_CATEGORY_HASH) return true;
+    return plugCount > 1 && isNoiseSocketCategory(label);
+  }
+
+  // Armor stats always render in this fixed order, matching the in-game
+  // card, with a Total row — same as api-debug.html.
+  const STAT_ORDER = ["Health", "Melee", "Grenade", "Super", "Class", "Weapons"];
+  function sortStatsToGameOrder(resolvedStats){
+    resolvedStats.sort((a, b) => {
+      const ai = STAT_ORDER.indexOf(a.name), bi = STAT_ORDER.indexOf(b.name);
+      if (ai === -1 && bi === -1) return 0;
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+    return resolvedStats;
+  }
+  function statBarsHtml(resolvedStats){
+    if (!resolvedStats.length) return "";
+    let html = resolvedStats.map(s => {
+      const pct = Math.max(0, Math.min(100, s.value));
+      return (
+        '<div class="vend-stat-bar-row">' +
+          '<div class="vend-stat-bar-head"><span>' + s.name + '</span><span class="val">' + s.value + '</span></div>' +
+          '<div class="vend-stat-bar-track"><div class="vend-stat-bar-fill" style="width:' + pct + '%"></div></div>' +
+        '</div>'
+      );
+    }).join("");
+    if (resolvedStats.every(s => STAT_ORDER.includes(s.name))){
+      const total = resolvedStats.reduce((sum, s) => sum + s.value, 0);
+      html += '<div class="vend-stat-bar-row"><div class="vend-stat-bar-head"><span>Total</span><span class="val">' + total + '</span></div></div>';
+    }
+    return html;
+  }
+
+  // Bungie's real API stat names are verbose ("Rounds Per Minute",
+  // "Airborne Effectiveness", "Ammo Generation") — the game abbreviates
+  // just these three for display. Matching/ordering still needs the
+  // real names below.
+  const STAT_DISPLAY_NAME = {
+    "Rounds Per Minute": "RPM",
+    "Airborne Effectiveness": "Airborne",
+    "Ammo Generation": "Ammo Gen"
+  };
+  // Per-weapon-type stat layout — same evidence as api-debug.html
+  // (confirmed against real screenshots, not guessed). `top` is the rate
+  // stat (a plain number, not a bar — Swing Speed is the one exception,
+  // via topIsBar), `order` is the bar-stat sequence, `bottom` is the
+  // capacity stat (also a bar).
+  const WEAPON_STAT_LAYOUT = {
+    "Sword": {
+      top: "Swing Speed",
+      topIsBar: true,
+      order: ["Impact", "Guard Resistance", "Charge Rate", "Guard Endurance"],
+      bottom: "Ammo Capacity"
+    },
+    "Bow": {
+      top: "Draw Time",
+      order: ["Impact", "Accuracy", "Stability", "Handling", "Reload Speed", "Aim Assistance", "Airborne Effectiveness", "Zoom", "Ammo Generation", "Recoil Direction"],
+      bottom: null
+    },
+    "Grenade Launcher": {
+      top: "Rounds Per Minute",
+      order: ["Blast Radius", "Velocity", "Stability", "Handling", "Reload Speed", "Aim Assistance", "Airborne Effectiveness", "Zoom", "Ammo Generation", "Recoil Direction"],
+      bottom: "Magazine"
+    },
+    "Glaive": {
+      top: "Rounds Per Minute",
+      order: ["Impact", "Range", "Shield Duration", "Handling", "Reload Speed", "Aim Assistance", "Airborne Effectiveness", "Zoom", "Ammo Generation", "Recoil Direction"],
+      bottom: "Magazine"
+    }
+  };
+  WEAPON_STAT_LAYOUT["Rocket Launcher"] = WEAPON_STAT_LAYOUT["Grenade Launcher"];
+  const CHARGE_TIME_GUN_STAT_LAYOUT = {
+    top: "Charge Time",
+    order: ["Impact", "Range", "Stability", "Handling", "Reload Speed", "Aim Assistance", "Airborne Effectiveness", "Zoom", "Ammo Generation", "Recoil Direction"],
+    bottom: "Magazine"
+  };
+  WEAPON_STAT_LAYOUT["Fusion Rifle"] = CHARGE_TIME_GUN_STAT_LAYOUT;
+  WEAPON_STAT_LAYOUT["Linear Fusion Rifle"] = CHARGE_TIME_GUN_STAT_LAYOUT;
+  const DEFAULT_GUN_STAT_LAYOUT = {
+    top: "Rounds Per Minute",
+    order: ["Impact", "Range", "Stability", "Handling", "Reload Speed", "Aim Assistance", "Airborne Effectiveness", "Zoom", "Ammo Generation", "Recoil Direction"],
+    bottom: "Magazine"
+  };
+  function weaponStatLayoutFor(itemTypeDisplayName){
+    return WEAPON_STAT_LAYOUT[itemTypeDisplayName] || DEFAULT_GUN_STAT_LAYOUT;
+  }
+
+  // Recoil Direction compass — exact reverse-engineered formula, same as
+  // api-debug.html (verified to 1e-13° against 58 real DIM SVG samples).
+  const RECOIL_LEAN_RATIO = [
+    -8 / 9, -0.8453835700401364, -0.7191262172221752, -0.5224757798155321,
+    -0.2746817727777316, 0,
+    0.2746817727777319, 0.5224757798155313, 0.7191262172221743, 0.8453835700401364
+  ];
+  function leanDegForValue(value){
+    if (value >= 100) return 0;
+    const half = 0.9 * (100 - value);
+    const sign = Math.floor(value / 10) % 2 === 0 ? -1 : 1;
+    return sign * RECOIL_LEAN_RATIO[value % 10] * half;
+  }
+  function recoilCompassHtml(value){
+    const half = 0.9 * (100 - value);
+    const center = leanDegForValue(value);
+    const cx = 1, cy = 1;
+    const pt = (deg) => {
+      const rad = deg * Math.PI / 180;
+      return [(cx + Math.sin(rad)).toFixed(4), (cy - Math.cos(rad)).toFixed(4)];
+    };
+    let inner;
+    if (half < 1){
+      const [x, y] = pt(center);
+      const [ox, oy] = pt(center + 180);
+      inner = '<line x1="' + ox + '" y1="' + oy + '" x2="' + x + '" y2="' + y + '" stroke="white" stroke-width="0.1"></line>';
+    } else {
+      const [x1, y1] = pt(center + half);
+      const [x2, y2] = pt(center - half);
+      inner = '<path d="M' + cx + ',' + cy + ' L' + x1 + ',' + y1 + ' A1,1 0 0,0 ' + x2 + ',' + y2 + ' Z" fill="#FFF"></path>';
+    }
+    return '<svg class="vend-recoil-compass" viewBox="0 0 2 1"><circle r="1" cx="1" cy="1" fill="#333"></circle>' + inner + '</svg>';
+  }
+
+  function weaponStatBarsHtml(resolvedStats, layout){
+    if (!resolvedStats.length) return "";
+    const fullOrder = (layout.top ? [layout.top] : []).concat(layout.order, layout.bottom ? [layout.bottom] : []);
+    const sorted = resolvedStats.slice().sort((a, b) => {
+      const ai = fullOrder.indexOf(a.name), bi = fullOrder.indexOf(b.name);
+      if (ai === -1 && bi === -1) return 0;
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+    return sorted.map(s => {
+      const label = STAT_DISPLAY_NAME[s.name] || s.name;
+      if (s.name === layout.top && !layout.topIsBar){
+        return '<div class="vend-stat-bar-row"><div class="vend-stat-bar-head"><span>' + label + '</span><span class="val">' + s.value + '</span></div></div>';
+      }
+      if (s.name === "Recoil Direction"){
+        return (
+          '<div class="vend-stat-bar-row">' +
+            '<div class="vend-stat-bar-head"><span>' + label + '</span><span class="val">' + s.value + '</span></div>' +
+            '<div class="vend-recoil-compass-wrap">' + recoilCompassHtml(s.value) + '</div>' +
+          '</div>'
+        );
+      }
+      const pct = Math.max(0, Math.min(100, s.value));
+      return (
+        '<div class="vend-stat-bar-row">' +
+          '<div class="vend-stat-bar-head"><span>' + label + '</span><span class="val">' + s.value + '</span></div>' +
+          '<div class="vend-stat-bar-track"><div class="vend-stat-bar-fill" style="width:' + pct + '%"></div></div>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  function perkIconHtml(name, icon, equipped){
+    const safeName = name.replace(/"/g, "&quot;");
+    const cls = "vend-perk-icon" + (equipped ? " equipped" : "");
+    if (icon) return '<img class="' + cls + '" src="' + icon + '" alt="' + safeName + '" title="' + safeName + '">';
+    return '<div class="' + cls + ' vend-perk-icon-empty" title="' + safeName + '"></div>';
+  }
+
+  let rollCardIdCounter = 0;
+
+  // Unified stats+perks roll block for a vendor sale item, same
+  // rendering as api-debug.html's Vendor Hash Lookup but tabbed (Stats /
+  // Perks) to keep these smaller 250px cards clean instead of stacking
+  // everything. Weapons get the DIM-style layout (top rate stat as a
+  // plain number, ordered bars, recoil compass, bottom capacity stat as
+  // a bar) plus a 4-column perk grid (barrel/launch/blade type,
+  // magazine/arrow/grenade type, perk 1, perk 2) scoped to what this
+  // sale can actually roll (component 310) with the equipped option
+  // highlighted. Armor gets game-ordered stat bars + a Total, plus a
+  // flat perk-chip list for anything else non-noise. Archetype/Frame —
+  // the one defining trait — renders above the tabs, always visible.
+  async function resolvedRollHtml(itemDef, statEntry, socketEntry, reusablePlugsEntry){
+    const stats = statEntry && statEntry.stats ? Object.values(statEntry.stats) : [];
+    const reusablePlugsByIndex = (reusablePlugsEntry && reusablePlugsEntry.plugs) || {};
+    // No isVisible filter — an armor archetype (Powerhouse, Paragon, etc.)
+    // lives in a hidden, non-swappable, rolled-at-drop socket; filtering
+    // on visibility silently drops exactly the trait this is meant to show.
+    const allSockets = (socketEntry && socketEntry.sockets) || [];
+    const visibleSockets = allSockets.map((s, i) => ({ socket: s, index: i })).filter(s => s.socket.plugHash);
+
+    const categoryHashByIndex = {};
+    ((itemDef.sockets && itemDef.sockets.socketCategories) || []).forEach(cat => {
+      (cat.socketIndexes || []).forEach(idx => { categoryHashByIndex[idx] = cat.socketCategoryHash; });
+    });
+
+    const isWeapon = itemDef.itemType === 3;
+
+    const [resolvedStats, resolvedSockets] = await Promise.all([
+      mapWithConcurrency(stats, 5, async (stat) => {
+        const statDef = await fetchDef("DestinyStatDefinition", stat.statHash);
+        const statName = statDef && statDef.displayProperties && statDef.displayProperties.name;
+        if (!statName) return null;
+        return { name: statName, value: stat.value };
+      }).then(rows => rows.filter(Boolean)),
+      mapWithConcurrency(visibleSockets, 5, async ({ socket, index }) => {
+        const categoryHash = categoryHashByIndex[index];
+        if (isArchetypeCategory(categoryHash)){
+          const plugDef = await fetchDef("DestinyInventoryItemDefinition", socket.plugHash);
+          const plugName = plugDef && plugDef.displayProperties && plugDef.displayProperties.name;
+          if (!plugName || isJunkSocketPlug(plugName)) return null;
+          return { isArchetype: true, name: plugName, icon: plugDef ? iconUrl(plugDef.displayProperties) : null };
+        }
+
+        // Armor has no equivalent perk-grid concept here (no 2pc/4pc set
+        // bonus data to show, and its other sockets are mostly cosmetic)
+        // — just the archetype chip + stats, no Perks tab at all. Skip
+        // resolving anything else for it rather than fetching plugs that
+        // will never render.
+        if (!isWeapon) return null;
+
+        // A live roll only ever carries ONE resolved plug per socket, but
+        // the weapon-perk columns are meant to show the whole swappable
+        // pool with the actual pick highlighted. Component 310
+        // (reusablePlugs) is what's scoped to this sale — the real "what
+        // this gun can roll" pool. Falls back to just the one resolved
+        // plug if it's missing for a socket.
+        const isPerkColumn = isWeapon && categoryHash === WEAPON_PERKS_CATEGORY_HASH;
+        const reusablePlugs = reusablePlugsByIndex[index];
+        const plugHashes = (isPerkColumn && reusablePlugs && reusablePlugs.length)
+          ? reusablePlugs.map(p => p.plugItemHash)
+          : (socket.plugHash ? [socket.plugHash] : []);
+        if (!plugHashes.length) return null;
+        if (isExcludedSocket(categoryHash, null, plugHashes.length)) return null;
+
+        const perks = (await mapWithConcurrency(plugHashes, 5, async (plugHash) => {
+          const plugDef = await fetchDef("DestinyInventoryItemDefinition", plugHash);
+          const plugName = plugDef && plugDef.displayProperties && plugDef.displayProperties.name;
+          if (!plugName || isJunkSocketPlug(plugName)) return null;
+          return { name: plugName, icon: plugDef ? iconUrl(plugDef.displayProperties) : null, equipped: plugHash === socket.plugHash };
+        })).filter(Boolean);
+        if (!perks.length) return null;
+
+        return { index, isArchetype: false, isPerkColumn, perks };
+      }).then(rows => rows.filter(Boolean))
+    ]);
+
+    const archetype = resolvedSockets.find(s => s.isArchetype);
+
+    const statsHtml = isWeapon
+      ? weaponStatBarsHtml(resolvedStats, weaponStatLayoutFor(itemDef.itemTypeDisplayName))
+      : statBarsHtml(sortStatsToGameOrder(resolvedStats));
+
+    let html = "";
+    if (archetype) html += '<div class="vend-archetype-chip">' + (archetype.icon ? '<img src="' + archetype.icon + '" alt="">' : '') + '<span class="name">' + archetype.name + '</span></div>';
+
+    // Armor: stats only, no tabs — there's no perk-grid content for it
+    // (no 2pc/4pc set bonus data available to show), so a Perks tab
+    // would just be permanently empty.
+    if (!isWeapon){
+      if (!archetype && !statsHtml) return "";
+      html += statsHtml || '<div class="vend-empty-note">no stat roll on this item</div>';
+      return html;
+    }
+
+    const perkColumns = resolvedSockets.filter(s => !s.isArchetype && s.isPerkColumn)
+      .sort((a, b) => a.index - b.index).map(s => s.perks);
+    const flatPerks = resolvedSockets.filter(s => !s.isArchetype && !s.isPerkColumn)
+      .flatMap(s => s.perks.map(p => perkIconHtml(p.name, p.icon)));
+
+    let perksHtml = "";
+    if (perkColumns.length) perksHtml += '<div class="vend-perk-grid">' + perkColumns.map(column =>
+      '<div class="vend-perk-grid-col">' + column.map(p => perkIconHtml(p.name, p.icon, p.equipped)).join("") + '</div>'
+    ).join("") + '</div>';
+    if (flatPerks.length) perksHtml += '<div class="vend-perks-row">' + flatPerks.join("") + '</div>';
+
+    if (!archetype && !statsHtml && !perksHtml) return "";
+
+    const id = "roll-" + (rollCardIdCounter++);
+    html +=
+      '<div class="vend-roll-tabs">' +
+        '<button type="button" class="vend-roll-tab active" data-tab="' + id + '-stats">Stats</button>' +
+        '<button type="button" class="vend-roll-tab" data-tab="' + id + '-perks">Perks</button>' +
+      '</div>' +
+      '<div class="vend-roll-tab-panel active" id="' + id + '-stats">' +
+        (statsHtml || '<div class="vend-empty-note">no stat roll on this item</div>') +
+      '</div>' +
+      '<div class="vend-roll-tab-panel" id="' + id + '-perks">' +
+        (perksHtml || '<div class="vend-empty-note">no perk data on this item</div>') +
+      '</div>';
+    return html;
+  }
+
+  document.addEventListener("click", (e) => {
+    const tab = e.target.closest(".vend-roll-tab");
+    if (!tab) return;
+    const panel = document.getElementById(tab.dataset.tab);
+    if (!panel) return;
+    tab.closest(".vend-roll-tabs").querySelectorAll(".vend-roll-tab").forEach(t => t.classList.toggle("active", t === tab));
+    panel.parentElement.querySelectorAll(".vend-roll-tab-panel").forEach(p => p.classList.toggle("active", p === panel));
+  });
+
+
+  function formatDate(iso){
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }) + " at "
+         + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  }
+
+  // ---------------- Xur's real schedule (same ground truth as
+  // this-week.html: active Friday 17:00 UTC through Tuesday 17:00 UTC) ----------------
+  const XUR_RESET_UTC_HOUR = 17;
+
+  function estimateNextXurArrival(){
+    const now = new Date();
+    const target = new Date(now);
+    target.setUTCHours(XUR_RESET_UTC_HOUR, 0, 0, 0);
+    let daysUntilFriday = (5 - target.getUTCDay() + 7) % 7;
+    if (daysUntilFriday === 0 && target.getTime() <= now.getTime()) daysUntilFriday = 7;
+    target.setUTCDate(target.getUTCDate() + daysUntilFriday);
+    return target.toISOString();
+  }
+
+  function isWithinXurSchedule(now){
+    now = now || new Date();
+    const day = now.getUTCDay();
+    const hour = now.getUTCHours();
+    if (day === 5) return hour >= XUR_RESET_UTC_HOUR;
+    if (day === 6 || day === 0 || day === 1) return true;
+    if (day === 2) return hour < XUR_RESET_UTC_HOUR;
+    return false;
+  }
+
+  function nextXurDeparture(){
+    const now = new Date();
+    const target = new Date(now);
+    target.setUTCHours(XUR_RESET_UTC_HOUR, 0, 0, 0);
+    let daysUntilTuesday = (2 - target.getUTCDay() + 7) % 7;
+    if (daysUntilTuesday === 0 && target.getTime() <= now.getTime()) daysUntilTuesday = 7;
+    target.setUTCDate(target.getUTCDate() + daysUntilTuesday);
+    return target;
+  }
+
+  let departureTimer = null;
+  function startDepartureCountdown(el){
+    if (departureTimer) clearInterval(departureTimer);
+    const target = nextXurDeparture();
+    function tick(){
+      const diff = target.getTime() - Date.now();
+      if (diff <= 0){
+        el.innerHTML = 'Leaving now…';
+        clearInterval(departureTimer);
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      el.innerHTML = 'Departs in <span class="clock">' + (d > 0 ? d + "d " : "") + h + "h " + m + "m " + s + "s</span>";
+    }
+    tick();
+    departureTimer = setInterval(tick, 1000);
+  }
+
+  let arrivalTimer = null;
+  function renderArrivalCountdown(container, arrivalIso){
+    if (arrivalTimer) clearInterval(arrivalTimer);
+    container.innerHTML =
+      '<div class="tw-countdown-wrap">' +
+        '<div class="tw-countdown-label">Xûr has left the Tower. Returns in</div>' +
+        '<div class="tw-countdown-digits" id="xur-countdown-digits">--</div>' +
+        '<div class="tw-countdown-arrival">Arrives ' + formatDate(arrivalIso) + '</div>' +
+        '<div class="tw-countdown-note">Estimated from his usual Friday reset — sign in and check back once he’s active for his real inventory.</div>' +
+      '</div>';
+    const digitsEl = document.getElementById("xur-countdown-digits");
+    const target = new Date(arrivalIso).getTime();
+    function tick(){
+      const diff = target - Date.now();
+      if (diff <= 0){
+        digitsEl.textContent = "Any moment now";
+        clearInterval(arrivalTimer);
+        return;
+      }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      digitsEl.textContent = (d > 0 ? d + "d " : "") + h + "h " + m + "m " + s + "s";
+    }
+    tick();
+    arrivalTimer = setInterval(tick, 1000);
+  }
+
+  // =================================================================
+  // Vanguard (Zavala)
+  // =================================================================
+  const ZAVALA_HASH = "69482069";
+  const ZAVALA_ARSENAL_HASH = "153857624"; // "Weekly: Vanguard Arms Rewards" — confirmed live, see api-debug.html
+
+  // Both his own hash and the Arsenal hash mix in blank portal-tile
+  // stubs and non-gear filler (materials, reputation reset, emblems,
+  // generic reward engrams/shaders, and a couple of zero-cost, icon-less
+  // "Armor Set" collection tiles that aren't a real equippable piece) —
+  // filtered out by name/type rather than guessed, based on what's
+  // actually been seen live.
+  const VANGUARD_SKIP_NAMES = new Set(["Legacy Gear", "Vanguard Ops", "Armor", "Weapons", "Weekly: Vanguard Arms Rewards", "Reset Rank", "Vanguard Tactician Armor", "Vanguard Tactician Arsenal", "Vanguard Engram"]);
+  const VANGUARD_SKIP_TYPES = new Set(["", "Material", "Emblem", "Faction Reward", "Engram", "Shader"]);
+
+  const VANGUARD_CLASS_LABELS = { 0: "Titan", 1: "Hunter", 2: "Warlock", 3: "Any Class" };
+
+  async function runVanguard(){
+    const statusEl = document.getElementById("vanguard-status");
+    const outputEl = document.getElementById("vanguard-output");
+    statusEl.className = "tw-status";
+    statusEl.textContent = "Resolving your Destiny characters…";
+    outputEl.innerHTML = "";
+
+    try {
+      const { membershipType, membershipId, characters } = await resolveAllCharacters();
+      const itemsByKey = new Map();
+
+      statusEl.textContent = "Checking Zavala across " + characters.length + " character(s)…";
+      const pairs = [];
+      for (const { characterId, classLabel } of characters){
+        for (const vHash of [ZAVALA_HASH, ZAVALA_ARSENAL_HASH]) pairs.push({ characterId, classLabel, vHash });
+      }
+      // Bounded concurrency, not fully sequential — each pair is an
+      // independent request, and the shared itemsByKey map is only ever
+      // mutated synchronously (no await between reading and writing it),
+      // so concurrent workers can't race each other on it.
+      await mapWithConcurrency(pairs, 4, async ({ characterId, classLabel, vHash }) => {
+        let saleItems = [], statsByIndex = {}, socketsByIndex = {}, reusablePlugsByIndex = {};
+        try {
+          const path = "/Platform/Destiny2/" + membershipType + "/Profile/" + membershipId +
+            "/Character/" + characterId + "/Vendors/" + vHash + "/?components=402,300,302,304,305,310";
+          const resp = await authedApiGet(path);
+          saleItems = Object.values((resp.sales && resp.sales.data) || {});
+          const itemComponents = resp.itemComponents || {};
+          statsByIndex = (itemComponents.stats && itemComponents.stats.data) || {};
+          socketsByIndex = (itemComponents.sockets && itemComponents.sockets.data) || {};
+          reusablePlugsByIndex = (itemComponents.reusablePlugs && itemComponents.reusablePlugs.data) || {};
+        } catch (e){
+          saleItems = [];
+        }
+        for (const sale of saleItems){
+          const statEntry = statsByIndex[sale.vendorItemIndex];
+          const socketEntry = socketsByIndex[sale.vendorItemIndex];
+          const reusablePlugsEntry = reusablePlugsByIndex[sale.vendorItemIndex];
+          // Zavala can sell the same weapon at the same price with
+          // genuinely different rolls at once (different perks in the
+          // same sockets) — keyed on itemHash + cost alone, those would
+          // wrongly collapse into a single card. Folding each socket's
+          // plugHash into the key keeps distinct rolls as separate
+          // cards, only merging true duplicates (same roll seen again
+          // on another character).
+          const rollSignature = (socketEntry && socketEntry.sockets) ? socketEntry.sockets.map(s => s.plugHash || 0).join(",") : "";
+          const key = sale.itemHash + "|" + costSignature(sale.costs) + "|" + rollSignature;
+          if (!itemsByKey.has(key)){
+            itemsByKey.set(key, { sale, statEntry, socketEntry, reusablePlugsEntry, seenOn: new Set() });
+          }
+          itemsByKey.get(key).seenOn.add(classLabel);
+        }
+      });
+
+      if (!itemsByKey.size){
+        statusEl.className = "tw-status tw-error";
+        statusEl.textContent = "Signed in, but no sale data came back from Zavala across any character right now.";
+        return;
+      }
+
+      statusEl.textContent = "Resolving " + itemsByKey.size + " offer(s)…";
+      const resolved = await mapWithConcurrency(Array.from(itemsByKey.values()), 6, async ({ sale, statEntry, socketEntry, reusablePlugsEntry }) => {
+        const itemDef = await fetchDef("DestinyInventoryItemDefinition", sale.itemHash);
+        const name = (itemDef && itemDef.displayProperties && itemDef.displayProperties.name) || ("Unknown (" + sale.itemHash + ")");
+        const typeName = (itemDef && itemDef.itemTypeDisplayName) || "";
+        if (VANGUARD_SKIP_NAMES.has(name) || VANGUARD_SKIP_TYPES.has(typeName)) return null;
+
+        const icon = itemDef ? iconUrl(itemDef.displayProperties) : null;
+        const isArmor = XUR_ARMOR_TYPES.has(typeName);
+        const [costText, extraHtml] = await Promise.all([
+          costChipsHtml(sale.costs),
+          resolvedRollHtml(itemDef, statEntry, socketEntry, reusablePlugsEntry)
+        ]);
+        const card = itemCardHtml(name, icon, typeName, costText, null, extraHtml);
+        const classType = isArmor ? ((itemDef && typeof itemDef.classType === "number") ? itemDef.classType : 3) : null;
+        return { card, isArmor, classType };
+      });
+
+      const weapons = [];
+      const armorByClass = new Map(); // classType -> card html[]
+      let cardCount = 0;
+      for (const r of resolved){
+        if (!r) continue;
+        cardCount++;
+        if (r.isArmor){
+          if (!armorByClass.has(r.classType)) armorByClass.set(r.classType, []);
+          armorByClass.get(r.classType).push(r.card);
+        } else {
+          weapons.push(r.card);
+        }
+      }
+
+      if (!cardCount){
+        outputEl.innerHTML = '<div class="tw-status">Nothing this pull beyond reputation/material filler.</div>';
+        statusEl.className = "tw-status";
+        statusEl.textContent = "OK: checked " + characters.length + " character(s), nothing worth showing right now";
+        return;
+      }
+
+      statusEl.className = "tw-status";
+      statusEl.textContent = "OK: " + cardCount + " offer(s) across " + characters.length + " character(s)";
+
+      if (weapons.length){
+        const labelEl = document.createElement("div");
+        labelEl.className = "vend-category-label";
+        labelEl.textContent = "Weapons (" + weapons.length + ")";
+        outputEl.appendChild(labelEl);
+        const grid = document.createElement("div");
+        grid.className = "vend-grid";
+        grid.innerHTML = weapons.join("");
+        outputEl.appendChild(grid);
+      }
+
+      for (const classType of [0, 1, 2, 3]){
+        if (!armorByClass.has(classType)) continue;
+        const items = armorByClass.get(classType);
+        appendCollapsibleCategory(outputEl, VANGUARD_CLASS_LABELS[classType] + " Armor (" + items.length + ")", items);
+      }
+    } catch (err){
+      statusEl.className = "tw-status tw-error";
+      statusEl.textContent = "Error: " + err.message;
+    }
+  }
+
+  // =================================================================
+  // Eververse (Tess Everis) — Bright Dust only
+  // =================================================================
+  // No hardcoded hash: Bright Dust items are scattered across dozens of
+  // unnamed one-item vendor stubs, discovered fresh each pull the same
+  // way api-debug.html's investigation confirmed live.
+  async function runEververse(){
+    const statusEl = document.getElementById("eververse-status");
+    const outputEl = document.getElementById("eververse-output");
+    statusEl.className = "tw-status";
+    statusEl.textContent = "Resolving your Destiny characters…";
+    outputEl.innerHTML = "";
+
+    try {
+      const { membershipType, membershipId, characters } = await resolveAllCharacters();
+      statusEl.textContent = "Discovering vendors across " + characters.length + " character(s)…";
+
+      // Phase 1: bulk vendor+sales list per character, in parallel — each
+      // character's call is independent of the others.
+      const perCharacterData = await mapWithConcurrency(characters, 3, async ({ characterId, classLabel }) => {
+        const path = "/Platform/Destiny2/" + membershipType + "/Profile/" + membershipId +
+          "/Character/" + characterId + "/Vendors/?components=400,402";
+        const resp = await authedApiGet(path);
+        return {
+          classLabel,
+          vendorsData: (resp.vendors && resp.vendors.data) || {},
+          salesData: (resp.sales && resp.sales.data) || {}
+        };
+      });
+
+      // Phase 2: any vendor hash missing sales in a character's own bulk
+      // response needs an individual Vendors/{hash}/ call — collected once
+      // across every character instead of re-discovered per character, and
+      // resolved through a single character's context since these one-item
+      // stubs aren't class-restricted (confirmed: real class-exclusive
+      // content, like Hunter/Titan ornaments, shows up directly in the bulk
+      // response instead, which is always read per-character above).
+      const stubHashes = new Set();
+      for (const { vendorsData, salesData } of perCharacterData){
+        for (const vHash of Object.keys(vendorsData)){
+          if (!salesData[vHash]) stubHashes.add(vHash);
+        }
+      }
+      statusEl.textContent = "Checking " + stubHashes.size + " stub vendor(s)…";
+      const stubSales = new Map();
+      const anyCharacterId = characters[0].characterId;
+      await mapWithConcurrency(Array.from(stubHashes), 5, async (vHash) => {
+        try {
+          const singlePath = "/Platform/Destiny2/" + membershipType + "/Profile/" + membershipId +
+            "/Character/" + anyCharacterId + "/Vendors/" + vHash + "/?components=402";
+          const singleResp = await authedApiGet(singlePath);
+          stubSales.set(vHash, Object.values((singleResp.sales && singleResp.sales.data) || {}));
+        } catch (e){
+          stubSales.set(vHash, []);
+        }
+      });
+
+      const itemsByKey = new Map();
+      for (const { classLabel, vendorsData, salesData } of perCharacterData){
+        for (const vHash of Object.keys(vendorsData)){
+          const saleItems = salesData[vHash] ? Object.values(salesData[vHash].saleItems || {}) : (stubSales.get(vHash) || []);
+          for (const sale of saleItems){
+            const key = sale.itemHash + "|" + costSignature(sale.costs);
+            if (!itemsByKey.has(key)) itemsByKey.set(key, { sale, seenOn: new Set() });
+            itemsByKey.get(key).seenOn.add(classLabel);
+          }
+        }
+      }
+
+      if (!itemsByKey.size){
+        statusEl.className = "tw-status tw-error";
+        statusEl.textContent = "Signed in, but no vendors came back live across any character right now.";
+        return;
+      }
+
+      // Grouped by real item type instead of one flat grid, and package/
+      // engram-style "X Decryption" items excluded — those decrypt into
+      // something random rather than being the specific cosmetic itself,
+      // per request.
+      statusEl.textContent = "Resolving " + itemsByKey.size + " item(s)…";
+      const resolved = await mapWithConcurrency(Array.from(itemsByKey.values()), 6, async ({ sale }) => {
+        const costDefs = await mapWithConcurrency(sale.costs || [], 3, c => fetchDef("DestinyInventoryItemDefinition", c.itemHash));
+        const brightDust = costDefs.some(d => /bright dust/i.test((d && d.displayProperties && d.displayProperties.name) || ""));
+        if (!brightDust) return null;
+
+        const itemDef = await fetchDef("DestinyInventoryItemDefinition", sale.itemHash);
+        const name = (itemDef && itemDef.displayProperties && itemDef.displayProperties.name) || ("Unknown (" + sale.itemHash + ")");
+        if (/decryption$/i.test(name)) return null;
+
+        const rawTypeName = (itemDef && itemDef.itemTypeDisplayName) || "Other";
+        // "Package" is Bungie's own type for the Warlock/Hunter/Titan Set
+        // and Pack bundles — a grab-bag of several ornament pieces sold
+        // as one unit, not a single specific cosmetic — excluded per
+        // request same as the Decryption engrams above.
+        if (rawTypeName === "Package") return null;
+
+        // "Hunter Ornament"/"Titan Ornament"/"Warlock Ornament"/"Weapon
+        // Ornament" are all real distinct Bungie types, but they read as
+        // one concept — condensed into a single "Ornaments" section with
+        // the specific kind (Hunter/Titan/Warlock/Weapon) as a tag on the
+        // card instead of splitting into 4 near-identical sections.
+        const ornamentMatch = /^(.*) Ornament$/.exec(rawTypeName);
+        const groupKey = ornamentMatch ? "Ornaments" : rawTypeName;
+        const tagText = ornamentMatch ? ornamentMatch[1] : null;
+
+        const icon = itemDef ? iconUrl(itemDef.displayProperties) : null;
+        const costText = await costChipsHtml(sale.costs);
+        return { groupKey, card: itemCardHtml(name, icon, null, costText, tagText) };
+      });
+
+      const groups = new Map(); // typeName -> card html[]
+      let totalCount = 0;
+      for (const r of resolved){
+        if (!r) continue;
+        if (!groups.has(r.groupKey)) groups.set(r.groupKey, []);
+        groups.get(r.groupKey).push(r.card);
+        totalCount++;
+      }
+
+      if (!totalCount){
+        outputEl.innerHTML = '<div class="tw-status">No Bright Dust offers came back this pull.</div>';
+        statusEl.className = "tw-status";
+        statusEl.textContent = "OK: checked " + characters.length + " character(s), no Bright Dust items this pull";
+        return;
+      }
+
+      statusEl.className = "tw-status";
+      statusEl.textContent = "OK: " + totalCount + " Bright Dust item(s) across " + characters.length + " character(s) — refreshes at daily reset";
+
+      const sortedTypes = Array.from(groups.keys()).sort((a, b) => a.localeCompare(b));
+      for (const typeName of sortedTypes){
+        const items = groups.get(typeName);
+        const labelEl = document.createElement("div");
+        labelEl.className = "vend-category-label";
+        labelEl.textContent = typeName + " (" + items.length + ")";
+        outputEl.appendChild(labelEl);
+        const grid = document.createElement("div");
+        grid.className = "vend-grid";
+        grid.innerHTML = items.join("");
+        outputEl.appendChild(grid);
+      }
+    } catch (err){
+      statusEl.className = "tw-status tw-error";
+      statusEl.textContent = "Error: " + err.message;
+    }
+  }
+
+  // =================================================================
+  // Ada-1 — shaders only
+  // =================================================================
+  const ADA_1_HASH = "350061650";
+
+  async function runAda1(){
+    const statusEl = document.getElementById("ada1-status");
+    const outputEl = document.getElementById("ada1-output");
+    statusEl.className = "tw-status";
+    statusEl.textContent = "Resolving your Destiny characters…";
+    outputEl.innerHTML = "";
+
+    try {
+      const { membershipType, membershipId, characters } = await resolveAllCharacters();
+      const itemsByKey = new Map();
+
+      statusEl.textContent = "Checking Ada-1 across " + characters.length + " character(s)…";
+      await mapWithConcurrency(characters, 3, async ({ characterId, classLabel }) => {
+        let saleItems;
+        try {
+          const path = "/Platform/Destiny2/" + membershipType + "/Profile/" + membershipId +
+            "/Character/" + characterId + "/Vendors/" + ADA_1_HASH + "/?components=402";
+          const resp = await authedApiGet(path);
+          saleItems = Object.values((resp.sales && resp.sales.data) || {});
+        } catch (e){
+          saleItems = [];
+        }
+        for (const sale of saleItems){
+          const key = sale.itemHash + "|" + costSignature(sale.costs);
+          if (!itemsByKey.has(key)) itemsByKey.set(key, { sale, seenOn: new Set() });
+          itemsByKey.get(key).seenOn.add(classLabel);
+        }
+      });
+
+      if (!itemsByKey.size){
+        statusEl.className = "tw-status tw-error";
+        statusEl.textContent = "Signed in, but no sale data came back from Ada-1 across any character right now.";
+        return;
+      }
+
+      const resolved = await mapWithConcurrency(Array.from(itemsByKey.values()), 6, async ({ sale }) => {
+        const itemDef = await fetchDef("DestinyInventoryItemDefinition", sale.itemHash);
+        if (!itemDef || itemDef.itemTypeDisplayName !== "Shader") return null;
+        const name = (itemDef.displayProperties && itemDef.displayProperties.name) || ("Unknown (" + sale.itemHash + ")");
+        const icon = iconUrl(itemDef.displayProperties);
+        const costText = await costChipsHtml(sale.costs);
+        return itemCardHtml(name, icon, "Shader", costText, null);
+      });
+      const cards = resolved.filter(Boolean);
+
+      if (!cards.length){
+        outputEl.innerHTML = '<div class="tw-status">No shaders came back this pull.</div>';
+        statusEl.className = "tw-status";
+        statusEl.textContent = "OK: checked " + characters.length + " character(s), no shaders this pull";
+        return;
+      }
+
+      statusEl.className = "tw-status";
+      statusEl.textContent = "OK: " + cards.length + " shader(s) across " + characters.length + " character(s)";
+      const grid = document.createElement("div");
+      grid.className = "vend-grid";
+      grid.innerHTML = cards.join("");
+      outputEl.appendChild(grid);
+    } catch (err){
+      statusEl.className = "tw-status tw-error";
+      statusEl.textContent = "Error: " + err.message;
+    }
+  }
+
+  // =================================================================
+  // Xur — countdown when he's gone, trimmed 3-store view when he's here
+  // =================================================================
+  const XUR_HASH = "2190858386";
+  const XUR_SUB_HASHES = ["3751514131", "537912098"]; // "More Strange Offers" / "Strange Gear Offers" — confirmed sub-vendors, see xur-debug.html
+  const XUR_ARMOR_TYPES = new Set(["Helmet", "Gauntlets", "Chest Armor", "Leg Armor", "Titan Mark", "Hunter Cloak", "Warlock Bond"]);
+  // Portal tiles, generic reward engrams, and account filler — kept as an
+  // exclude-list rather than an allow-list so real catalysts (which also
+  // report an empty itemTypeDisplayName) still come through via the
+  // name-based check below instead of getting filtered out with the junk.
+  const XUR_SKIP_TYPES = new Set(["", "Material", "Engram", "Weapon Engram", "Armor Engram", "Emblem", "Faction Reward", "Quest Step", "Currency", "Container", "Buff", "Consumable"]);
+
+  // Ported from the old this-week.html Xur section: flags an exotic sale
+  // item that a curated build calls for, with a link straight to it.
+  function findBuildMatch(itemHash){
+    const builds = (window.BuildsData && window.BuildsData.BUILDS) || [];
+    for (const b of builds){
+      if ((b.exoticArmor && b.exoticArmor.itemHash === itemHash) || (b.exoticWeapon && b.exoticWeapon.itemHash === itemHash)){
+        return b;
+      }
+    }
+    return null;
+  }
+
+  async function runXur(){
+    const statusEl = document.getElementById("xur-status");
+    const outputEl = document.getElementById("xur-output");
+
+    if (!isWithinXurSchedule()){
+      statusEl.className = "";
+      statusEl.textContent = "";
+      renderArrivalCountdown(outputEl, estimateNextXurArrival());
+      return;
+    }
+
+    statusEl.className = "tw-status";
+    statusEl.textContent = "Resolving your Destiny characters…";
+    outputEl.innerHTML = '<div class="vend-departure-note" id="xur-departure-note"></div>';
+    startDepartureCountdown(document.getElementById("xur-departure-note"));
+
+    try {
+      const { membershipType, membershipId, characters } = await resolveAllCharacters();
+      const itemsByKey = new Map();
+
+      statusEl.textContent = "Checking Xûr across " + characters.length + " character(s)…";
+      const pairs = [];
+      for (const { characterId, classLabel } of characters){
+        for (const vHash of [XUR_HASH, ...XUR_SUB_HASHES]) pairs.push({ characterId, classLabel, vHash });
+      }
+      await mapWithConcurrency(pairs, 4, async ({ characterId, classLabel, vHash }) => {
+        let saleItems = [], statsByIndex = {}, socketsByIndex = {}, reusablePlugsByIndex = {};
+        try {
+          const path = "/Platform/Destiny2/" + membershipType + "/Profile/" + membershipId +
+            "/Character/" + characterId + "/Vendors/" + vHash + "/?components=402,300,302,304,305,310";
+          const resp = await authedApiGet(path);
+          saleItems = Object.values((resp.sales && resp.sales.data) || {});
+          const itemComponents = resp.itemComponents || {};
+          statsByIndex = (itemComponents.stats && itemComponents.stats.data) || {};
+          socketsByIndex = (itemComponents.sockets && itemComponents.sockets.data) || {};
+          reusablePlugsByIndex = (itemComponents.reusablePlugs && itemComponents.reusablePlugs.data) || {};
+        } catch (e){
+          saleItems = [];
+        }
+        for (const sale of saleItems){
+          const socketEntry = socketsByIndex[sale.vendorItemIndex];
+          // Same reasoning as Zavala: fold each socket's plugHash into the
+          // key so genuinely different rolls of the same item stay as
+          // separate cards instead of collapsing into one.
+          const rollSignature = (socketEntry && socketEntry.sockets) ? socketEntry.sockets.map(s => s.plugHash || 0).join(",") : "";
+          const key = sale.itemHash + "|" + costSignature(sale.costs) + "|" + rollSignature;
+          if (!itemsByKey.has(key)){
+            itemsByKey.set(key, {
+              sale,
+              statEntry: statsByIndex[sale.vendorItemIndex],
+              socketEntry,
+              reusablePlugsEntry: reusablePlugsByIndex[sale.vendorItemIndex],
+              seenOn: new Set()
+            });
+          }
+          itemsByKey.get(key).seenOn.add(classLabel);
+        }
+      });
+
+      if (!itemsByKey.size){
+        statusEl.className = "tw-status tw-error";
+        statusEl.textContent = "Signed in, but no sale data came back from Xûr across any character right now.";
+        return;
+      }
+
+      statusEl.textContent = "Resolving " + itemsByKey.size + " item(s)…";
+      const resolved = await mapWithConcurrency(Array.from(itemsByKey.values()), 6, async ({ sale, statEntry, socketEntry, reusablePlugsEntry }) => {
+        const itemDef = await fetchDef("DestinyInventoryItemDefinition", sale.itemHash);
+        const name = (itemDef && itemDef.displayProperties && itemDef.displayProperties.name) || ("Unknown (" + sale.itemHash + ")");
+        const typeName = (itemDef && itemDef.itemTypeDisplayName) || "";
+        const tier = itemDef && itemDef.inventory ? itemDef.inventory.tierTypeName : null;
+        const isCatalyst = /catalyst/i.test(name);
+
+        if (!isCatalyst && XUR_SKIP_TYPES.has(typeName)) return null;
+
+        const icon = itemDef ? iconUrl(itemDef.displayProperties) : null;
+        const tag = isCatalyst ? "Catalyst" : (tier === "Exotic" ? "Exotic" : null);
+        const isArmor = XUR_ARMOR_TYPES.has(typeName);
+        const [costText, rollHtml] = await Promise.all([
+          costChipsHtml(sale.costs),
+          resolvedRollHtml(itemDef, statEntry, socketEntry, reusablePlugsEntry)
+        ]);
+        const buildMatch = findBuildMatch(sale.itemHash);
+        const buildHtml = buildMatch
+          ? '<div class="vend-build-note">We recommend this in <a href="builds.html#build-' + buildMatch.slug + '">' + buildMatch.title + '</a></div>'
+          : "";
+        const card = itemCardHtml(name, icon, typeName || (isCatalyst ? "Catalyst" : ""), costText, tag, rollHtml + buildHtml);
+        const classType = isArmor ? ((itemDef && typeof itemDef.classType === "number") ? itemDef.classType : 3) : null;
+        return { card, isArmor, classType };
+      });
+
+      const weapons = [];
+      const armorByClass = new Map(); // classType -> card html[]
+      let itemCount = 0;
+      for (const r of resolved){
+        if (!r) continue;
+        itemCount++;
+        if (r.isArmor){
+          if (!armorByClass.has(r.classType)) armorByClass.set(r.classType, []);
+          armorByClass.get(r.classType).push(r.card);
+        } else {
+          weapons.push(r.card);
+        }
+      }
+
+      if (!itemCount){
+        outputEl.insertAdjacentHTML("beforeend", '<div class="tw-status">Nothing worth showing came back this pull.</div>');
+        statusEl.className = "tw-status";
+        statusEl.textContent = "OK: checked " + characters.length + " character(s), nothing to show";
+        return;
+      }
+
+      statusEl.className = "tw-status";
+      statusEl.textContent = "OK: " + itemCount + " item(s) across " + characters.length + " character(s)";
+
+      if (weapons.length){
+        const labelEl = document.createElement("div");
+        labelEl.className = "vend-category-label";
+        labelEl.textContent = "Weapons (" + weapons.length + ")";
+        outputEl.appendChild(labelEl);
+        const grid = document.createElement("div");
+        grid.className = "vend-grid";
+        grid.innerHTML = weapons.join("");
+        outputEl.appendChild(grid);
+      }
+
+      for (const classType of [0, 1, 2, 3]){
+        if (!armorByClass.has(classType)) continue;
+        const items = armorByClass.get(classType);
+        appendCollapsibleCategory(outputEl, VANGUARD_CLASS_LABELS[classType] + " Armor (" + items.length + ")", items);
+      }
+    } catch (err){
+      statusEl.className = "tw-status tw-error";
+      statusEl.textContent = "Error: " + err.message;
+    }
+  }
+
+  // =================================================================
+  // View switching (URL-synced pills, same pattern as tracker.html)
+  // =================================================================
+  const VIEWS = [
+    { key: "vanguard", label: "Vanguard", run: runVanguard },
+    { key: "eververse", label: "Eververse", run: runEververse },
+    { key: "ada-1", label: "Ada-1", run: runAda1 },
+    { key: "xur", label: "Xûr", run: runXur }
+  ];
+  const loadedViews = new Set();
+
+  function renderPills(){
+    const wrap = document.getElementById("vend-pills");
+    wrap.innerHTML = VIEWS.map(v => '<a href="?view=' + v.key + '" data-view="' + v.key + '">' + v.label + '</a>').join("");
+    wrap.addEventListener("click", (e) => {
+      const link = e.target.closest("a[data-view]");
+      if (!link) return;
+      e.preventDefault();
+      const view = link.dataset.view;
+      history.pushState(null, "", "?view=" + view);
+      showView(view);
+    });
+  }
+
+  function showView(view){
+    if (!VIEWS.some(v => v.key === view)) view = "vanguard";
+    document.querySelectorAll(".vend-view").forEach(el => el.classList.toggle("active", el.id === "view-" + view));
+    document.querySelectorAll("#vend-pills a").forEach(el => el.classList.toggle("active", el.dataset.view === view));
+    if (!loadedViews.has(view)){
+      loadedViews.add(view);
+      const entry = VIEWS.find(v => v.key === view);
+      if (entry) entry.run();
+    }
+  }
+
+  window.addEventListener("popstate", () => {
+    const params = new URLSearchParams(location.search);
+    showView(params.get("view") || "vanguard");
+  });
+
+  // ---------------- sign-in gating ----------------
+  function renderAuthState(){
+    const gate = document.getElementById("vend-signin-gate");
+    const note = document.getElementById("vend-signed-in-note");
+    const pills = document.getElementById("vend-pills");
+    const views = document.querySelectorAll(".vend-view");
+
+    if (RallyFlagAuth.isSignedIn()){
+      gate.style.display = "none";
+      pills.style.display = "";
+      note.innerHTML = "Signed in as " + (RallyFlagAuth.getDisplayName() || "Bungie.net user") +
+        ' — <a id="vend-signout">sign out</a>';
+      document.getElementById("vend-signout").addEventListener("click", () => RallyFlagAuth.signOut());
+      views.forEach(v => v.style.display = "");
+      const initial = new URLSearchParams(location.search).get("view") || "vanguard";
+      showView(initial);
+    } else {
+      gate.style.display = "";
+      pills.style.display = "none";
+      note.innerHTML = "";
+      views.forEach(v => v.style.display = "none");
+      loadedViews.clear();
+    }
+  }
+
+  document.getElementById("vend-signin-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    RallyFlagAuth.signIn();
+  });
+
+  renderPills();
+  renderAuthState();
+  RallyFlagAuth.onChange(renderAuthState);
+})();
+</script>
+</body>
+</html>
