@@ -28,6 +28,37 @@
   }
   .disclosure strong{ color:var(--accent-bright); }
 
+  .owned-auth-row{
+    max-width:1000px; margin:16px auto 0; padding:0 24px;
+    font-size:12.5px; font-family:'JetBrains Mono', monospace; text-align:center;
+  }
+  .owned-auth-row a{ color:var(--accent-bright); text-decoration:none; cursor:pointer; }
+  .owned-auth-row a:hover{ text-decoration:underline; }
+  .owned-auth-row .signed-in-text{ color:var(--text-dimmer); }
+  .weapon-unlock-badge{
+    font-family:'JetBrains Mono', monospace; font-size:9.5px; letter-spacing:0.04em;
+    text-transform:uppercase; padding:3px 8px; border-radius:999px;
+    background:var(--accent); color:var(--bg);
+  }
+  .weapon-unlock-badge.missing{
+    background:none; border:1px solid var(--panel-border); color:var(--text-dimmer);
+  }
+  .weapon-unlock-badge.exact-roll{
+    background:var(--accent-bright); color:#0b0700;
+  }
+  .weapon-unlock-rating{
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer);
+  }
+  .unlock-legend{
+    max-width:1000px; margin:14px auto 0; padding:0 24px;
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px 28px;
+  }
+  .unlock-legend-item{
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; color:var(--text-dimmer); white-space:nowrap;
+  }
+  .unlock-legend .weapon-unlock-badge{ flex-shrink:0; }
+
   section{ max-width:1000px; margin:40px auto 0; padding:0 24px 90px; }
   .weapon-grid{
     display:flex; flex-wrap:wrap; justify-content:center; gap:16px;
@@ -58,11 +89,10 @@
     position:absolute; bottom:3px; right:3px; width:16px; height:16px;
     object-fit:contain; pointer-events:none;
   }
-  .weapon-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:19px; color:var(--text); }
+  .weapon-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:19px; color:var(--text); margin-bottom:4px; }
   .weapon-name.tier-exotic{ color:#ceae33; }
   .weapon-name.tier-legendary{ color:#a892d1; }
-  .weapon-name-row{ display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
-  .weapon-badges{ display:flex; align-items:center; gap:6px; }
+  .weapon-badges{ display:flex; align-items:center; gap:6px; margin-bottom:6px; }
   .alt-roll-btn{
     font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
@@ -82,6 +112,7 @@
   }
   .ammo-badge img{ width:12px; height:12px; object-fit:contain; }
   .weapon-meta{ font-size:11.5px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); }
+  .weapon-unlock-row{ margin-top:8px; min-height:20px; display:flex; align-items:center; justify-content:flex-end; gap:8px; }
   .weapon-flavor{ font-size:12.5px; color:var(--text-dim); font-style:italic; margin-top:8px; line-height:1.5; }
 
   .perk-section{ margin-top:16px; padding-top:16px; border-top:1px solid var(--panel-border); }
@@ -207,6 +238,13 @@
   These aren't community popularity stats. What's here is <strong>our own personal picks from our own playtime</strong>: the rolls we've actually chased and use, not a claim that they're the objectively best for everyone. Your mileage (and your subclass, your playstyle, your favorite activity) may vary.
 </div>
 
+<div class="owned-auth-row" id="owned-auth-row"></div>
+<div class="unlock-legend">
+  <div class="unlock-legend-item"><span class="weapon-unlock-rating">5/5</span><span class="weapon-unlock-badge exact-roll">Owned</span><span>a copy has every perk in this roll</span></div>
+  <div class="unlock-legend-item"><span class="weapon-unlock-rating">3/5</span><span class="weapon-unlock-badge">Unlocked</span><span>X/N is your best copy's perk match</span></div>
+  <div class="unlock-legend-item"><span class="weapon-unlock-badge missing">Not Unlocked</span><span>never obtained</span></div>
+</div>
+
 <div class="controls">
   <div class="search-row">
     <div class="search-box">
@@ -246,6 +284,7 @@
 <script src="assets/nav.js"></script>
 <script src="assets/god-rolls-data.js"></script>
 <script src="assets/api-keys.js"></script>
+<script src="assets/oauth.js"></script>
 <script>
 (function(){
   // ---------------------------------------------------------------
@@ -293,8 +332,144 @@
       tierName: def.inventory?.tierTypeName || "",
       flavorText: def.flavorText || "",
       ammoTypeName: AMMO_TYPE_NAMES[ammoType] || null,
-      damageTypeHash: def.damageTypeHashes && def.damageTypeHashes.length ? def.damageTypeHashes[0] : null
+      damageTypeHash: def.damageTypeHashes && def.damageTypeHashes.length ? def.damageTypeHashes[0] : null,
+      collectibleHash: def.collectibleHash || null
     };
+  }
+
+  // ---------------------------------------------------------------
+  // Ownership badges (signed-in only). Two separate checks:
+  //   - Unlocked: this weapon pattern has ever been obtained, via
+  //     Collectibles (component 800) — same approach as vendors.html's
+  //     Eververse/Ada-1 badges.
+  //   - Owned: an actual copy in your vault/inventory/equipped right
+  //     now has every perk in the recommended roll socketed. Needs the
+  //     full inventory (102 vault, 201 character inventories, 205
+  //     equipped) plus each instanced item's current sockets (305) —
+  //     all in the one bulk Profile call below, no per-item requests.
+  // ---------------------------------------------------------------
+  const COLLECTIBLE_STATE_NOT_ACQUIRED = 1;
+
+  async function authedApiGet(path){
+    const res = await RallyFlagAuth.authedFetch(path);
+    const data = await res.json();
+    if (!res.ok || data.ErrorCode !== 1) throw new Error((data && data.Message) || ("HTTP " + res.status));
+    return data.Response;
+  }
+
+  async function fetchOwnershipData(){
+    const memberships = await authedApiGet("/Platform/User/GetMembershipsForCurrentUser/");
+    const destinyMemberships = memberships.destinyMemberships || [];
+    if (!destinyMemberships.length) throw new Error("This Bungie account has no linked Destiny 2 platform.");
+    const primary = destinyMemberships.find(m => m.membershipId === memberships.primaryMembershipId) || destinyMemberships[0];
+
+    const profile = await authedApiGet(
+      "/Platform/Destiny2/" + primary.membershipType + "/Profile/" + primary.membershipId +
+      "/?components=102,201,205,305,800"
+    );
+
+    const unlockedHashes = new Set();
+    const addAcquired = (collectibles) => {
+      for (const hash of Object.keys(collectibles || {})){
+        if (!(collectibles[hash].state & COLLECTIBLE_STATE_NOT_ACQUIRED)) unlockedHashes.add(hash);
+      }
+    };
+    // Most weapon collectibles are account-wide, but check per-character
+    // too — same bulk call returns both, and this was a real bug on the
+    // Eververse/Ada-1 badges when only account-wide was checked.
+    addAcquired(profile.profileCollectibles && profile.profileCollectibles.data && profile.profileCollectibles.data.collectibles);
+    const characterCollectibles = (profile.characterCollectibles && profile.characterCollectibles.data) || {};
+    for (const characterId of Object.keys(characterCollectibles)){
+      addAcquired(characterCollectibles[characterId].collectibles);
+    }
+
+    // instancesByHash: itemHash -> [itemInstanceId, ...], across vault,
+    // every character's inventory, and every character's equipped slot.
+    const instancesByHash = new Map();
+    const addItems = (items) => {
+      for (const it of items || []){
+        if (!it.itemInstanceId) continue;
+        if (!instancesByHash.has(it.itemHash)) instancesByHash.set(it.itemHash, []);
+        instancesByHash.get(it.itemHash).push(it.itemInstanceId);
+      }
+    };
+    addItems(profile.profileInventory && profile.profileInventory.data && profile.profileInventory.data.items);
+    const characterInventories = (profile.characterInventories && profile.characterInventories.data) || {};
+    for (const characterId of Object.keys(characterInventories)) addItems(characterInventories[characterId].items);
+    const characterEquipment = (profile.characterEquipment && profile.characterEquipment.data) || {};
+    for (const characterId of Object.keys(characterEquipment)) addItems(characterEquipment[characterId].items);
+
+    const socketsByInstanceId = (profile.itemComponents && profile.itemComponents.sockets && profile.itemComponents.sockets.data) || {};
+
+    return { unlockedHashes, instancesByHash, socketsByInstanceId };
+  }
+
+  // itemHashes is a list, not a single hash — crafted weapons carry a
+  // separate item hash for the actual owned/craftable instance from the
+  // "pattern" hash used for perks/light.gg links, so a weapon can have
+  // real owned instances split across more than one hash (see
+  // craftedItemHash in god-rolls-data.js).
+  function instancesFor(itemHashes, ownership){
+    return itemHashes.flatMap(h => ownership.instancesByHash.get(h) || []);
+  }
+
+  // Highest number of perkHashes found socketed together on any single
+  // owned instance across itemHashes (barrel/mag/traits/etc are all just
+  // sockets — a flat union across all of an instance's sockets is
+  // enough, no need to know which socket is which column). Takes the
+  // best copy, not just the first one found, in case you own more than
+  // one roll of the same weapon. Returns 0 if you don't own any copy at
+  // all — that's different from "owns it with 0 matching perks", but
+  // this page never has both perkHashes.length === 0 and an owned
+  // instance to confuse the two.
+  function bestRollMatchCount(itemHashes, perkHashes, ownership){
+    let best = 0;
+    for (const instanceId of instancesFor(itemHashes, ownership)){
+      const sockets = (ownership.socketsByInstanceId[instanceId] && ownership.socketsByInstanceId[instanceId].sockets) || [];
+      const plugHashes = new Set(sockets.map(s => s.plugHash).filter(Boolean));
+      const matched = perkHashes.filter(h => plugHashes.has(h)).length;
+      if (matched > best) best = matched;
+    }
+    return best;
+  }
+
+  let ownershipDataPromise = null;
+
+  // Console-only utility, not wired to any UI. Scans every itemHash
+  // actually found in your vault/inventory/equipped and resolves its
+  // real name — useful for finding a crafted weapon's true item hash
+  // when it doesn't match the "pattern" hash used for its perks/
+  // light.gg link (see craftedItemHash in god-rolls-data.js). Usage
+  // from the browser console once signed in: debugFindItemsByName("vinctus")
+  window.debugFindItemsByName = async function(nameFragment){
+    if (!ownershipDataPromise){ console.warn("[owned-debug] Not signed in / ownership data not loaded yet."); return; }
+    const ownership = await ownershipDataPromise;
+    const hashes = Array.from(ownership.instancesByHash.keys());
+    const matches = [];
+    await Promise.all(hashes.map(async (hash) => {
+      try {
+        const item = await fetchItemByHash(hash);
+        if (item.name && item.name.toLowerCase().includes(nameFragment.toLowerCase())){
+          matches.push({ hash: hash, name: item.name, instanceIds: ownership.instancesByHash.get(hash) });
+        }
+      } catch (e) {}
+    }));
+    console.log("[owned-debug] name search '" + nameFragment + "':", matches);
+    return matches;
+  };
+
+  function renderAuthRow(){
+    const row = document.getElementById("owned-auth-row");
+    if (RallyFlagAuth.isSignedIn()){
+      const name = RallyFlagAuth.getDisplayName() || "Signed in";
+      row.innerHTML = '<span class="signed-in-text">Signed in as ' + name + ' — Owned/Unlocked badges shown below</span>';
+    } else {
+      row.innerHTML = '<a href="#" id="owned-signin-link">Sign in with Bungie.net to see what you already own →</a>';
+      document.getElementById("owned-signin-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        RallyFlagAuth.signIn();
+      });
+    }
   }
 
   const damageTypeCache = {};
@@ -327,11 +502,12 @@
       '<div class="weapon-head">' +
         '<span class="weapon-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
         '<div class="weapon-icon" id="icon-' + weapon.slug + '">' + monogram(weapon.name) + '</div>' +
-        '<div><div class="weapon-name-row">' +
+        '<div>' +
           '<div class="weapon-name" id="name-' + weapon.slug + '">' + weapon.name + '</div>' +
           '<span class="weapon-badges" id="badges-' + weapon.slug + '"></span>' +
+          '<div class="weapon-meta" id="meta-' + weapon.slug + '">Loading live data\u2026</div>' +
+          '<div class="weapon-unlock-row" id="unlock-badge-' + weapon.slug + '"></div>' +
         '</div>' +
-        '<div class="weapon-meta" id="meta-' + weapon.slug + '">Loading live data\u2026</div></div>' +
       '</div>' +
       '<div class="weapon-body">' +
         '<div class="weapon-flavor" id="flavor-' + weapon.slug + '"></div>' +
@@ -416,6 +592,40 @@
         badgesHtml += '<span class="ammo-badge" title="' + item.ammoTypeName + '"><img src="' + AMMO_TYPE_ICONS[item.ammoTypeName] + '" alt="' + item.ammoTypeName + '"></span>';
       }
       badgesEl.innerHTML = badgesHtml;
+
+      const unlockBadgeEl = document.getElementById("unlock-badge-" + weapon.slug);
+      if (unlockBadgeEl){
+        if (ownershipDataPromise){
+          const ownership = await ownershipDataPromise;
+          // Check both the "pattern" hash (roll.itemHash, what perks/
+          // light.gg use) and, when known, the crafted weapon's separate
+          // real item hash (weapon.craftedItemHash) — a player could own
+          // either, or both.
+          const candidateHashes = [roll.itemHash, weapon.craftedItemHash].filter(Boolean);
+          const totalPerks = roll.perkHashes.length;
+          const matchCount = bestRollMatchCount(candidateHashes, roll.perkHashes, ownership);
+          const owned = totalPerks > 0 && matchCount === totalPerks;
+          const hasAnyInstance = instancesFor(candidateHashes, ownership).length > 0;
+          // Some weapons (a lot of newer craftable ones) don't expose a
+          // normal collectibleHash at all, so Collectibles alone can't
+          // confirm "unlocked" for them — but finding an actual owned
+          // instance in vault/inventory/equipped is proof on its own,
+          // regardless of what Collections says.
+          const unlocked = owned || hasAnyInstance || (item.collectibleHash && ownership.unlockedHashes.has(String(item.collectibleHash)));
+          const label = owned ? "Owned" : (unlocked ? "Unlocked" : "Not Unlocked");
+          const cls = owned ? "exact-roll" : (unlocked ? "" : "missing");
+          // Fraction shown as its own separate element, not folded into
+          // the pill text — "Unlocked 5/5" read like a fourth, confusing
+          // state distinct from "Owned". Only shown when there's an
+          // actual owned instance to have counted perks on —
+          // collectibles-only "Unlocked" (no live copy found) has no
+          // roll to compare against.
+          const ratingHtml = hasAnyInstance ? '<span class="weapon-unlock-rating">' + matchCount + '/' + totalPerks + '</span>' : "";
+          unlockBadgeEl.innerHTML = ratingHtml + '<span class="weapon-unlock-badge' + (cls ? " " + cls : "") + '">' + label + '</span>';
+        } else {
+          unlockBadgeEl.innerHTML = "";
+        }
+      }
     } catch (err){
       console.warn("Weapon fetch failed for " + weapon.name + ":", err.message);
       document.getElementById("meta-" + weapon.slug).innerHTML = '<span class="load-error">Live data unavailable, check console</span>';
@@ -453,6 +663,20 @@
   }
 
   async function render(){
+    renderAuthRow();
+    // Fetched once here rather than lazily per-weapon so every card's
+    // first hydration already has it available — kicked off before the
+    // per-weapon loop so it resolves in parallel with the first few
+    // weapon/perk fetches instead of adding its own serial delay.
+    // Sign-in itself is a full OAuth redirect (via oauth-callback.html
+    // back to this page), so a fresh render() on page load already
+    // picks up the signed-in state correctly without needing a live
+    // re-subscription here.
+    ownershipDataPromise = RallyFlagAuth.isSignedIn() ? fetchOwnershipData().catch(err => {
+      console.warn("Ownership data fetch failed:", err.message);
+      return { unlockedHashes: new Set(), instancesByHash: new Map(), socketsByInstanceId: {} };
+    }) : null;
+
     const grid = document.getElementById("weapon-grid");
     grid.innerHTML = "";
     for (const weapon of window.GodRollsData.WEAPONS){
