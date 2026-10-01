@@ -21,6 +21,92 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
+  /* ---------- Mixer (build crafting) ---------- */
+  .mixer{ max-width:1180px; margin:40px auto 0; padding:0 24px; }
+  .mixer-card{ padding:26px 26px 22px; }
+  .mixer-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:6px;
+  }
+  .mixer-sub{ font-size:13px; color:var(--text-dim); margin-bottom:18px; line-height:1.5; }
+  .mixer-slots{ display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px; }
+  .mixer-slot{ flex:1 1 260px; min-width:240px; }
+  .mixer-slot-label{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.08em;
+    color:var(--text-dimmer); text-transform:uppercase; margin-bottom:8px;
+  }
+  .mixer-select{
+    width:100%; background:var(--panel); border:1px solid var(--panel-border);
+    color:var(--text); font-family:'Inter', sans-serif; font-size:13.5px;
+    padding:12px 14px; border-radius:2px; outline:none;
+    transition: border-color 0.2s ease;
+  }
+  .mixer-select:focus{ border-color:var(--accent); }
+  .mixer-select:disabled{ opacity:0.45; cursor:not-allowed; }
+  /* The dropdown popup is browser-rendered, not styled by the rules
+     above — Chrome/Firefox do respect background/color set directly
+     on <option>/<optgroup>, so without this the popup falls back to
+     the OS default (white background, near-invisible light text).
+     Uses --bg (solid) rather than --panel: --panel is a translucent
+     white overlay meant to sit on top of the page's dark background,
+     which the native popup doesn't have behind it, so it would still
+     render as plain white here. */
+  .mixer-select option, .mixer-select optgroup{
+    background-color:var(--bg); color:var(--text);
+  }
+  .mixer-slot-note{ font-size:11.5px; color:var(--text-dimmer); margin-top:6px; line-height:1.4; }
+  .mixer-results{ border-top:1px solid var(--panel-border); padding-top:18px; }
+  .mixer-empty{ font-size:13px; color:var(--text-dimmer); font-style:italic; }
+  .mixer-flex-note{
+    margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
+    font-size:12px; color:var(--text-dimmer); line-height:1.5;
+  }
+  .mixer-keywords{
+    margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
+  }
+  .mixer-keywords-label{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.08em;
+    color:var(--accent); text-transform:uppercase; margin-bottom:8px;
+  }
+  .mixer-keyword-row{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-bottom:6px; }
+  .mixer-keyword-row:last-child{ margin-bottom:0; }
+  .mixer-keyword-arrow{ color:var(--accent-bright); }
+  .mixer-keyword-none{ font-style:italic; color:var(--text-dimmer); }
+
+  .mixer-suggestions-card{ margin-top:16px; padding:22px 26px; }
+  .mixer-suggestions-summary{
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; list-style:none; user-select:none;
+  }
+  .mixer-suggestions-summary::-webkit-details-marker{ display:none; }
+  .mixer-suggestions-card[open] .mixer-suggestions-summary{ margin-bottom:4px; }
+  .mixer-suggestions-card[open] .mixer-category-chevron{ transform:rotate(90deg); }
+  .mixer-suggestions-label{
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    color:var(--accent); text-transform:uppercase;
+  }
+  .mixer-category-chevron{ font-size:11px; color:var(--accent); transition:transform 0.15s ease; }
+  .mixer-suggestions-sub{ font-size:12px; color:var(--text-dimmer); margin:10px 0 16px; line-height:1.5; }
+
+  .mixer-suggestion-group{ margin-bottom:18px; }
+  .mixer-suggestion-group:last-child{ margin-bottom:0; }
+  .mixer-suggestion-group-label{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.06em;
+    color:var(--text-dimmer); text-transform:uppercase; margin-bottom:8px;
+  }
+  .mixer-suggestion-group-count{ color:var(--text-dimmer); }
+  .mixer-suggestion-list{ display:flex; flex-direction:column; gap:6px; }
+  .mixer-suggestion-btn{
+    display:block; width:100%; text-align:left; cursor:pointer;
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:4px;
+    padding:10px 12px; font-family:'Inter', sans-serif; font-size:12.5px; color:var(--text-dim);
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .mixer-suggestion-btn:hover, .mixer-suggestion-btn:focus-visible{
+    border-color:var(--accent); color:var(--text);
+  }
+  .mixer-suggestion-btn strong{ color:var(--text); }
+
   /* ---------- Controls ---------- */
   .controls{ max-width:1180px; margin:40px auto 0; padding:0 24px; }
 
@@ -194,6 +280,34 @@
   <p class="subtitle">Every 2-piece and 4-piece armor set perk in one place. Filter by source, subclass, weapon pairing, or artifact synergy, or search for a build piece by name.</p>
 </div>
 
+<div class="mixer">
+  <div class="mixer-card panel-card">
+    <div class="mixer-label">Mix & Match</div>
+    <div class="mixer-sub">You've got 5 armor slots. Run two different 2-piece bonuses together (4 of 5 slots), or commit to one set's 4-piece bonus (also 4 of 5) — pick below to see them side by side.</div>
+    <div class="mixer-slots">
+      <div class="mixer-slot">
+        <div class="mixer-slot-label">Piece 1</div>
+        <select class="mixer-select" id="mixer-slot-1"></select>
+      </div>
+      <div class="mixer-slot">
+        <div class="mixer-slot-label">Piece 2</div>
+        <select class="mixer-select" id="mixer-slot-2"></select>
+        <div class="mixer-slot-note" id="mixer-slot-2-note"></div>
+      </div>
+    </div>
+    <div class="mixer-results" id="mixer-results"></div>
+  </div>
+
+  <details class="mixer-suggestions-card panel-card">
+    <summary class="mixer-suggestions-summary">
+      <span class="mixer-suggestions-label">Suggested Combos</span>
+      <span class="mixer-category-chevron">&#9656;</span>
+    </summary>
+    <div class="mixer-suggestions-sub">Every 2-piece pairing our own keyword tags flag, grouped by what they share — tap one to load it into the picker above.</div>
+    <div id="mixer-suggestions"></div>
+  </details>
+</div>
+
 <div class="controls">
   <div class="search-row">
     <div class="search-box">
@@ -218,6 +332,10 @@
   <div class="filter-row">
     <div class="filter-label">Artifact</div>
     <div class="chip-group" id="artifact-chips"></div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-label">Keyword</div>
+    <div class="chip-group" id="keyword-chips"></div>
     <button class="clear-btn" id="clear-btn">Clear filters</button>
   </div>
 </div>
@@ -379,7 +497,7 @@
   }
 
   // ---------- Filter state ----------
-  const state = { search:"", sources:new Set(), weapons:new Set(), artifacts:new Set(), subclasses:new Set() };
+  const state = { search:"", sources:new Set(), weapons:new Set(), artifacts:new Set(), subclasses:new Set(), keywords:new Set() };
 
   const ALL_SOURCES = [...new Set(SETS.map(s => s.source))].sort();
   const ALL_WEAPONS = [...new Set(SETS.flatMap(s => s.pairs))].sort();
@@ -389,12 +507,31 @@
   const ALL_ARTIFACTS = [...new Set(SETS.flatMap(s => matchingArtifacts(s).map(a => a.name)))].sort();
   const ALL_SUBCLASSES = ELEMENT_ORDER.filter(e => SETS.some(s => (s.elementPairs || []).includes(e)));
 
-  function buildChips(container, values, set){
+  // Shared with the Mix & Match section below (see Suggested Combos):
+  // the only tags that can ever appear on both sides of the produces/
+  // triggers overlap, i.e. the exact keywords that actually drive a
+  // suggested pairing. Same label text used for both the filter chips
+  // here and the group headings down there.
+  const KEYWORD_TAG_LABELS = {
+    "orb-of-power": "Orb of Power",
+    "pickup-ammo": "Ammo Pickups",
+    "healing": "Healing",
+    "disorient": "Disorient",
+    "elemental-pickup": "Elemental Pickup"
+  };
+  const ALL_KEYWORDS = Object.keys(KEYWORD_TAG_LABELS).filter(tag =>
+    SETS.some(s => (s.twoTriggers || []).includes(tag) || (s.twoProduces || []).includes(tag))
+  );
+  function keywordTags(set){
+    return [...(set.twoTriggers || []), ...(set.twoProduces || [])];
+  }
+
+  function buildChips(container, values, set, labelFn){
     container.innerHTML = "";
     values.forEach(v => {
       const chip = document.createElement("div");
       chip.className = "chip";
-      chip.textContent = v;
+      chip.textContent = labelFn ? labelFn(v) : v;
       chip.addEventListener("click", () => {
         if (set.has(v)) set.delete(v); else set.add(v);
         chip.classList.toggle("on");
@@ -407,6 +544,7 @@
   buildChips(document.getElementById("weapon-chips"), ALL_WEAPONS, state.weapons);
   buildChips(document.getElementById("artifact-chips"), ALL_ARTIFACTS, state.artifacts);
   buildChips(document.getElementById("subclass-chips"), ALL_SUBCLASSES, state.subclasses);
+  buildChips(document.getElementById("keyword-chips"), ALL_KEYWORDS, state.keywords, tag => KEYWORD_TAG_LABELS[tag]);
 
   document.getElementById("search-input").addEventListener("input", e => {
     state.search = e.target.value.trim().toLowerCase();
@@ -419,6 +557,7 @@
     state.weapons.clear();
     state.artifacts.clear();
     state.subclasses.clear();
+    state.keywords.clear();
     document.getElementById("search-input").value = "";
     document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
     render();
@@ -435,6 +574,7 @@
     if (state.weapons.size && !set.pairs.some(p => state.weapons.has(p))) return false;
     if (state.artifacts.size && !matchingArtifacts(set).some(a => state.artifacts.has(a.name))) return false;
     if (state.subclasses.size && !(set.elementPairs || []).some(e => state.subclasses.has(e))) return false;
+    if (state.keywords.size && !keywordTags(set).some(t => state.keywords.has(t))) return false;
     if (state.search){
       const hay = (set.name + " " + set.two[0] + " " + set.two[1] + " " + set.four[0] + " " + set.four[1] + " " + set.sourceDetail).toLowerCase();
       if (!hay.includes(state.search)) return false;
@@ -531,6 +671,275 @@
     cards.forEach(c => c.classList.toggle("expanded", anyCollapsed));
     updateExpandAllLabel();
   });
+
+  // ---------- Mix & Match (build crafting) ----------
+  // A Guardian has 5 armor slots total. Two different 2-piece bonuses
+  // uses 4 of them; one set's 4-piece bonus also uses 4 (and already
+  // includes that set's own 2-piece effect, since 4 >= 2). There's no
+  // valid combo beyond that — a second 4-piece needs 8 slots, a third
+  // 2-piece needs 6 — so Slot 2 only ever offers a second 2-piece pick,
+  // and only once Slot 1 is itself a 2-piece pick.
+  const mixerSlot1 = document.getElementById("mixer-slot-1");
+  const mixerSlot2 = document.getElementById("mixer-slot-2");
+  const mixerSlot2Note = document.getElementById("mixer-slot-2-note");
+  const mixerResultsEl = document.getElementById("mixer-results");
+  const SETS_BY_NAME = [...SETS].sort((a, b) => a.name.localeCompare(b.name));
+
+  // ---------- Keyword overlap ----------
+  // Every 2-piece bonus is tagged (in assets/sets-data.js, as twoTriggers/
+  // twoProduces) with what sets it off and what it grants, read straight
+  // from its own bonus text — not a subjective "synergy score". When one
+  // bonus's output tag matches the other's trigger tag, that's a real,
+  // traceable mechanical link (e.g. Crystocrene's Resupply creates an Orb
+  // of Power, which is exactly what Yearning Echo's Untold Greed triggers
+  // on). No overlap just means neither bonus happens to feed the other —
+  // they can still be run together, they just don't interact directly.
+  const TAG_INFO = {
+    "orb-of-power": { produce: "creates an Orb of Power", trigger: "triggers on picking up an Orb of Power" },
+    "pickup-ammo": { produce: "gathers extra ammo pickups", trigger: "triggers on picking up ammo" },
+    "elemental-pickup": { produce: "creates an Elemental pickup", trigger: "triggers on picking up an Elemental pickup" },
+    "healing": { produce: "heals you", trigger: "triggers when you receive healing" },
+    "disorient": { produce: "disorients the target", trigger: "triggers against disoriented targets" },
+    "ammo-progress": { produce: "grants ammo progress" },
+    "damage-resistance": { produce: "grants damage resistance" },
+    "weapon-handling-buff": { produce: "buffs weapon handling/reload" },
+    "weapon-damage-buff": { produce: "buffs weapon damage" },
+    "reload-speed-buff": { produce: "buffs reload speed" },
+    "health-regen": { produce: "starts health regeneration" },
+    "grenade-stat": { produce: "grants Grenade stat" },
+    "melee-stat": { produce: "grants Melee stat" },
+    "grenade-energy": { produce: "grants grenade energy" },
+    "class-energy": { produce: "grants class ability energy" },
+    "weapons-stat": { produce: "grants Weapons stat" },
+    "stat-bonus": { produce: "grants a stat bonus" },
+    "speed-booster": { produce: "grants Speed Booster" },
+    "mobility-buff": { produce: "grants a mobility buff" },
+    "flinch-resist": { produce: "grants flinch resistance" },
+    "armor-charge": { produce: "grants Armor Charge" },
+    "super-stat": { produce: "grants Super stat" },
+    "overshield": { produce: "grants an overshield" },
+    "slow": { produce: "applies a slowing effect" },
+    "exhaust": { produce: "exhausts the target" },
+    "aoe-burst": { produce: "releases an area burst" },
+    "void-breach": { produce: "spawns a Void breach" },
+    "threadling": { produce: "spawns a Threadling" },
+    "transcendence-energy": { produce: "grants Transcendence energy" },
+    "weapon-reload": { produce: "reloads a stowed weapon" },
+    "final-blow": { trigger: "triggers on a final blow" },
+    "final-blow-powerful": { trigger: "triggers on a final blow against a powerful combatant" },
+    "final-blow-primary": { trigger: "triggers on a Primary ammo final blow" },
+    "final-blow-precision": { trigger: "triggers on a precision final blow" },
+    "final-blow-elemental": { trigger: "triggers on an elemental final blow" },
+    "final-blow-heavy-ordnance": { trigger: "triggers on a Rocket/Grenade Launcher/micro-missile final blow" },
+    "final-blow-debuffed": { trigger: "triggers on a final blow against a debuffed target" },
+    "melee-final-blow": { trigger: "triggers on a melee final blow" },
+    "grenade-final-blow": { trigger: "triggers on a grenade final blow" },
+    "melee-hit": { trigger: "triggers on melee hits" },
+    "sword-hit": { trigger: "triggers on Sword hits" },
+    "finisher": { trigger: "triggers on a finisher" },
+    "shields-broken": { trigger: "triggers when your shields break" },
+    "taking-damage": { trigger: "triggers when you take damage" },
+    "taking-melee-damage": { trigger: "triggers when you take melee damage" },
+    "out-of-combat": { trigger: "triggers after being out of combat" },
+    "sprint": { trigger: "triggers while sprinting" },
+    "slide": { trigger: "triggers while sliding" },
+    "reload": { trigger: "triggers on reload" },
+    "weapon-swap": { trigger: "triggers on a weapon swap" },
+    "weapon-stow": { trigger: "triggers on stowing a weapon" },
+    "low-health": { trigger: "triggers at low health" },
+    "proximity-allies": { trigger: "triggers near allies" },
+    "ally-defeated": { trigger: "triggers when an ally is defeated" },
+    "ally-revived": { trigger: "triggers on reviving an ally" },
+    "shield-regen-start": { trigger: "triggers when your shields start regenerating" },
+    "amplified": { trigger: "triggers while Amplified" },
+    "grenade-cast": { trigger: "triggers on casting your grenade" }
+  };
+
+  function keywordMatches(pick1, pick2){
+    const matches = [];
+    (pick1.set.twoProduces || []).forEach(tag => {
+      if ((pick2.set.twoTriggers || []).includes(tag)) matches.push({ from: pick1, to: pick2, tag });
+    });
+    (pick2.set.twoProduces || []).forEach(tag => {
+      if ((pick1.set.twoTriggers || []).includes(tag)) matches.push({ from: pick2, to: pick1, tag });
+    });
+    return matches;
+  }
+
+  function mixerKeywordsHtml(pick1, pick2){
+    const matches = keywordMatches(pick1, pick2);
+    const rows = matches.map(m => {
+      const info = TAG_INFO[m.tag] || {};
+      return '<div class="mixer-keyword-row">' + m.from.bonusName + ' ' + (info.produce || m.tag) +
+        ' <span class="mixer-keyword-arrow">→</span> ' + m.to.bonusName + ' ' + (info.trigger || m.tag) + '</div>';
+    });
+    return (
+      '<div class="mixer-keywords">' +
+        '<div class="mixer-keywords-label">Shared Keywords</div>' +
+        (rows.length
+          ? rows.join("")
+          : '<div class="mixer-keyword-row mixer-keyword-none">No direct keyword overlap between these two — nothing stops you running them together, they just don’t feed into each other.</div>') +
+      '</div>'
+    );
+  }
+
+  // Every 2pc/2pc pair that our own keyword tags actually flag — computed
+  // once against the full set list, not hand-picked. "Suggested" means
+  // "the data says these feed each other," nothing more.
+  function computeSuggestedCombos(){
+    const combos = [];
+    for (let i = 0; i < SETS.length; i++){
+      for (let j = i + 1; j < SETS.length; j++){
+        const pick1 = { set: SETS[i], bonusName: SETS[i].two[0] };
+        const pick2 = { set: SETS[j], bonusName: SETS[j].two[0] };
+        const matches = keywordMatches(pick1, pick2);
+        if (matches.length) combos.push({ pick1, pick2, matches });
+      }
+    }
+    return combos;
+  }
+
+  function renderMixerSuggestions(){
+    const el = document.getElementById("mixer-suggestions");
+    const combos = computeSuggestedCombos();
+
+    // Group by the exact set of matched tags, not a flat list — a wall of
+    // 27 identical-looking rows reads as noise, a handful of labeled
+    // categories reads as organized. Biggest category first.
+    const groups = new Map();
+    combos.forEach(c => {
+      const tags = [...new Set(c.matches.map(m => m.tag))].sort();
+      const key = tags.join("+");
+      if (!groups.has(key)) groups.set(key, { tags, combos: [] });
+      groups.get(key).combos.push(c);
+    });
+    const sortedGroups = [...groups.values()].sort((a, b) => b.combos.length - a.combos.length);
+
+    el.innerHTML = sortedGroups.map(g => {
+      const label = g.tags.map(t => KEYWORD_TAG_LABELS[t] || t).join(" + ");
+      const rows = g.combos.map(c =>
+        '<button type="button" class="mixer-suggestion-btn" data-slug-a="' + c.pick1.set.slug + '" data-slug-b="' + c.pick2.set.slug + '">' +
+          '<strong>' + c.pick1.set.name + '</strong> (' + c.pick1.bonusName + ') + ' +
+          '<strong>' + c.pick2.set.name + '</strong> (' + c.pick2.bonusName + ')' +
+        '</button>'
+      ).join("");
+      return (
+        '<div class="mixer-suggestion-group">' +
+          '<div class="mixer-suggestion-group-label">' + label + ' <span class="mixer-suggestion-group-count">(' + g.combos.length + ')</span></div>' +
+          '<div class="mixer-suggestion-list">' + rows + '</div>' +
+        '</div>'
+      );
+    }).join("");
+
+    el.querySelectorAll(".mixer-suggestion-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        mixerSlot1.value = mixerValue(btn.dataset.slugA, 2);
+        refreshMixerSlot2();
+        mixerSlot2.value = mixerValue(btn.dataset.slugB, 2);
+        renderMixerResults();
+        document.querySelector(".mixer-card").scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+  }
+
+  function mixerValue(slug, tier){ return slug + ":" + tier; }
+  function mixerLookup(value){
+    if (!value) return null;
+    const sepIndex = value.lastIndexOf(":");
+    const slug = value.slice(0, sepIndex);
+    const tier = Number(value.slice(sepIndex + 1));
+    const set = SETS.find(s => s.slug === slug);
+    if (!set) return null;
+    const bonus = tier === 2 ? set.two : set.four;
+    return { set, tier, bonusName: bonus[0], bonusText: bonus[1] };
+  }
+
+  function fillMixerSelect(selectEl, placeholderText, excludeSlug, tiersToShow){
+    const prevValue = selectEl.value;
+    selectEl.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = placeholderText;
+    selectEl.appendChild(placeholder);
+
+    SETS_BY_NAME.forEach(set => {
+      if (set.slug === excludeSlug) return;
+      const group = document.createElement("optgroup");
+      group.label = set.name;
+      tiersToShow.forEach(tier => {
+        const bonus = tier === 2 ? set.two : set.four;
+        const opt = document.createElement("option");
+        opt.value = mixerValue(set.slug, tier);
+        opt.textContent = tier + "-Piece: " + bonus[0];
+        group.appendChild(opt);
+      });
+      selectEl.appendChild(group);
+    });
+
+    selectEl.value = [...selectEl.options].some(o => o.value === prevValue) ? prevValue : "";
+  }
+
+  function mixerPerkHtml(pick){
+    return (
+      '<div class="perk">' +
+        '<div class="perk-badge">' + pick.tier + '</div>' +
+        '<div class="perk-body">' +
+          '<div class="perk-name">' + pick.tier + ' Piece — ' + pick.set.name + ' | ' + pick.bonusName + '</div>' +
+          '<div class="perk-desc">' + pick.bonusText + '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderMixerResults(){
+    const pick1 = mixerLookup(mixerSlot1.value);
+    const pick2 = pick1 && pick1.tier === 2 ? mixerLookup(mixerSlot2.value) : null;
+
+    if (!pick1){
+      mixerResultsEl.innerHTML = '<div class="mixer-empty">Pick a piece above to see its bonus.</div>';
+      return;
+    }
+
+    let html = mixerPerkHtml(pick1);
+    if (pick2) html += mixerPerkHtml(pick2);
+    if (pick2) html += mixerKeywordsHtml(pick1, pick2);
+
+    const usedSlots = pick1.tier === 4 ? 4 : (pick2 ? 4 : 2);
+    html += '<div class="mixer-flex-note">' + usedSlots + ' of 5 armor slots committed' +
+      (usedSlots < 5 ? ' — the rest is open for an exotic, a crafted class item, or whatever else you want to run.' : '.') +
+      '</div>';
+    mixerResultsEl.innerHTML = html;
+  }
+
+  function refreshMixerSlot2(){
+    if (!mixerSlot1.value){
+      mixerSlot2.disabled = true;
+      mixerSlot2.value = "";
+      mixerSlot2Note.textContent = "";
+      return;
+    }
+    const pick1 = mixerLookup(mixerSlot1.value);
+    if (pick1.tier === 4){
+      mixerSlot2.disabled = true;
+      mixerSlot2.value = "";
+      mixerSlot2Note.textContent = "A 4-piece bonus already fills 4 of your 5 slots — no room for a second one.";
+      return;
+    }
+    mixerSlot2.disabled = false;
+    mixerSlot2Note.textContent = "Pick a second 2-piece bonus from a different set.";
+    fillMixerSelect(mixerSlot2, "Select a second 2-piece…", pick1.set.slug, [2]);
+  }
+
+  fillMixerSelect(mixerSlot1, "Select a piece…", null, [2, 4]);
+  refreshMixerSlot2();
+  renderMixerResults();
+  renderMixerSuggestions();
+
+  mixerSlot1.addEventListener("change", () => {
+    refreshMixerSlot2();
+    renderMixerResults();
+  });
+  mixerSlot2.addEventListener("change", renderMixerResults);
 
   render();
 })();
