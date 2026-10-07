@@ -7,7 +7,7 @@
    ============================================================ */
 window.RaidsData = (function(){
   const RAIDS = [
-    { name:"Last Wish", slug:"last-wish", armorSlugs:["great-hunt"],
+    { name:"Last Wish", slug:"last-wish", armorSlugs:["great-hunt"], difficulties:["Normal"],
       puzzleHelper:{ slug:"wall-of-wishes", title:"Wall of Wishes Reference", blurb:"Look up any of the 15 wishes: plate location, effect, and the button pattern to shoot." },
       summary:"Last Wish was Destiny 2's first true modern raid, and it still has a reputation as one of the most mentally demanding raids in the series, not because the combat is brutal, but because nearly every encounter is a puzzle that needs constant callouts. If your team doesn't talk, this raid grinds to a halt fast.",
       encounters:[
@@ -83,7 +83,7 @@ window.RaidsData = (function(){
           ],
           wipe:"Letting the Creeping Darkness debuff reach its max stack kills whoever's affected, and losing too many carriers to enemies mid-transport can stall the whole relay. Keep the path clear ahead of whoever's currently carrying it." }
       ] },
-    { name:"Garden of Salvation", slug:"garden-of-salvation", armorSlugs:["kentarch-3"],
+    { name:"Garden of Salvation", slug:"garden-of-salvation", armorSlugs:["kentarch-3"], difficulties:["Normal"],
       summary:"Garden of Salvation is short compared to most raids (just four encounters), but it makes up for that with pure endurance. There's very little in the way of puzzles here; it's mostly about managing timers, buffs, and constant enemy pressure without anyone getting overwhelmed.",
       encounters:[
         { name:"Evade the Consecrated Mind",
@@ -134,7 +134,7 @@ window.RaidsData = (function(){
           ],
           wipe:"Standing on a platform when the boss destroys it kills you instantly, so use the relay tether to rebuild broken platforms before they're needed again, and always know which platforms are safe before you need to cross them." }
       ] },
-    { name:"Deep Stone Crypt", slug:"deep-stone-crypt", armorSlugs:["legacys-oath"],
+    { name:"Deep Stone Crypt", slug:"deep-stone-crypt", armorSlugs:["legacys-oath"], difficulties:["Normal"],
       summary:"Deep Stone Crypt introduced two buffs, Scanner and Operator, that show up again and again through the raid: Scanner lets you see something hidden that other players can't, and Operator lets you interact with terminals and free trapped teammates. Nearly every encounter comes down to the same loop: find the right target, tell someone else, and don't let the timers run out.",
       encounters:[
         { name:"Pike & Sparrow",
@@ -211,7 +211,7 @@ window.RaidsData = (function(){
           ],
           wipe:"This fight punishes indecision: letting radiation max out on a core carrier kills them, and running out of time in the final teleporting phase is a hard wipe with no second chances, so keep pushing damage even when things feel chaotic." }
       ] },
-    { name:"Vault of Glass", slug:"vault-of-glass", armorSlugs:["atheons-memory"],
+    { name:"Vault of Glass", slug:"vault-of-glass", armorSlugs:["atheons-memory"], difficulties:["Normal","Master"],
       summary:"Vault of Glass is Destiny's oldest raid, brought back from the original game. The whole thing is built around Vex time-travel shenanigans: if you get pulled through a portal alone, that's supposed to happen, not a sign you messed up. A few ideas repeat through every encounter: one person carries a special item called the Relic that does something different in each fight, callouts matter more than damage, and almost every encounter has a specific 'do this wrong and the raid wipes' rule. Learn that one rule per encounter and the rest takes care of itself.",
       encounters:[
         { name:"Opening the Vault of Glass",
@@ -237,7 +237,8 @@ window.RaidsData = (function(){
             "Prioritize Wyverns and any tougher Champion-type enemies the instant they appear over regular Vex.",
             "Watch for glowing pools left behind by defeated enemies. Standing in one marks you for Negation, and there's a cleansing well in the center of the arena to clear the debuff."
           ],
-          wipe:"Letting too many regular Vex sacrifice into a Conflux fails it, but letting even one Wyvern sacrifice is an instant wipe, so kill Wyverns the moment you see them, no exceptions." },
+          wipe:"Letting too many regular Vex sacrifice into a Conflux fails it, but letting even one Wyvern sacrifice is an instant wipe, so kill Wyverns the moment you see them, no exceptions.",
+          master:"On Master, the Minotaurs that show up during this encounter are Overload Champions." },
         { name:"Oracles",
           objective:"Destroy Oracles in the exact order they spawn, across five rounds that each add one more (3, then 4, 5, 6, and 7).",
           roles:"Assign each player to watch one or two specific spawn points and call out a number the instant theirs appears.",
@@ -284,7 +285,7 @@ window.RaidsData = (function(){
             "Send one player into each portal. They call out as soon as a shielded Praetorian appears on their side.",
             "The Relic holder rushes into whichever portal has the Praetorian, breaks its shield, then drops the Relic for the player already inside to pick up.",
             "That player carries the Relic back out and across to the opposite portal, where the process repeats.",
-            "Watch the sync plates: if an Overload Minotaur reaches one, it shuts that portal down until it's cleared.",
+            "Watch the sync plates: if a Minotaur reaches one, it shuts that portal down until it's cleared.",
             "Additional Gatekeepers can respawn in the middle of the room and lock both portals again — kill them to reopen things and keep the rotation going.",
             "Once enough Praetorians are cleared this way, a Conflux appears in the main room. Regroup there and defend it, including a few Wyverns that show up near the end, until the encounter ends."
           ],
@@ -306,7 +307,7 @@ window.RaidsData = (function(){
           ],
           wipe:"Getting the Oracle order wrong on either side, or running out of time before the teleported players escape, ends the run, and dropping the Relic for more than about 10 seconds does too. Clean callouts between the inside and outside teams matter more here than anywhere else in the raid." }
       ] },
-    { name:"Vow of the Disciple", slug:"vow-of-the-disciple", armorSlugs:["resonant-fury"],
+    { name:"Vow of the Disciple", slug:"vow-of-the-disciple", armorSlugs:["resonant-fury"], difficulties:["Normal","Master"],
       summary:"Vow of the Disciple hinges on symbol callouts more than any raid before it. Nearly every encounter has you finding two or three symbols, matching them to a target, and acting fast once you do. It also introduces a stacking darkness debuff that follows you through the whole raid, so managing that matters as much as the mechanics themselves.",
       encounters:[
         { name:"Payload",
@@ -330,7 +331,8 @@ window.RaidsData = (function(){
             "Check the obelisks that haven't been cleared yet — only one of them will actually display that exact combination, even if it isn't the one that revealed it — and shoot its three symbols in quick succession.",
             "Repeat the entire process two more times, once for each remaining obelisk — by the third round only one is left, so you just need the code."
           ],
-          wipe:"The obelisk fills a hidden meter as the fight goes on, faster if you shoot wrong symbols or let enemies attack it. If it fills completely, the team wipes, so speed and accuracy both matter." },
+          wipe:"The obelisk fills a hidden meter as the fight goes on, faster if you shoot wrong symbols or let enemies attack it. If it fills completely, the team wipes, so speed and accuracy both matter.",
+          master:"On Master, the room Glyphkeepers become Overload Champions, and the Abominations that spawn during offerings become Unstoppable Champions." },
         { name:"The Caretaker",
           objective:"Stun a boss to keep him from reaching a central obelisk, collect symbols from a dark side room to unlock a damage phase, then repeat across three floors.",
           roles:"Two players keep the boss's attention and stun him, two clear enemies and support, two rotate through a dark room collecting symbols.",
@@ -342,7 +344,8 @@ window.RaidsData = (function(){
             "Stand on each plate as it activates, damage the boss, and rotate to the next plate when it deactivates.",
             "Repeat this whole loop on each of the raid's three floors, then finish with a final stand in a hallway with its own set of plates."
           ],
-          wipe:"Letting the boss reach the obelisk while unstunned wipes the team, and running out of plates during the final stand without finishing him off does the same. This fight is a straight damage race as much as a mechanics one." },
+          wipe:"Letting the boss reach the obelisk while unstunned wipes the team, and running out of plates during the final stand without finishing him off does the same. This fight is a straight damage race as much as a mechanics one.",
+          master:"On Master, the Vandals in the outer arena become Overload Champions." },
         { name:"The Upended",
           objective:"Carry one or more artifacts through several rooms, find matching symbols in each, and deposit the artifacts before a shared timer runs out.",
           roles:"Split into two groups of three to clear each room; different artifacts unlock different actions, so track who's holding what.",
@@ -353,7 +356,8 @@ window.RaidsData = (function(){
             "Defeat the enemy that spawns partway through each room for another chunk of extra time.",
             "Continue through each room, passing artifacts to new carriers as needed, until you reach the end."
           ],
-          wipe:"The shared timer wipes the whole team if it hits zero. Killing the time-adding enemy and depositing artifacts promptly are the only ways to keep pace with it." },
+          wipe:"The shared timer wipes the whole team if it hits zero. Killing the time-adding enemy and depositing artifacts promptly are the only ways to keep pace with it.",
+          master:"On Master, the Taken Glyphkeepers become Unstoppable Champions and the Scorn Glyphkeepers become Overload Champions." },
         { name:"Rhulk, Disciple of the Witness",
           objective:"Split a shared buff between players and feed it through one of the boss's attacks to build a deliverable version, bank it at the right pillar to push back his barrier, then repeat a weak-point sequence each round before damaging him and finishing with his final stand.",
           roles:"Two players dedicate themselves to splitting and re-splitting Leeching Force; two more convert it into Emanating Force and carry it to a called-out pillar; the last two clear adds and call out matching symbols.",
@@ -369,9 +373,10 @@ window.RaidsData = (function(){
             "Damage him until he resets and goes immune, then retreat and repeat the whole weak-point sequence to force another damage window. Expect to do this a few times.",
             "In his final stand, save your strongest abilities — he moves constantly and a darkness debuff stacks on the whole team until he's dead."
           ],
-          wipe:"Letting Rhulk summon a third unclaimed crystal is an instant wipe on its own, separate from the final stand's darkness debuff maxing out. Converting both holders into Emanating Force at the same time loses your progress entirely instead of splitting it, so always keep one Leeching Force holder in reserve." }
+          wipe:"Letting Rhulk summon a third unclaimed crystal is an instant wipe on its own, separate from the final stand's darkness debuff maxing out. Converting both holders into Emanating Force at the same time loses your progress entirely instead of splitting it, so always keep one Leeching Force holder in reserve.",
+          master:"On Master, the Taken Glyphkeeper becomes an Overload Champion and the Scorn Glyphkeeper becomes an Unstoppable Champion." }
       ] },
-    { name:"King's Fall", slug:"kings-fall", armorSlugs:["oryxs-memory"],
+    { name:"King's Fall", slug:"kings-fall", armorSlugs:["oryxs-memory"], difficulties:["Normal","Master"],
       summary:"King's Fall reintroduces a lot of ideas from Destiny's original raids: statues, totems, and boss fights that hinge on trading a single buff back and forth between a handful of players. Nothing here is subtle: if a role isn't being covered, you'll know almost immediately.",
       encounters:[
         { name:"Relics & Opening the Gate",
@@ -384,7 +389,8 @@ window.RaidsData = (function(){
             "Repeat for six rounds total, since orbs spawn slightly farther away each round and expire if held too long.",
             "Once all six rounds are done, clear the remaining enemies near the portal to open it."
           ],
-          wipe:"Orbs expire if carried too long without being deposited, and depositing without the other side's orb landing at nearly the same time fails that round, forcing a retry. If a carrier goes down or gets cut off, grab the dropped orb quickly or the timer will force a restart on that run." },
+          wipe:"Orbs expire if carried too long without being deposited, and depositing without the other side's orb landing at nearly the same time fails that round, forcing a retry. If a carrier goes down or gets cut off, grab the dropped orb quickly or the timer will force a restart on that run.",
+          master:"On Master, the side-route Taken Phalanxes become Unstoppable Champions, and the central Taken Hobgoblin becomes an Overload Champion." },
         { name:"Annihilator Totems",
           objective:"Keep a totem in each of two side rooms defended at all times while running a three-player rotation that charges a central plate.",
           roles:"Two teams of three, one per side room, each running a fixed rotation: Brand holder, plate depositor, balcony claimer.",
@@ -396,7 +402,8 @@ window.RaidsData = (function(){
             "After draining, that same player becomes the next balcony claimer, continuing the rotation: holder, to depositor, to claimer, and back to holder again.",
             "Repeat this loop on both sides until the encounter ends. There's no boss here, just constant buff management."
           ],
-          wipe:"Leaving a totem completely undefended wipes the team after a few seconds, so even mid-rotation, always make sure someone's covering it." },
+          wipe:"Leaving a totem completely undefended wipes the team after a few seconds, so even mid-rotation, always make sure someone's covering it.",
+          master:"On Master, three Unstoppable Champion Ogres appear together: one in the center room and one in each totem room." },
         { name:"The Warpriest",
           objective:"Read a hidden sequence of glowing plates to earn the Brand of the Initiate, then burn the boss down while managing who's exposed to a room-clearing blast.",
           roles:"Split into three pairs across the room; whoever ends up on the final plate gets the Brand of the Initiate and needs it passed along by teammates.",
@@ -408,7 +415,8 @@ window.RaidsData = (function(){
             "When the Brand's timer runs low, have someone grab the Brand Claimer buff from a Knight to pass the Brand to a new player, keeping the damage phase going.",
             "When the boss unleashes his room-clearing attack, take cover behind one of the pillars to avoid it, then repeat the whole sequence."
           ],
-          wipe:"Letting the Brand of the Initiate's timer expire with nobody ready to take it over stalls the whole encounter, and getting caught without cover during the boss's blast can wipe the team outright. There's also a hard ceiling: using a pillar for cover destroys it, so you've only got a few uses before you're out of cover entirely." },
+          wipe:"Letting the Brand of the Initiate's timer expire with nobody ready to take it over stalls the whole encounter, and getting caught without cover during the boss's blast can wipe the team outright. There's also a hard ceiling: using a pillar for cover destroys it, so you've only got a few uses before you're out of cover entirely.",
+          master:"On Master, the glyph-plate Knights become Barrier Champions. Once the fight shifts to its Taken-heavy state, their replacements are Overload Taken Hobgoblins instead." },
         { name:"Golgoroth",
           objective:"Juggle a boss's attention between two players while the rest of the team shoots down orbs and deals damage from special pools on the ground.",
           roles:"Two players trade the boss's aggro back and forth; everyone else destroys orbs, stands in the resulting pools, and deals damage.",
@@ -420,7 +428,8 @@ window.RaidsData = (function(){
             "Repeat with a new orb and pool each time the Gaze swaps, watching for Unstable Light, which will explode on whoever's affected — move away from allies once you're marked, though exploding close to the boss himself deals him a solid chunk of damage, so use it as a parting shot if you can.",
             "Continue until either all the available orbs are used or the boss is defeated."
           ],
-          wipe:"Failing to pass the boss's attention in time gets whoever's exposed killed, and letting too many orbs go unused across the fight eventually wipes the whole team. Both are about timing, not damage." },
+          wipe:"Failing to pass the boss's attention in time gets whoever's exposed killed, and letting too many orbs go unused across the fight eventually wipes the whole team. Both are about timing, not damage.",
+          master:"On Master, the Knights controlling the final bridge or gate become Barrier Champions." },
         { name:"Daughters of Oryx",
           objective:"Repeatedly build a path across the arena to collect pieces of the Blightguard, then use it to steal the Aura of Immortality from one of two bosses and burn her down before a timer expires.",
           roles:"One player gets randomly selected each round to cross the path and collect the Blightguard piece; everyone else manages the plates and clears adds.",
@@ -432,7 +441,8 @@ window.RaidsData = (function(){
             "With the aura stolen, the whole team groups up inside it and burns down that same daughter, the one you stole the aura from, before her sister's song finishes.",
             "Repeat the entire process for the second boss."
           ],
-          wipe:"The boss's song wipes the team automatically if nobody steals her aura in time. The whole encounter is a race to build the path and grab the buff pieces fast enough to make that deadline every round." },
+          wipe:"The boss's song wipes the team automatically if nobody steals her aura in time. The whole encounter is a race to build the path and grab the buff pieces fast enough to make that deadline every round.",
+          master:"On Master, the Knight that begins each ascendant path becomes a Barrier Champion." },
         { name:"Oryx, The Taken King",
           objective:"Repeat a path-and-buff cycle similar to the Daughters fight to steal an aura, use it to safely detonate bombs that stun Oryx, then damage his exposed chest, across several long rounds.",
           roles:"One player gets randomly selected each round to cross the path; a few players are responsible for triggering bombs during the stun window; everyone else clears enemies and supports.",
@@ -445,9 +455,10 @@ window.RaidsData = (function(){
             "After the damage window ends, either survive a wave of extra attacks or fight through a side challenge, depending on which one triggers, then repeat the whole cycle until his health is low enough for the final stand.",
             "In the final stand, two Light-Eater Ogres spawn and drop two more bombs instead of four — trigger them one at a time rather than together, and finish him off before you run out of chances; failing here wipes the team even while standing in the aura."
           ],
-          wipe:"Missing the bomb detonation window during his wipe attack is an instant wipe, though triggering even just one bomb is enough to stun him and avoid that — triggering more just extends the damage window. Failing to get back into the aura before a triggered bomb detonates kills whoever's still outside it. This is one of the longest fights in the game, so pace your ammo and your patience accordingly." }
+          wipe:"Missing the bomb detonation window during his wipe attack is an instant wipe, though triggering even just one bomb is enough to stun him and avoid that — triggering more just extends the damage window. Failing to get back into the aura before a triggered bomb detonates kills whoever's still outside it. This is one of the longest fights in the game, so pace your ammo and your patience accordingly.",
+          master:"On Master, the Knights standing on the plates become Overload Taken Hobgoblins." }
       ] },
-    { name:"Root of Nightmares", slug:"root-of-nightmares", armorSlugs:["nezarecs-nightmare"],
+    { name:"Root of Nightmares", slug:"root-of-nightmares", armorSlugs:["nezarecs-nightmare"], difficulties:["Normal","Master"],
       puzzleHelper:{ slug:"nezarec-extra-chest", title:"Nezarec's Extra Chest", blurb:"Note the reference wall's Light/Dark pattern at the start, then work out which orbs to connect in each of the raid's three hidden rooms." },
       summary:"Root of Nightmares runs almost entirely on one shared idea: building a network of glowing nodes by carrying a short-lived buff from one to the next. Once you understand that loop, every encounter in this raid is a variation on the same theme, just with a different twist bolted on.",
       encounters:[
@@ -461,7 +472,8 @@ window.RaidsData = (function(){
             "Meanwhile, everyone else defeats Psion pairs as they appear. Killing both spawns a Tormentor that, when defeated, buys the network builders extra time.",
             "Repeat across the arena until all sections are complete."
           ],
-          wipe:"The Sweeping Terror timer wipes the team if it runs out. Finishing a network pauses it, so the faster your two builders work, the less pressure everyone else is under." },
+          wipe:"The Sweeping Terror timer wipes the team if it runs out. Finishing a network pauses it, so the faster your two builders work, the less pressure everyone else is under.",
+          master:"On Master, expect more Barrier Champion Colossi and Solar-shielded Centurions." },
         { name:"Scission",
           objective:"Build two zig-zagging node networks across a gap by jumping back and forth with Field of Light or Flux of Darkness, while clearing enemies that can only be damaged by whoever's holding it.",
           roles:"One dedicated jumper per side who crosses the gap repeatedly; everyone else clears enemies and can relay-run nodes on their own side.",
@@ -472,7 +484,8 @@ window.RaidsData = (function(){
             "Defeat the Redolence of Splendor or Redolence of Decay enemies that spawn, prioritizing the type that only takes damage from whoever's holding the matching buff.",
             "Once a full network on a level is done, a tougher version of that same enemy spawns, so defeat it to unlock the next level and repeat."
           ],
-          wipe:"There's no instant wipe here, but stacking distractions slows your builders down against the encounter's shared timer, so keep the crossing player's job as simple as possible and handle everything else around them." },
+          wipe:"There's no instant wipe here, but stacking distractions slows your builders down against the encounter's shared timer, so keep the crossing player's job as simple as possible and handle everything else around them.",
+          master:"On Master, Unstoppable Champion Incendiors are added on each floor, and Barrier Champion Colossi still show up near the end of each floor." },
         { name:"Zo'Aurc, Explicator of Planets",
           objective:"Swap mismatched planets to their correct sides using Planetary Insight, then deliver the right combination to a set of central plates for a damage phase.",
           roles:"Two pairs handle planet-swapping on each side; the rest handle add-clear and later plate positioning.",
@@ -484,7 +497,8 @@ window.RaidsData = (function(){
             "Stand on whichever plate matches the boss's current shield type to deal bonus damage, and rotate to the next one as its shield changes — the sequence always follows a pattern where whichever color appears twice among the three plates goes first and last, so you can call the full rotation order before damage even starts.",
             "Repeat the whole cycle until the boss is defeated."
           ],
-          wipe:"Nothing here directly wipes the team, but failing to deal enough damage during a plate rotation means you can't cycle through all of them. Slow, correct swaps beat fast, wrong ones." },
+          wipe:"Nothing here directly wipes the team, but failing to deal enough damage during a plate rotation means you can't cycle through all of them. Slow, correct swaps beat fast, wrong ones.",
+          master:"On Master, Barrier Champion Colossi replace the Terrestrial Lieutenants that grant Planetary Insight, so you'll need Barrier coverage just to start reading planets. Solar-shielded Centurions still show up as the trigger wave." },
         { name:"Nezarec, Final God of Pain",
           objective:"Build two networks of nodes (one of each energy type) while periodically stunning the boss, then burn him down in short damage phases across multiple rounds.",
           roles:"Two players build the node networks; two more take turns tanking Nezarec's aggro and signaling which safe zone color is needed; everyone else keeps both lanes clear of adds.",
@@ -496,9 +510,10 @@ window.RaidsData = (function(){
             "Reset and repeat: each round gives you less time before his wipe attack triggers, so move faster each time, with the tanks swapping Nezarec's Hatred back and forth to buy extra seconds.",
             "Continue until his final stand, where you'll need to finish him off before he wipes the team outright."
           ],
-          wipe:"Getting caught outside a Refuge during his wipe attack kills everyone who isn't protected. The fastest way to avoid needing one at all is finishing both node networks before his patience runs out." }
+          wipe:"Getting caught outside a Refuge during his wipe attack kills everyone who isn't protected. The fastest way to avoid needing one at all is finishing both node networks before his patience runs out.",
+          master:"On Master, Barrier Champion Colossi replace the normal Esteemed Colossi." }
       ] },
-    { name:"Crota's End", slug:"crotas-end", armorSlugs:["crotas-memory"],
+    { name:"Crota's End", slug:"crotas-end", armorSlugs:["crotas-memory"], difficulties:["Normal","Master"],
       summary:"Crota's End is built entirely around one shared item, the Chalice of Light. Whoever holds it slowly charges up, and handing it off gives the new holder a buff called Enlightened, which lets you do whatever the current encounter needs: light lanterns, pick up Hive swords, cross bridges, or damage the final boss. The whole raid is really just different ways of passing that buff around your team at the right moment.",
       encounters:[
         { name:"Descend into the Hellmouth",
@@ -524,6 +539,7 @@ window.RaidsData = (function(){
             "At the end of the path, use Enlightened on the plate to start building the bridge, then survive the enemies that rush in until it finishes."
           ],
           wipe:"Engulfed in Darkness is a visible 60-second timer on your screen that kills the whole team if it reaches zero. Lighting a lantern resets it, and so does depositing the Chalice at a preservation node. Separately, Weight of Darkness stacks up to 10 times the longer you go without lighting a lantern, slowing your movement. Preserving the Chalice resets the death timer but does nothing for this stack, only actually lighting a lantern clears it.",
+          master:"On Master, expect extra Unstoppable Ogres and a Barrier Knight during the final plate defense.",
           advancedTactics:[
             "You don't need to light every lantern along the path. Since depositing the Chalice at a preservation node resets Engulfed in Darkness on its own, a fast team can skip several lanterns in a row and just preserve often enough to stay ahead of the timer.",
             "The catch is Weight of Darkness: preserving doesn't clear it, so skipping too many lanterns in a row leaves the whole team slowed even though the death timer is fine. Budget in an actual lantern light every so often specifically to knock that stack back down, not just to reset the timer."
@@ -542,7 +558,8 @@ window.RaidsData = (function(){
             "Once three players are across, the far side takes over plate and totem duty; the rest can then cross either by grabbing a sword from a new Swordbearer or simply carrying the charged Chalice itself, since holding either one lets you cross.",
             "With everyone across, defeat a final wave of Gatekeepers using swords to close out the encounter."
           ],
-          wipe:"Leaving an Annihilator Totem unguarded while the plate is active kills the whole team instantly. This matters more than anything else in the fight." },
+          wipe:"Leaving an Annihilator Totem unguarded while the plate is active kills the whole team instantly. This matters more than anything else in the fight.",
+          master:"On Master, expect more Barrier Knights, and the Ogres in the final wave become Unstoppable Champions." },
         { name:"The Thrallway",
           objective:"Push through a short corridor of Thrall and Shriekers using the Enlightened buff to pass through barriers.",
           roles:"No fixed roles, just keep pushing forward as a group.",
@@ -563,7 +580,8 @@ window.RaidsData = (function(){
             "With her shield down, the whole team focuses damage, aiming to hit a specific notch in her health bar before time runs out.",
             "Each round adds one more Wizard to find and kill (three, then four, then five)."
           ],
-          wipe:"A countdown called the Dark Liturgy starts automatically a few minutes in. If it hits zero before you've dealt enough damage, the team wipes." },
+          wipe:"A countdown called the Dark Liturgy starts automatically a few minutes in. If it hits zero before you've dealt enough damage, the team wipes.",
+          master:"On Master, expect recurring Barrier Champions in the center room and through the add-clear sequence." },
         { name:"Crota, Son of Oryx",
           objective:"Break Crota's shield with Hive swords, burn his health across several damage phases, and manage a recurring hazard called the Oversoul, until his final stand.",
           roles:"Some players clear adds in the two towers; one focuses on finishing the Swordbearer each round; several rotate through the Chalice to stay Enlightened for swords, damage, and Oversoul duty.",
@@ -578,9 +596,10 @@ window.RaidsData = (function(){
             "Repeat the shield-break-and-damage cycle across several rounds until Crota reaches his final stand, a shorter and more dangerous last phase.",
             "After his final stand ends, back away from Crota immediately. He's briefly invulnerable and can still one-shot anyone standing too close."
           ],
-          wipe:"Letting the Oversoul run out without destroying it wipes the whole team, so always keep at least one Enlightened player free to handle it instead of spending every buff on swords or damage." }
+          wipe:"Letting the Oversoul run out without destroying it wipes the whole team, so always keep at least one Enlightened player free to handle it instead of spending every buff on swords or damage.",
+          master:"On Master, the Revenant Ogres become Unstoppable Champions." }
       ] },
-    { name:"Salvation's Edge", slug:"salvations-edge", armorSlugs:["promised"],
+    { name:"Salvation's Edge", slug:"salvations-edge", armorSlugs:["promised"], difficulties:["Normal","Master"],
       puzzleHelper:{ slug:"witness-extra-chest", title:"Witness's Extra Chest", blurb:"Note the reference column's shapes at the start, then check all 5 hidden rooms across the raid, and deposit the right shape at whichever 3 turn out active." },
       summary:"Salvation's Edge is the final raid of the original Light and Darkness saga, and it plays like it: five long, intricate encounters that layer symbol logic, split teams, and shared timers on top of each other. It's widely considered one of the most mechanically demanding raids ever made, so take each encounter slowly the first time through.",
       encounters:[
@@ -638,7 +657,8 @@ window.RaidsData = (function(){
             "With all three Inside players out, Outside finishes clearing remaining adds, including a pair of Unstoppable Ogres. Once that's done, the Witness triggers a second, separate fake-wipe: everyone except one player gets hit with a status that plays out like a death (Catatonic Decimation). The one player left standing has roughly a minute to find and deliver Ghosts to revive everyone (exactly the same statue-matching mechanic as the Inside revival, just now applied to the whole team) before the timer becomes a real wipe (Imminent End). If your team struggles to tell each other apart in the panic of this moment, Fireteam Fashion (the other half of our Verity Tools on the Puzzle Helper page) shows everyone's currently equipped gear side by side ahead of time, so the one survivor already knows who's who.",
             "Repeat this entire loop (new players get pulled Inside, shapes get traded, both fake-wipes happen again) a total of three times before the encounter ends and the path forward opens."
           ],
-          wipe:"Reviving a downed player at the wrong statue kills them again instead of helping, so don't guess: confirm the pedestal before committing. The two fake-wipes are not real wipes by themselves, but running out the ~1-minute timer on the final all-but-one revival (once Catatonic Decimation flips into Imminent End) is a genuine wipe. This encounter punishes under-communication more than almost anything else in the raid, so over-explain what you're holding and what you're missing rather than assume it's obvious." },
+          wipe:"Reviving a downed player at the wrong statue kills them again instead of helping, so don't guess: confirm the pedestal before committing. The two fake-wipes are not real wipes by themselves, but running out the ~1-minute timer on the final all-but-one revival (once Catatonic Decimation flips into Imminent End) is a genuine wipe. This encounter punishes under-communication more than almost anything else in the raid, so over-explain what you're holding and what you're missing rather than assume it's obvious.",
+          master:"On Master, the Ogre in each Inside player's isolated room becomes an Unstoppable Champion, and the Outside team's recurring Ogres do too — since who goes Inside is random, everyone should be ready to handle one." },
         { name:"Zenith",
           objective:"Earn Glyphbreaker by standing in the Witness's telegraphed attacks to collect the matching Resonance, use it to crack a glyph, and repeat until all six are gone, then survive a long, mobile damage phase.",
           roles:"Multiple players cycle through collecting Resonance and cracking glyphs; everyone needs to react fast to the boss's periodic pattern challenge.",
@@ -652,7 +672,7 @@ window.RaidsData = (function(){
           ],
           wipe:"Building the wrong shape during the boss's pattern test wipes the whole team instantly. This one has zero room for guessing, so make sure whoever's calling out the shape is confident before anyone shoots." }
       ] },
-    { name:"The Desert Perpetual", slug:"the-desert-perpetual", armorSlugs:["collective-psyche","wayward-psyche-set"],
+    { name:"The Desert Perpetual", slug:"the-desert-perpetual", armorSlugs:["collective-psyche","wayward-psyche-set"], difficulties:["Normal","Epic"],
       summary:"The Desert Perpetual is built around a hub-and-spoke structure: you clear three boss encounters in whatever order you like before the final fight. Nearly everything in this raid runs on the same core loop: collect a resource called Chronons, bank them to buy time, and use buffs to reveal information only certain players can see.",
       encounters:[
         { name:"Predestination",
@@ -713,6 +733,56 @@ window.RaidsData = (function(){
             "With the boss vulnerable, the team unloads damage while one player keeps banking Chronons through a ring to extend the fight, avoiding hazards on the ground and from above."
           ],
           wipe:"Ignoring the boss's turrets or hazard zones during either phase gets people killed fast, and letting the shared resource run dry cuts your damage window short. This fight demands the most multitasking in the raid, so keep your assigned job simple and stick to it." }
+      ],
+      epicEncounters:[
+        { name:"Epoptes, Lord of Quanta (Epic)",
+          objective:"Run an inside/outside relay on both side rooms to clear every shield-eye, manage Detain Seekers and Function Collapse, then break three rotating shields with rotating pairs during damage.",
+          roles:"One pair per side room, with one player inside reading the room and one staying outside in the projected light; two more players hold the middle, clear adds, and back up the Seeker cleanup.",
+          steps:[
+            "Clear the opening enemies and send a pair into each side room: one player goes inside, the other stays outside in the rotating light.",
+            "The inside player sees two glowing positions and calls both to the outside player on the same side; the outside player shoots both on the entrance panel, and one of them lights up again.",
+            "That final re-lit call crosses the arena: the left room's inside player shoots whatever the right room's outside player called back, and vice versa.",
+            "After both sides finish a pair of eyes, kill the three Detain Seekers that spawn above each Lens before starting the next relay — a detained inside player can't free themselves.",
+            "Once Function Collapse triggers, the two middle players take the plates, read their side's single unlit node (top, left, or right), and call it to that side's inside player to destroy, while also shooting the two nodes called out by the opposite reader.",
+            "Finish the remaining outer eyes and both Lens center eyes, then return to the middle and break the boss's two central shield eyes to start damage."
+          ],
+          wipe:"Crossed calls that go to the wrong inside player, or Seekers left alive on a detained player, stall the relay fast. During damage, each rotating pair has to clear its side room's full local shield before the boss re-shields, so a slow pair costs the whole team a damage window." },
+        { name:"Iatros, Inward-Turned (Epic)",
+          objective:"Record a repeating three-color Chronon sequence, send three players to hold Temporality pointing at the raid's three towers, and build a staircase by firing volleys timed to the fourth Diastole pulse while a separate pair keeps depositing the sequence.",
+          roles:"Three shooters hold Temporality and fire on cue; one climber reads capsule colors without ever taking a buff; two runners keep collecting and depositing the recorded Chronon sequence.",
+          steps:[
+            "Reveal the hourglass-ring color and have two runners deposit matching Chronons as a pair, three times total, to lock in a three-color sequence that repeats for the rest of the encounter.",
+            "Send exactly three players to take Temporality from the plates — never the climber — so each shooter points at one of the three fixed towers.",
+            "Start the climb; the climber reads the capsule colors and calls them in order to shooter one, two, and three, and each shooter fires at the box height matching that color on their current tower.",
+            "Fire the volley together as the fourth Diastole pulse lights, jumping so the suspension doesn't interrupt the shot.",
+            "After each successful volley, Temporalities can stay, swap, or rotate before the next climb and the next three-color call — repeat across all three tiers.",
+            "Keep running the recorded Chronon sequence throughout to avoid running the clock out, and clear Detain Seekers before they reach the runners."
+          ],
+          wipe:"A fourth player touching a plate creates a duplicate Temporality and stalls the climb outright. Missing the fourth-pulse timing breaks a volley, and improvising a color instead of following the recorded sequence runs the hourglass dry." },
+        { name:"Agraios, Inherent (Epic)",
+          objective:"Use two hoop reads to solve a fixed two-two-one portal color pattern, charge all five portals and clear the Wyverns that spawn, then recharge four of five portals during Alignment to reflect Variable Elimination into the correct copy before clearing three headless copies for the final stand.",
+          roles:"Three players hold Temporality and watch the portals; one alignment runner carries the detain; two more carry Chronons and record portal colors.",
+          steps:[
+            "Carry one Chronon through the center hoop to reveal which portals need that color, wait for its glow to clear, then read a second color — the one or two portals still unmarked are the third color by elimination.",
+            "Carry the correct recorded color through each of the five portals to charge them all, then clear the three Wyverns that spawn once every portal is lit.",
+            "Have three players take the Temporality plates; when a named copy starts its attack, the matching Temporality holder aligns at that copy's position while the other two identify which four portals need recharging.",
+            "Recharge those four called portals with their recorded colors and leave the fifth alone, then have the alignment runner cross all five charged portals to convert their grenade into a detain and throw it to reflect the attack into the correct copy.",
+            "Focus the unnamed copy specifically — it's the one that actually takes damage — and track it as it teleports between the upper perches.",
+            "When three headless copies appear at the end, split into pairs, use Temporality to find and kill the one matching each pair's buff, then collapse to the center and burst the boss the moment it's exposed."
+          ],
+          wipe:"Charging a portal with the wrong color is lethal on contact. A missed or late detain throw lets Variable Elimination go unreflected, and leaving any of the three headless copies alive keeps the final boss immune to damage." },
+        { name:"Koregos, Fractured in Time (Epic)",
+          objective:"Clear Banishment each loop, send an assigned pair into one of three route-ordered side rooms behind a Chronon-alignment gate, open that room's Temporal Locus, fight off returning echoes as earlier rooms come back online, then finish with plate damage and a six-player platform climb.",
+          roles:"Pairs are assigned to specific side rooms and later own that room's returning echo and Locus; everyone needs to know the Banishment routine since it can target anyone.",
+          steps:[
+            "Clear Banishment every loop: the first selected pair enters a portal together while the outside team clears its entrance Cyclops, then the remaining four players each use a separate central cube.",
+            "Send that loop's assigned pair into its side-room door while the rest align a central canister to the color saved from the previous loop, kill the enemy it summons, and deposit the four matching Chronons it drops to fill the hourglass.",
+            "Have the room pair clear their boss-specific mechanic and kill the room's echo, earning that boss's Undoing.",
+            "Have the matching Temporality holder hit the newly exposed Temporal Locus's outer shell, then have an unbuffed player shoot the inner core to open a damage window — note the canister color for next loop before the reset.",
+            "On later loops, earlier echoes return near the boss; only players holding that boss's Undoing can damage them, and whoever lands the final blow earns the Temporality needed to reopen that boss's Locus again.",
+            "Once all three rooms and Loci have cycled through, move to the damage platform pairing a buffed interact-caller with an unbuffed core-breaker on each crystal, then stage for the final climb: killing the lone Harpy grants everyone Banishment, and the team crosses the resulting platforms in a fixed order, one cube per player, before finishing the boss at the top with the same outer-shell, inner-core routine."
+          ],
+          wipe:"Sending a Banishment pair through the portal separately locks the second player out. Damaging an echo with the wrong boss's Undoing wastes the kill, and shooting a Locus's outer shell while buffed — instead of the inner core while unbuffed — does nothing, so burning too much time on any of it lets the loop reset before the room or Locus is finished." }
       ] },
     { name:"Pantheon", slug:"pantheon", armorSlugs:["pantheos-resplendent"],
       summary:"Pantheon isn't a traditional raid — it's three ways to fight vaulted raid bosses without running the full raids. Calus Resplendent runs the three Leviathan-era bosses (Argos, Gahlran, Emperor Calus) close to their originals. Morgeth Surpassing takes three bosses from three different raids — Warpriest (King's Fall), Consecrated Mind (Garden of Salvation), Morgeth (Last Wish) — each merged with the non-boss encounter that originally preceded it. The Gauntlet strings all six together and adds a seventh: Insurrection Prime, the returning final boss of the vaulted Scourge of the Past raid.",
