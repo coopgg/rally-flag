@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
 <title>Puzzle Helper - Rally Flag</title>
 <meta name="description" content="Interactive lookup tools for raid and dungeon secrets: Wish Wall codes, Oracle callouts, and more.">
 <meta property="og:type" content="website">
@@ -31,7 +32,7 @@
     transition: all 0.15s ease; -webkit-appearance:none; appearance:none; margin:0;
   }
   .tool-chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
-  .tool-chip.active{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); font-weight:600; }
+  .tool-chip.active{ color:var(--on-accent); background:var(--accent-fill); border-color:var(--accent-fill); font-weight:600; }
 
   .tool-section{ max-width:1000px; margin:0 auto; padding:0 24px 90px; }
   .tool-head{ margin-bottom:14px; }
@@ -108,7 +109,7 @@
   .rune-picker-cell.disabled{ opacity:0.35; cursor:not-allowed; }
   .rune-picker-num{
     position:absolute; bottom:3px; right:6px; font-family:'JetBrains Mono', monospace;
-    font-size:10px; color:var(--text-dimmer);
+    font-size:11px; color:var(--text-dimmer);
   }
   .rune-picker-hint{ font-size:12.5px; color:var(--text-dim); margin-top:18px; text-align:center; }
   .rune-picker-hint strong{ color:var(--accent-bright); }
@@ -123,10 +124,10 @@
   .rune-row-icon{ width:34px; height:34px; flex-shrink:0; border-radius:4px; overflow:hidden; background:var(--accent-dim); }
   .rune-row-icon img{ width:100%; height:100%; object-fit:contain; }
   .rune-row-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--text); flex:1; }
-  .rune-row-name b{ color:var(--accent); margin-right:6px; }
+  .rune-row-name b{ color:var(--accent-text); margin-right:6px; }
   .rune-next-btn{
-    font-family:'JetBrains Mono', monospace; font-size:12px; color:#0b0700;
-    background:var(--accent-bright); border:none; border-radius:4px; padding:8px 16px;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--on-accent);
+    background:var(--accent-fill); border:none; border-radius:4px; padding:8px 16px;
     cursor:pointer; flex-shrink:0;
   }
   .rune-row-detail{
@@ -160,7 +161,7 @@
     transition: all 0.15s ease;
   }
   .verity-subtab:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
-  .verity-subtab.active{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); }
+  .verity-subtab.active{ color:var(--on-accent); background:var(--accent-fill); border-color:var(--accent-fill); }
 
   .ft-panel{ max-width:900px; margin:0 auto; }
   .ft-disclosure{
@@ -177,8 +178,8 @@
   }
   .ft-search-row input:focus{ border-color:var(--accent); }
   .ft-search-row button{
-    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; color:#0b0700;
-    background:var(--accent-bright); border:none; border-radius:4px; padding:0 20px;
+    font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; color:var(--on-accent);
+    background:var(--accent-fill); border:none; border-radius:4px; padding:0 20px;
     cursor:pointer; -webkit-appearance:none;
   }
   .ft-search-error{
@@ -197,14 +198,14 @@
   .ft-settings-row input{ width:14px; height:14px; accent-color:var(--accent-bright); cursor:pointer; }
   .ft-section-label{
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.12em;
-    color:var(--accent); text-transform:uppercase; margin:32px 0 14px; text-align:center;
+    color:var(--accent-text); text-transform:uppercase; margin:32px 0 14px; text-align:center;
   }
   .ft-player-grid{
     display:flex; flex-wrap:wrap; justify-content:center; gap:14px;
   }
   .ft-player-card{ flex:0 1 150px; padding:12px; text-align:center; }
   .ft-player-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:13px; color:var(--text); }
-  .ft-player-class{ font-size:10px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-bottom:8px; }
+  .ft-player-class{ font-size:11px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-bottom:8px; }
   .ft-player-emblem{ width:100%; border-radius:4px; display:block; margin-bottom:8px; }
   .ft-gear-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; }
   .ft-gear-slot{ aspect-ratio:1/1; border-radius:3px; overflow:hidden; background:var(--panel-border); }
@@ -226,7 +227,7 @@
   .verity-master-label input{ width:16px; height:16px; accent-color:var(--accent-bright); cursor:pointer; }
   .verity-section-label{
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
-    color:var(--accent); text-transform:uppercase; margin:26px 0 12px;
+    color:var(--accent-text); text-transform:uppercase; margin:26px 0 12px;
   }
   .verity-section-label:first-child{ margin-top:0; }
   .verity-hint{ font-size:12.5px; color:var(--text-dim); margin-bottom:14px; line-height:1.5; }
@@ -275,7 +276,7 @@
   .verity-ogre-step{
     background:var(--accent-dim); border-color:var(--accent);
   }
-  .verity-ogre-step .step-num{ background:var(--accent); color:#0b0700; border-color:var(--accent); }
+  .verity-ogre-step .step-num{ background:var(--accent-fill-deep); color:var(--on-accent); border-color:var(--accent-fill-deep); }
   .verity-solution-step-icon{
     width:22px; height:22px; border-radius:50%; overflow:hidden; flex-shrink:0;
     background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
@@ -293,11 +294,11 @@
     border-radius:50%; padding:6px; box-sizing:border-box;
   }
   .verity-progress-lane span{
-    font-family:'JetBrains Mono', monospace; font-size:9.5px; letter-spacing:0.06em;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.06em;
     color:var(--text-dimmer); text-transform:uppercase;
   }
   .verity-progress-label{
-    text-align:center; font-family:'JetBrains Mono', monospace; font-size:10px;
+    text-align:center; font-family:'JetBrains Mono', monospace; font-size:11px;
     letter-spacing:0.06em; color:var(--text-dimmer); text-transform:uppercase; margin:-4px 0 8px;
   }
   .verity-ogre-tip{
@@ -310,7 +311,7 @@
   .lr-tool-wrap{ max-width:560px; margin:0 auto; }
   .lr-section-label{
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+    color:var(--accent-text); text-transform:uppercase; margin-bottom:10px;
   }
   .lr-reference-text{
     font-size:13.5px; color:var(--text-dim); line-height:1.65; text-align:left;
@@ -323,7 +324,7 @@
   .lr-pair-icon{ width:40px; height:40px; flex-shrink:0; }
   .lr-pair-icon img{ width:100%; height:100%; object-fit:contain; }
   .lr-pair-label{ font-family:'Oswald', sans-serif; font-weight:600; font-size:15px; color:var(--text); flex:1; }
-  .lr-pair-label b{ color:var(--accent); margin-right:8px; }
+  .lr-pair-label b{ color:var(--accent-text); margin-right:8px; }
   .lr-pair-buttons{ display:flex; gap:8px; flex-shrink:0; }
   .lr-btn{
     font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:600; color:var(--text-dim);
@@ -332,13 +333,13 @@
     -webkit-appearance:none; appearance:none;
   }
   .lr-btn:hover{ color:var(--text); border-color:rgba(255,255,255,0.25); }
-  .lr-btn.selected{ color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright); }
+  .lr-btn.selected{ color:var(--on-accent); background:var(--accent-fill); border-color:var(--accent-fill); }
 
   /* ---------- Light/Dark flower wall (Root of Nightmares) ---------- */
   .ld-tool-wrap{ max-width:640px; margin:0 auto; }
   .ld-section-label{
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:10px;
+    color:var(--accent-text); text-transform:uppercase; margin-bottom:10px;
   }
   .ld-reference-text{
     font-size:13.5px; color:var(--text-dim); line-height:1.65; text-align:left;
@@ -408,7 +409,7 @@
   .sym-group-head{ margin-top:4px; }
   .sym-group-title{
     font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:4px;
+    color:var(--accent-text); text-transform:uppercase; margin-bottom:4px;
   }
   .sym-group-note{ font-size:12.5px; color:var(--text-dim); line-height:1.5; }
 

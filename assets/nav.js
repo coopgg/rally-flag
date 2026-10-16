@@ -5,7 +5,7 @@
    to control which top-level nav link is marked active:
      "distortions" | "setbonuses" | "guides" | "godrolls" | "artifacts" | "builds" | "puzzlehelper" | "codes" | "tracker" | "vendors" | "publicevents" | "debug"
 
-   Theme (element) and mode (dark/light) are stored in localStorage
+   Theme (element) and mode (auto/light/dark) are stored in localStorage
    so they persist across every page on the site, not just the one
    you're on. First-ever visit picks a random element once, then
    remembers it from then on until changed via the menu.
@@ -14,7 +14,15 @@
   const THEMES = ["solar", "void", "arc", "stasis", "strand", "prismatic"];
   const THEME_LABELS = { solar: "Solar", void: "Void", arc: "Arc", stasis: "Stasis", strand: "Strand", prismatic: "Prismatic" };
   const STORAGE_THEME_KEY = "rallyflag_theme";
-  const STORAGE_MODE_KEY = "rallyflag_mode";
+  // Mode preference: "light" or "dark" when the visitor picked one; no
+  // value means Auto (follow the device's prefers-color-scheme).
+  const STORAGE_MODE_PREF_KEY = "rallyflag_mode_pref";
+  // Old key: written as "dark" on every visit before Auto existed, so
+  // only a stored "light" reflects an actual choice. Migrated, then removed.
+  const LEGACY_MODE_KEY = "rallyflag_mode";
+  const MODE_PREFS = ["auto", "light", "dark"];
+  const MODE_PREF_LABELS = { auto: "Auto", light: "Light", dark: "Dark" };
+  const systemLightQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: light)") : null;
 
   // Grouped (rather than one flat list) once the link count grew past
   // ~10 — same labeled-section treatment the Appearance panel already
@@ -74,6 +82,11 @@
   // reproduction of their actual brand mark.
   const KOFI_ICON_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M17 9.5h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 4.5c-.6.6-.6 1.4 0 2s.6 1.4 0 2"/><path d="M12 4.5c-.6.6-.6 1.4 0 2s.6 1.4 0 2"/></svg>';
 
+  // Gear outline (same 16px stroke style as the Ko-fi glyph) for the
+  // settings button — a second ☰ here read as a duplicate of the site
+  // menu button on the left.
+  const SETTINGS_ICON_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+
   const BUNGIE_ROOT = "https://www.bungie.net";
 
   // Real subclass icons, sourced directly from Bungie's CDN (via Destiny
@@ -98,57 +111,99 @@
     prismatic: "#ff6fd5"
   };
 
+  // localStorage can throw (blocked site data, some private modes); the
+  // nav must still render, just without remembering the choice.
+  function storageGet(key){ try { return localStorage.getItem(key); } catch (e) { return null; } }
+  function storageSet(key, value){ try { localStorage.setItem(key, value); } catch (e) {} }
+  function storageRemove(key){ try { localStorage.removeItem(key); } catch (e) {} }
+
+  // Each page's <head> has a tiny inline script that applies the stored
+  // theme/mode before first paint (otherwise light-mode visitors saw a
+  // dark, accent-less flash until this file ran). Keep its logic in sync
+  // with getStoredTheme / getStoredModePref / resolveMode.
   function getStoredTheme(){
-    let theme = localStorage.getItem(STORAGE_THEME_KEY);
+    let theme = storageGet(STORAGE_THEME_KEY);
     if (!theme || !THEMES.includes(theme)){
-      theme = THEMES[Math.floor(Math.random() * THEMES.length)];
-      localStorage.setItem(STORAGE_THEME_KEY, theme);
+      theme = document.documentElement.getAttribute("data-theme");
+      if (!THEMES.includes(theme)) theme = THEMES[Math.floor(Math.random() * THEMES.length)];
+      storageSet(STORAGE_THEME_KEY, theme);
     }
     return theme;
   }
 
-  function getStoredMode(){
-    const mode = localStorage.getItem(STORAGE_MODE_KEY);
-    return mode === "light" ? "light" : "dark";
+  function getStoredModePref(){
+    let pref = storageGet(STORAGE_MODE_PREF_KEY);
+    const legacy = storageGet(LEGACY_MODE_KEY);
+    if (legacy !== null){
+      if (pref !== "light" && pref !== "dark" && legacy === "light"){
+        pref = "light";
+        storageSet(STORAGE_MODE_PREF_KEY, pref);
+      }
+      storageRemove(LEGACY_MODE_KEY);
+    }
+    return pref === "light" || pref === "dark" ? pref : "auto";
   }
+
+  function resolveMode(pref){
+    if (pref !== "auto") return pref;
+    return systemLightQuery && systemLightQuery.matches ? "light" : "dark";
+  }
+
+  // Browser UI color (mobile address bar, installed-app title bar)
+  // follows light/dark mode — matches --bg in theme.css.
+  const MODE_THEME_COLORS = { dark: "#07080a", light: "#f3f4f7" };
 
   function applyTheme(theme){
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_THEME_KEY, theme);
+    storageSet(STORAGE_THEME_KEY, theme);
     const btnIcon = document.getElementById("nav-menu-icon");
-    if (btnIcon) btnIcon.innerHTML = '<img src="' + BUNGIE_ROOT + THEME_ICON_PATHS[theme] + '" alt="' + theme + '">';
+    if (btnIcon) btnIcon.innerHTML = '<img src="' + BUNGIE_ROOT + THEME_ICON_PATHS[theme] + '" alt="">';
     document.querySelectorAll(".element-swatch").forEach(el => {
-      el.classList.toggle("active", el.dataset.theme === theme);
+      const isActive = el.dataset.theme === theme;
+      el.classList.toggle("active", isActive);
+      el.setAttribute("aria-pressed", String(isActive));
     });
   }
 
-  function applyMode(mode){
+  let currentModePref = "auto";
+
+  function applyModePref(pref){
+    currentModePref = pref;
+    if (pref === "auto") storageRemove(STORAGE_MODE_PREF_KEY);
+    else storageSet(STORAGE_MODE_PREF_KEY, pref);
+    const mode = resolveMode(pref);
     document.documentElement.setAttribute("data-mode", mode);
-    localStorage.setItem(STORAGE_MODE_KEY, mode);
-    const thumb = document.getElementById("mode-switch-thumb");
-    if (thumb) thumb.classList.toggle("is-dark", mode === "dark");
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.content = MODE_THEME_COLORS[mode];
+    document.querySelectorAll(".mode-option").forEach(el => {
+      el.setAttribute("aria-pressed", String(el.dataset.modePref === pref));
+    });
   }
 
   function buildMenuPanel(){
     const swatchesHtml = THEMES.map(theme =>
-      '<div class="element-swatch" data-theme="' + theme + '" title="' + THEME_LABELS[theme] + '" style="background:' + THEME_ACCENT_COLORS[theme] + '">' +
-        '<img src="' + BUNGIE_ROOT + THEME_ICON_PATHS[theme] + '" alt="' + theme + '">' +
-      '</div>'
+      // Real <button>s (not divs) so the swatches are reachable with Tab
+      // and pickable with Enter/Space; aria-pressed marks the current one.
+      '<button type="button" class="element-swatch" data-theme="' + theme + '" title="' + THEME_LABELS[theme] + '"' +
+        ' aria-label="' + THEME_LABELS[theme] + ' theme" aria-pressed="false" style="background:' + THEME_ACCENT_COLORS[theme] + '">' +
+        '<img src="' + BUNGIE_ROOT + THEME_ICON_PATHS[theme] + '" alt="">' +
+      '</button>'
     ).join("");
 
     return (
       '<div class="nav-menu-panel" id="nav-menu-panel">' +
         '<div class="nav-menu-section">' +
           '<div class="nav-menu-section-label">Appearance</div>' +
-          '<button class="mode-switch" id="mode-switch" title="Toggle dark/light mode">' +
-            '<span class="mode-switch-icon">\u2600\ufe0f</span>' +
-            '<span class="mode-switch-icon">\ud83c\udf19</span>' +
-            '<span class="mode-switch-thumb" id="mode-switch-thumb"></span>' +
-          '</button>' +
+          '<div class="mode-options" role="group" aria-label="Color mode">' +
+            MODE_PREFS.map(pref =>
+              '<button type="button" class="mode-option" data-mode-pref="' + pref + '" aria-pressed="false"' +
+                (pref === "auto" ? ' title="Match your device setting"' : '') + '>' + MODE_PREF_LABELS[pref] + '</button>'
+            ).join("") +
+          '</div>' +
         '</div>' +
         '<div class="nav-menu-section">' +
           '<div class="nav-menu-section-label">Subclass Theme</div>' +
-          '<div class="element-grid">' + swatchesHtml + '</div>' +
+          '<div class="element-grid" role="group" aria-label="Subclass theme">' + swatchesHtml + '</div>' +
         '</div>' +
         '<div class="nav-menu-section" id="nav-auth-section"></div>' +
       '</div>'
@@ -210,7 +265,7 @@
 
     const themeColor = document.createElement("meta");
     themeColor.name = "theme-color";
-    themeColor.content = "#07080a";
+    themeColor.content = MODE_THEME_COLORS.dark; // applyModePref() updates it
     head.appendChild(themeColor);
 
     const appleCapable = document.createElement("meta");
@@ -253,36 +308,35 @@
     const container = document.getElementById("site-nav");
     if (!container) return;
 
-    // Each section is a <details>, all sharing one `name` — browsers
-    // auto-collapse the others whenever one opens, so the menu can't
-    // stack up into a long scroll of every link at once. The section
-    // holding the current page starts open; everything else starts
-    // collapsed to just its label.
+    // Every section is rendered expanded (no collapsing) so any page is
+    // a single tap from the menu button; theme.css lays the sections out
+    // as columns on wide screens and stacks them on phones.
     const linksHtml = NAV_SECTIONS.map(section => {
-      const hasActive = section.items.some(item => item.group === activeGroup);
       return (
-        '<details class="nav-menu-section" name="nav-links-accordion"' + (hasActive ? " open" : "") + '>' +
-          '<summary class="nav-menu-section-label">' + section.label + '</summary>' +
+        '<div class="nav-menu-section">' +
+          '<div class="nav-menu-section-label">' + section.label + '</div>' +
           section.items.map(item =>
-            '<a href="' + item.href + '"' + (item.group === activeGroup ? ' class="active"' : '') + '>' + item.label + '</a>'
+            '<a href="' + item.href + '"' + (item.group === activeGroup ? ' class="active" aria-current="page"' : '') + '>' + item.label + '</a>'
           ).join("") +
-        '</details>'
+        '</div>'
       );
     }).join("");
 
     container.innerHTML =
       '<nav class="site-nav">' +
         '<div class="nav-links-wrap">' +
-          '<button class="nav-links-btn" id="nav-links-btn" title="Menu">\u2630</button>' +
+          '<button class="nav-links-btn" id="nav-links-btn" title="Menu" aria-label="Site menu">\u2630</button>' +
+          // Panel sits right after its button (it's absolutely positioned,
+          // so this doesn't move it) so Tab goes from the button into the links.
+          '<div class="nav-links-panel" id="nav-links-panel" style="--nav-cols:' + NAV_SECTIONS.length + '">' + linksHtml + '</div>' +
           '<a href="index.html" class="brand"><span class="brand-mark"></span>RALLY FLAG</a>' +
-          '<div class="nav-links-panel" id="nav-links-panel">' + linksHtml + '</div>' +
         '</div>' +
         '<div class="nav-right-wrap">' +
           '<a class="nav-icon-btn" href="' + DISCORD_INVITE_URL + '" target="_blank" rel="noopener" title="Join the Discord">' + DISCORD_ICON_SVG + '</a>' +
           '<a class="nav-icon-btn" href="' + KOFI_URL + '" target="_blank" rel="noopener" title="Support us on Ko-fi">' + KOFI_ICON_SVG + '</a>' +
           '<div class="nav-menu-wrap">' +
-            '<button class="nav-menu-btn" id="nav-menu-btn" title="Appearance settings">' +
-              '<span class="nav-menu-burger">\u2630</span>' +
+            '<button class="nav-menu-btn" id="nav-menu-btn" title="Settings" aria-label="Settings">' +
+              '<span class="nav-menu-gear">' + SETTINGS_ICON_SVG + '</span>' +
               '<span class="nav-menu-icon" id="nav-menu-icon"></span>' +
             '</button>' +
             buildMenuPanel() +
@@ -290,33 +344,50 @@
         '</div>' +
       '</nav>';
 
-    const linksPanel = document.getElementById("nav-links-panel");
-    const linksBtn = document.getElementById("nav-links-btn");
-    linksBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      linksPanel.classList.toggle("open");
-    });
-
-    const panel = document.getElementById("nav-menu-panel");
-    const btn = document.getElementById("nav-menu-btn");
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      panel.classList.toggle("open");
+    // Both dropdowns share one open/close path so aria-expanded always
+    // matches what's on screen, only one is open at a time, and Escape /
+    // clicking outside / tabbing out all close them the same way.
+    const menus = [
+      { btn: document.getElementById("nav-links-btn"), panel: document.getElementById("nav-links-panel") },
+      { btn: document.getElementById("nav-menu-btn"), panel: document.getElementById("nav-menu-panel") }
+    ];
+    function setMenuOpen(menu, open){
+      menu.panel.classList.toggle("open", open);
+      menu.btn.setAttribute("aria-expanded", String(open));
+    }
+    menus.forEach(menu => {
+      menu.btn.setAttribute("aria-controls", menu.panel.id);
+      menu.btn.setAttribute("aria-expanded", "false");
+      menu.btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = !menu.panel.classList.contains("open");
+        menus.forEach(other => { if (other !== menu) setMenuOpen(other, false); });
+        setMenuOpen(menu, open);
+      });
+      // Tabbing past the last item (or Shift+Tabbing above the button)
+      // closes the panel. A null relatedTarget is a click on a non-
+      // focusable spot inside the panel, so that leaves it open.
+      [menu.btn, menu.panel].forEach(el => el.addEventListener("focusout", (e) => {
+        const next = e.relatedTarget;
+        if (next && !menu.btn.contains(next) && !menu.panel.contains(next)) setMenuOpen(menu, false);
+      }));
     });
     document.addEventListener("click", (e) => {
-      if (!panel.contains(e.target) && e.target !== btn){
-        panel.classList.remove("open");
-      }
-      if (!linksPanel.contains(e.target) && e.target !== linksBtn){
-        linksPanel.classList.remove("open");
-      }
+      menus.forEach(menu => {
+        if (!menu.panel.contains(e.target) && !menu.btn.contains(e.target)) setMenuOpen(menu, false);
+      });
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      menus.forEach(menu => {
+        if (!menu.panel.classList.contains("open")) return;
+        setMenuOpen(menu, false);
+        menu.btn.focus();
+      });
     });
 
-    const modeSwitch = document.getElementById("mode-switch");
-    modeSwitch.addEventListener("click", () => {
-      const current = document.documentElement.getAttribute("data-mode") === "light" ? "light" : "dark";
-      applyMode(current === "light" ? "dark" : "light");
+    document.querySelectorAll(".mode-option").forEach(el => {
+      el.addEventListener("click", () => applyModePref(el.dataset.modePref));
     });
     document.querySelectorAll(".element-swatch").forEach(el => {
       el.addEventListener("click", () => applyTheme(el.dataset.theme));
@@ -327,7 +398,13 @@
   setupAnalytics();
   buildNav();
   applyTheme(getStoredTheme());
-  applyMode(getStoredMode());
+  applyModePref(getStoredModePref());
+  // In Auto, follow the device live (e.g. an OS that switches at sunset).
+  if (systemLightQuery){
+    const onSystemChange = () => { if (currentModePref === "auto") applyModePref("auto"); };
+    if (systemLightQuery.addEventListener) systemLightQuery.addEventListener("change", onSystemChange);
+    else if (systemLightQuery.addListener) systemLightQuery.addListener(onSystemChange);
+  }
 
   ensureAuthReady().then(() => {
     renderAuthSection();

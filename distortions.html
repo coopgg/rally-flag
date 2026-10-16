@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
 <title>Distortions - Rally Flag</title>
 <meta name="description" content="Live tracker for Destiny 2's hourly Distortion rotation. See what's distorted now and what's up next.">
 <meta property="og:type" content="website">
@@ -42,7 +43,7 @@
   }
   .hud-label{
     font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.18em;
-    color:var(--accent); margin-bottom:14px; position:relative;
+    color:var(--accent-text); margin-bottom:14px; position:relative;
   }
   .hud-dest{
     font-family:'Oswald', sans-serif; font-weight:700; font-size:clamp(34px,6vw,52px);
@@ -56,8 +57,8 @@
   .hud-cta{
     position:relative;
     display:inline-block; text-decoration:none;
-    background: linear-gradient(180deg, var(--accent-bright), var(--accent));
-    color:#0b0700; font-family:'Oswald', sans-serif; font-weight:600;
+    background: linear-gradient(180deg, var(--accent-fill), var(--accent-fill-deep));
+    color:var(--on-accent); font-family:'Oswald', sans-serif; font-weight:600;
     letter-spacing:0.03em; text-transform:uppercase; font-size:14px;
     padding:15px 30px;
     clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
@@ -69,7 +70,7 @@
     opacity:0.6;
   }
   .hud-set-link{
-    position:relative; display:block; margin-top:20px;
+    position:relative; display:block; margin-top:17px; padding:3px 0;
     font-family:'JetBrains Mono', monospace; font-size:12px;
     color:var(--text-dim); text-decoration:none;
     transition: color 0.2s ease;
@@ -81,8 +82,8 @@
     border-top:1px solid var(--panel-border); text-align:left;
   }
   .nine-touched-label{
-    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
-    text-transform:uppercase; color:var(--accent); margin-bottom:8px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--accent-text); margin-bottom:8px;
   }
   .nine-touched-body{ font-size:13.5px; color:var(--text-dim); line-height:1.6; }
   .nine-touched-body strong{ color:var(--text); }

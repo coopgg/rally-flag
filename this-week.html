@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
 <title>This Week - Rally Flag</title>
 <meta name="description" content="This week's featured raid and dungeon.">
 <meta property="og:type" content="website">
@@ -37,15 +38,25 @@
 
   .tw-collapsible{ margin:44px 0 0; }
   .tw-collapsible summary{
-    display:flex; align-items:baseline; justify-content:flex-start; gap:8px;
+    display:flex; align-items:center; justify-content:flex-start; flex-wrap:wrap; gap:8px 12px;
     margin:0 0 16px; cursor:pointer; list-style:none;
   }
   .tw-collapsible summary::-webkit-details-marker{ display:none; }
-  .tw-collapse-chevron{
-    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
-    transition:transform 0.15s ease;
+  /* Pill-shaped Show/Hide control: the old lone 12px chevron didn't read
+     as clickable. The whole summary row stays the click target. */
+  .tw-collapse-toggle{
+    display:inline-flex; align-items:center; gap:6px; min-height:28px;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
+    background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
+    padding:4px 12px; transition: color 0.15s ease, border-color 0.15s ease;
   }
-  .tw-collapsible[open] .tw-collapse-chevron{ transform:rotate(90deg); }
+  .tw-collapsible summary:hover .tw-collapse-toggle,
+  .tw-collapsible summary:focus-visible .tw-collapse-toggle{ color:var(--accent-text); border-color:var(--accent); }
+  .tw-collapse-chevron{ display:inline-block; transition:transform 0.15s ease; }
+  .tw-collapsible[open] .tw-collapse-chevron{ transform:rotate(180deg); }
+  .tw-collapsible .when-open{ display:none; }
+  .tw-collapsible[open] .when-open{ display:inline; }
+  .tw-collapsible[open] .when-closed{ display:none; }
 
   .tw-status{
     text-align:center; padding:30px 20px; color:var(--text-dimmer);
@@ -65,18 +76,18 @@
   }
   .featured-card{ padding:16px 18px; }
   .featured-kind{
-    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:6px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    color:var(--accent-text); text-transform:uppercase; margin-bottom:6px;
   }
   .featured-always-badge{
-    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px;
     font-weight:400; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--accent-bright); border:1px solid var(--accent); border-radius:999px;
     padding:2px 8px; margin-left:6px; vertical-align:middle;
   }
   .featured-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:16px; color:var(--text); }
   .featured-set-label{
-    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
     color:var(--text-dimmer); text-transform:uppercase; margin-top:14px; margin-bottom:8px;
   }
   .set-links{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -87,7 +98,7 @@
   }
   .set-link:hover, .set-link:focus-visible{ border-color:var(--accent-bright); }
   .featured-link{
-    display:block; font-size:11.5px; color:var(--accent-bright); margin-top:14px;
+    display:block; font-size:11.5px; color:var(--accent-bright); margin-top:10px; padding:4px 0;
     text-decoration:none;
   }
   .featured-link:hover{ text-decoration:underline; }
@@ -97,14 +108,14 @@
     border-left:3px solid var(--accent); background:var(--accent-dim);
   }
   .ib-banner-label{
-    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
     color:var(--accent-bright); text-transform:uppercase; margin-bottom:6px;
   }
   .ib-banner-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:16px; color:var(--text); margin-bottom:10px; }
 
   .featured-card.predicted{ border-style:dashed; opacity:0.82; }
   .tw-predicted-badge{
-    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:9.5px;
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px;
     font-weight:400; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--text-dimmer); border:1px solid var(--panel-border); border-radius:999px;
     padding:3px 8px; margin-left:8px; vertical-align:middle;
@@ -137,7 +148,7 @@
   <details class="tw-collapsible">
     <summary>
       <span class="tw-section-title">Next Week<span class="tw-predicted-badge">Predicted</span></span>
-      <span class="tw-collapse-chevron">&#9656;</span>
+      <span class="tw-collapse-toggle"><span class="when-closed">Show predicted lineup</span><span class="when-open">Hide</span><span class="tw-collapse-chevron" aria-hidden="true">&#9662;</span></span>
     </summary>
     <div class="tw-subsection-label">Raids</div>
     <div id="next-week-raids-content"></div>

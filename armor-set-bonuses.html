@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
 <title>Armor Set Bonuses - Rally Flag</title>
 <meta name="description" content="Every Destiny 2 armor set bonus: 2-piece and 4-piece perks, weapon pairings, and drop sources, in one searchable page.">
 <meta property="og:type" content="website">
@@ -26,14 +27,14 @@
   .mixer-card{ padding:26px 26px 22px; }
   .mixer-label{
     font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:6px;
+    color:var(--accent-text); text-transform:uppercase; margin-bottom:6px;
   }
   .mixer-sub{ font-size:13px; color:var(--text-dim); margin-bottom:18px; line-height:1.5; }
   .mixer-slots{ display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px; }
   .mixer-slot{ flex:1 1 260px; min-width:240px; }
   .mixer-slot-label{
-    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.08em;
-    color:var(--text-dimmer); text-transform:uppercase; margin-bottom:8px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    display:block; color:var(--text-dimmer); text-transform:uppercase; margin-bottom:8px;
   }
   .mixer-select{
     width:100%; background:var(--panel); border:1px solid var(--panel-border);
@@ -65,8 +66,8 @@
     margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
   }
   .mixer-keywords-label{
-    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.08em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:8px;
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    color:var(--accent-text); text-transform:uppercase; margin-bottom:8px;
   }
   .mixer-keyword-row{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-bottom:6px; }
   .mixer-keyword-row:last-child{ margin-bottom:0; }
@@ -75,7 +76,7 @@
 
   .mixer-suggestions-card{ margin-top:16px; padding:22px 26px; }
   .mixer-suggestions-summary{
-    display:flex; align-items:center; justify-content:space-between;
+    display:flex; align-items:center; justify-content:space-between; min-height:24px;
     cursor:pointer; list-style:none; user-select:none;
   }
   .mixer-suggestions-summary::-webkit-details-marker{ display:none; }
@@ -83,9 +84,9 @@
   .mixer-suggestions-card[open] .mixer-category-chevron{ transform:rotate(90deg); }
   .mixer-suggestions-label{
     font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
-    color:var(--accent); text-transform:uppercase;
+    color:var(--accent-text); text-transform:uppercase;
   }
-  .mixer-category-chevron{ font-size:11px; color:var(--accent); transition:transform 0.15s ease; }
+  .mixer-category-chevron{ font-size:11px; color:var(--accent-text); transition:transform 0.15s ease; }
   .mixer-suggestions-sub{ font-size:12px; color:var(--text-dimmer); margin:10px 0 16px; line-height:1.5; }
 
   .mixer-suggestion-group{ margin-bottom:10px; }
@@ -98,7 +99,7 @@
     padding:8px 2px;
   }
   .mixer-suggestion-group-label::-webkit-details-marker{ display:none; }
-  .mixer-suggestion-group[open] > .mixer-suggestion-group-label{ color:var(--accent); }
+  .mixer-suggestion-group[open] > .mixer-suggestion-group-label{ color:var(--accent-text); }
   .mixer-suggestion-group[open] > .mixer-suggestion-group-label .mixer-category-chevron{ transform:rotate(90deg); }
   .mixer-suggestion-group-count{ color:var(--text-dimmer); font-weight:400; }
   .mixer-suggestion-group .mixer-suggestion-list{ margin-top:8px; }
@@ -157,12 +158,12 @@
   }
   .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
   .chip.on{
-    color:#0b0700; background:var(--accent-bright); border-color:var(--accent-bright);
+    color:var(--on-accent); background:var(--accent-fill); border-color:var(--accent-fill);
     font-weight:600;
   }
   .clear-btn{
     font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
-    background:none; border:none; cursor:pointer; text-decoration:underline;
+    background:none; border:none; cursor:pointer; min-height:24px; padding:4px 6px; text-decoration:underline;
     text-underline-offset:2px; margin-left:auto;
   }
   .clear-btn:hover{ color:var(--accent-bright); }
@@ -186,7 +187,7 @@
   .set-caret{
     flex-shrink:0; width:18px; height:18px;
     display:flex; align-items:center; justify-content:center;
-    color:var(--accent); transition: transform 0.18s ease;
+    color:var(--accent-text); transition: transform 0.18s ease;
   }
   .set-caret svg{ width:11px; height:11px; }
   .set-card.expanded .set-caret{ transform:rotate(90deg); }
@@ -211,7 +212,7 @@
   .perk-badge{
     flex-shrink:0; width:22px; height:22px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono', monospace; font-size:10px; font-weight:700;
+    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700;
     background:#68a0b7; color:#fff; border:2px solid #fff;
     margin-top:2px; overflow:hidden;
   }
@@ -224,7 +225,7 @@
     margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
     display:flex; flex-wrap:wrap; gap:6px; align-items:center;
   }
-  .pairs-label{ font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.08em; margin-right:4px; }
+  .pairs-label{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.08em; margin-right:4px; }
   .pair-tag{
     font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
     background:var(--accent-dim); border:1px solid var(--panel-border);
@@ -254,7 +255,7 @@
   }
   .artifact-pair-tag{
     font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
-    color:#0b0700; background:var(--accent-bright); border:1px solid transparent;
+    color:var(--on-accent); background:var(--accent-fill); border:1px solid transparent;
     padding:3px 9px 3px 3px; border-radius:999px; text-decoration:none;
     display:inline-flex; align-items:center; gap:6px;
     transition: filter 0.15s ease;
@@ -293,11 +294,11 @@
     <div class="mixer-sub">Pick two 2-piece bonuses from different sets (4 of your 5 armor slots) to see them side by side, plus any keyword overlap between them.</div>
     <div class="mixer-slots">
       <div class="mixer-slot">
-        <div class="mixer-slot-label">Piece 1</div>
+        <label class="mixer-slot-label" for="mixer-slot-1">Piece 1</label>
         <select class="mixer-select" id="mixer-slot-1"></select>
       </div>
       <div class="mixer-slot">
-        <div class="mixer-slot-label">Piece 2</div>
+        <label class="mixer-slot-label" for="mixer-slot-2">Piece 2</label>
         <select class="mixer-select" id="mixer-slot-2"></select>
         <div class="mixer-slot-note" id="mixer-slot-2-note"></div>
       </div>
