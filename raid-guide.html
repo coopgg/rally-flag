@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>Raid Guide - Rally Flag</title>
 <meta name="description" content="Destiny 2 raid guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
 <meta property="og:type" content="website">
@@ -12,33 +12,42 @@
 <meta property="og:title" content="Raid Guide">
 <meta property="og:description" content="Destiny 2 raid guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
 <meta property="og:url" content="https://rallyflag.gg/raid-guide.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Raid Guide">
 <meta name="twitter:description" content="Destiny 2 raid guides: encounter breakdowns, armor set bonuses, and puzzle solvers for every raid.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
   section{ max-width:760px; margin:44px auto 0; padding:0 24px 90px; }
   .block{ padding:26px 28px; margin-bottom:16px; }
+  /* Phones: less side padding so 16px guide text keeps a usable line length. */
+  @media (max-width:560px){
+    section{ padding-left:16px; padding-right:16px; }
+    .block{ padding:22px 18px; }
+  }
   .block-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.14em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.14em;
     color:var(--accent-text); text-transform:uppercase; margin-bottom:14px;
   }
   .block-empty{ font-size:14px; color:var(--text-dimmer); font-style:italic; }
   .raid-difficulty{ font-size:12px; font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-top:-4px; margin-bottom:4px; }
-  .block p{ font-size:14px; color:var(--text-dim); line-height:1.6; }
+  .block p{ font-size:16px; max-width:62ch; color:var(--text-dim); line-height:1.6; }
 
   .block-label-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
   .block-label-row .block-label{ margin-bottom:0; }
   .difficulty-toggle{ display:flex; gap:6px; }
   .difficulty-toggle-btn{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--text-dim); background:none; border:1px solid var(--panel-border); cursor:pointer;
-    padding:6px 14px; border-radius:999px; transition: all 0.15s ease;
+    padding:6px 14px; border-radius:999px; transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   }
   .difficulty-toggle-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
   .difficulty-toggle-btn.active{ color:var(--accent-bright); border-color:var(--accent); background:var(--accent-dim); }
@@ -47,29 +56,29 @@
   .encounter-block:first-child{ border-top:none; padding-top:0; }
   .encounter-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
   .encounter-title{ font-family:'Oswald', sans-serif; font-weight:600; font-size:16px; color:var(--text); }
-  .encounter-field{ margin-bottom:10px; font-size:13.5px; color:var(--text-dim); line-height:1.55; }
+  .encounter-field{ margin-bottom:10px; font-size:16px; max-width:62ch; color:var(--text-dim); line-height:1.55; }
   .encounter-field-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     color:var(--accent-text); text-transform:uppercase; margin-right:6px;
   }
   .encounter-steps{ margin:8px 0 12px; padding-left:20px; }
-  .encounter-steps li{ font-size:13.5px; color:var(--text-dim); line-height:1.55; margin-bottom:6px; }
+  .encounter-steps li{ font-size:16px; max-width:62ch; color:var(--text-dim); line-height:1.55; margin-bottom:6px; }
   .encounter-wipe{
     margin-top:12px; padding:12px 14px;
     background:var(--accent-dim); border-left:3px solid var(--accent);
-    font-size:13px; color:var(--text-dim); line-height:1.55;
+    font-size:15px; color:var(--text-dim); line-height:1.55;
   }
   .encounter-wipe-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     color:var(--accent-bright); text-transform:uppercase; display:block; margin-bottom:4px;
   }
   .encounter-master, .raid-master-note{
     margin-top:12px; padding:12px 14px;
     background:var(--panel); border-left:3px solid var(--text-dimmer);
-    font-size:13px; color:var(--text-dim); line-height:1.55;
+    font-size:15px; color:var(--text-dim); line-height:1.55;
   }
   .encounter-master-label, .raid-master-note-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     color:var(--text); text-transform:uppercase; display:block; margin-bottom:4px;
   }
   em.term-buff{ font-style:italic; color:#7fd8a8; }
@@ -81,26 +90,26 @@
   .encounter-advanced{ margin-top:12px; }
   .encounter-advanced-toggle{
     display:inline-flex; align-items:center; gap:6px; cursor:pointer; user-select:none;
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.06em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.06em;
     color:var(--text-dim); background:none; border:1px dashed var(--panel-border);
     padding:6px 12px; border-radius:999px; text-transform:uppercase;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   }
   .encounter-advanced-toggle:hover{ color:var(--accent-bright); border-color:var(--accent); }
   .encounter-advanced-toggle .caret{ display:inline-block; transition: transform 0.18s ease; }
   .encounter-advanced.open .encounter-advanced-toggle .caret{ transform:rotate(90deg); }
   .encounter-advanced-body{ display:none; margin-top:10px; padding:12px 14px; background:var(--panel); border-left:3px solid var(--text-dimmer); }
   .encounter-advanced.open .encounter-advanced-body{ display:block; }
-  .encounter-advanced-body p{ font-size:13px; color:var(--text-dim); line-height:1.55; margin:0 0 8px; }
+  .encounter-advanced-body p{ font-size:15px; max-width:62ch; color:var(--text-dim); line-height:1.55; margin:0 0 8px; }
   .encounter-advanced-body p:last-child{ margin-bottom:0; }
   .encounter-map-credit{
-    margin-top:6px; font-size:11.5px; font-family:'JetBrains Mono', monospace;
+    margin-top:6px; font-size:12px; font-family:'JetBrains Mono', monospace;
     color:var(--text-dimmer);
   }
   .encounter-map-credit a{ color:var(--text-dim); }
   .encounter-map-credit a:hover{ color:var(--accent-bright); }
   .encounter-map-label{
-    margin-top:6px; font-size:11.5px; font-family:'JetBrains Mono', monospace;
+    margin-top:6px; font-size:12px; font-family:'JetBrains Mono', monospace;
     color:var(--accent-text); text-transform:uppercase; letter-spacing:0.06em;
   }
 
@@ -123,7 +132,7 @@
     flex-shrink:0; width:26px; height:26px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     background:var(--accent-dim); color:var(--accent-bright); border:1px solid var(--panel-border);
-    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700;
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
   }
   .encounter-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; color:var(--text); margin-bottom:4px; }
   .encounter-notes{ font-size:13px; color:var(--text-dim); }
@@ -143,6 +152,8 @@
 
 <div id="site-nav"></div>
 
+<main id="main-content" tabindex="-1">
+
 <div class="hero" id="hero">
   <div class="eyebrow">Destiny 2 · Raid Guide</div>
   <h1 class="title" id="raid-title">…</h1>
@@ -157,6 +168,8 @@
 </div>
 
 <section id="content"></section>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
@@ -180,6 +193,12 @@
 
   document.title = raid.name + " - Rally Flag";
   document.getElementById("raid-title").textContent = raid.name;
+  // Header sits over the raid's official art.
+  if (raid.art){
+    const hero = document.getElementById("hero");
+    hero.classList.add("has-art");
+    hero.insertAdjacentHTML("afterbegin", '<div class="hero-art"><img src="' + window.rallyFlagArtUrl(raid.art) + '" alt="" fetchpriority="high"></div>');
+  }
   document.getElementById("raid-difficulty").textContent = raid.difficulties ? raid.difficulties.join(" · ") : "";
 
   // Updates the static fallback meta/OG tags with the actual raid once it's
@@ -196,6 +215,11 @@
   setMeta('meta[property="og:title"]', "content", raid.name);
   setMeta('meta[property="og:description"]', "content", raidDesc);
   setMeta('meta[property="og:url"]', "content", "https://rallyflag.gg/raid-guide.html?slug=" + raid.slug);
+  // No static canonical on this page: one shared URL for every raid would
+  // tell search engines all guides are the same page. Set per raid instead.
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical){ canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
+  canonical.href = "https://rallyflag.gg/raid-guide.html?slug=" + raid.slug;
   setMeta('meta[name="twitter:title"]', "content", raid.name);
   setMeta('meta[name="twitter:description"]', "content", raidDesc);
 
@@ -230,7 +254,7 @@
     const target = document.querySelector(link.getAttribute("href"));
     if (!target) return;
     ev.preventDefault();
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
     history.replaceState(null, "", link.getAttribute("href"));
   });
 

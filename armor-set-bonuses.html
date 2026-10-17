@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>Armor Set Bonuses - Rally Flag</title>
 <meta name="description" content="Every Destiny 2 armor set bonus: 2-piece and 4-piece perks, weapon pairings, and drop sources, in one searchable page.">
 <meta property="og:type" content="website">
@@ -12,13 +12,19 @@
 <meta property="og:title" content="Armor Set Bonuses">
 <meta property="og:description" content="Every Destiny 2 armor set bonus: 2-piece and 4-piece perks, weapon pairings, and drop sources, in one searchable page.">
 <meta property="og:url" content="https://rallyflag.gg/armor-set-bonuses.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rallyflag.gg/armor-set-bonuses.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Armor Set Bonuses">
 <meta name="twitter:description" content="Every Destiny 2 armor set bonus: 2-piece and 4-piece perks, weapon pairings, and drop sources, in one searchable page.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
+<link rel="preconnect" href="https://www.bungie.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
@@ -33,7 +39,7 @@
   .mixer-slots{ display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px; }
   .mixer-slot{ flex:1 1 260px; min-width:240px; }
   .mixer-slot-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     display:block; color:var(--text-dimmer); text-transform:uppercase; margin-bottom:8px;
   }
   .mixer-select{
@@ -55,7 +61,7 @@
   .mixer-select option, .mixer-select optgroup{
     background-color:var(--bg); color:var(--text);
   }
-  .mixer-slot-note{ font-size:11.5px; color:var(--text-dimmer); margin-top:6px; line-height:1.4; }
+  .mixer-slot-note{ font-size:12px; color:var(--text-dimmer); margin-top:6px; line-height:1.4; }
   .mixer-results{ border-top:1px solid var(--panel-border); padding-top:18px; }
   .mixer-empty{ font-size:13px; color:var(--text-dimmer); font-style:italic; }
   .mixer-flex-note{
@@ -66,7 +72,7 @@
     margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
   }
   .mixer-keywords-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     color:var(--accent-text); text-transform:uppercase; margin-bottom:8px;
   }
   .mixer-keyword-row{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-bottom:6px; }
@@ -86,7 +92,7 @@
     font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.12em;
     color:var(--accent-text); text-transform:uppercase;
   }
-  .mixer-category-chevron{ font-size:11px; color:var(--accent-text); transition:transform 0.15s ease; }
+  .mixer-category-chevron{ font-size:12px; color:var(--accent-text); transition:transform 0.15s ease; }
   .mixer-suggestions-sub{ font-size:12px; color:var(--text-dimmer); margin:10px 0 16px; line-height:1.5; }
 
   .mixer-suggestion-group{ margin-bottom:10px; }
@@ -94,7 +100,7 @@
   .mixer-suggestion-group-label{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
     cursor:pointer; list-style:none; user-select:none;
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.06em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.06em;
     color:var(--text-dimmer); text-transform:uppercase;
     padding:8px 2px;
   }
@@ -136,7 +142,7 @@
   .expand-all-btn{
     font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
-    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   }
   .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
 
@@ -146,7 +152,7 @@
   }
   .filter-row:last-child{ border-bottom:1px solid var(--panel-border); }
   .filter-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
   }
   .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -154,7 +160,7 @@
     font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
     color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
     padding:7px 14px; border-radius:999px; cursor:pointer;
-    transition: all 0.15s ease; user-select:none;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; user-select:none;
   }
   .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
   .chip.on{
@@ -206,28 +212,28 @@
     object-fit:contain; pointer-events:none;
   }
   .set-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:18px; color:var(--text); }
-  .set-source{ font-size:11px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-top:2px; }
+  .set-source{ font-size:12px; color:var(--text-dimmer); font-family:'JetBrains Mono', monospace; margin-top:2px; }
 
   .perk{ display:flex; gap:10px; margin-bottom:14px; }
   .perk-badge{
     flex-shrink:0; width:22px; height:22px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700;
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
     background:#68a0b7; color:#fff; border:2px solid #fff;
     margin-top:2px; overflow:hidden;
   }
   .perk-badge img{ width:70%; height:70%; object-fit:contain; }
   .perk-body{ flex:1; }
   .perk-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:13.5px; color:var(--accent-bright); text-transform:uppercase; letter-spacing:0.02em; margin-bottom:4px; }
-  .perk-desc{ font-size:13px; color:var(--text-dim); line-height:1.45; }
+  .perk-desc{ font-size:15px; color:var(--text-dim); line-height:1.5; }
 
   .pairs-row{
     margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border);
     display:flex; flex-wrap:wrap; gap:6px; align-items:center;
   }
-  .pairs-label{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.08em; margin-right:4px; }
+  .pairs-label{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.08em; margin-right:4px; }
   .pair-tag{
-    font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
+    font-size:12px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
     background:var(--accent-dim); border:1px solid var(--panel-border);
     padding:3px 9px; border-radius:999px;
   }
@@ -238,7 +244,7 @@
   }
   .subclass-tag{
     display:inline-flex; align-items:center; gap:5px;
-    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
+    font-size:12px; font-family:'JetBrains Mono', monospace; font-weight:500;
     color:#0b0700; border:1px solid transparent; padding:3px 9px; border-radius:999px;
   }
   .subclass-tag-icon{ width:12px; height:12px; object-fit:contain; flex-shrink:0; display:block; }
@@ -254,7 +260,7 @@
     display:flex; flex-wrap:wrap; gap:6px; align-items:center;
   }
   .artifact-pair-tag{
-    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
+    font-size:12px; font-family:'JetBrains Mono', monospace; font-weight:500;
     color:var(--on-accent); background:var(--accent-fill); border:1px solid transparent;
     padding:3px 9px 3px 3px; border-radius:999px; text-decoration:none;
     display:inline-flex; align-items:center; gap:6px;
@@ -281,6 +287,8 @@
 <body data-nav-group="setbonuses">
 
 <div id="site-nav"></div>
+
+<main id="main-content" tabindex="-1">
 
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Set Bonus Lookup</div>
@@ -319,9 +327,9 @@
 <div class="controls">
   <div class="search-row">
     <div class="search-box">
-      <input type="text" id="search-input" placeholder="Search sets or bonuses…" autocomplete="off">
+      <input type="text" id="search-input" aria-label="Search sets or bonuses" placeholder="Search sets or bonuses…" autocomplete="off">
     </div>
-    <div class="set-count"><strong id="count-num">0</strong> sets</div>
+    <div class="set-count" aria-live="polite" aria-atomic="true"><strong id="count-num">0</strong> sets</div>
     <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
   </div>
 
@@ -351,6 +359,8 @@
 <div class="grid-section">
   <div class="card-grid" id="card-grid"></div>
 </div>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
@@ -537,12 +547,15 @@
   function buildChips(container, values, set, labelFn){
     container.innerHTML = "";
     values.forEach(v => {
-      const chip = document.createElement("div");
+      const chip = document.createElement("button");
+      chip.type = "button";
       chip.className = "chip";
       chip.textContent = labelFn ? labelFn(v) : v;
+      chip.setAttribute("aria-pressed", "false");
       chip.addEventListener("click", () => {
         if (set.has(v)) set.delete(v); else set.add(v);
         chip.classList.toggle("on");
+        chip.setAttribute("aria-pressed", String(chip.classList.contains("on")));
         render();
       });
       container.appendChild(chip);
@@ -567,7 +580,7 @@
     state.subclasses.clear();
     state.keywords.clear();
     document.getElementById("search-input").value = "";
-    document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+    document.querySelectorAll(".chip.on").forEach(c => { c.classList.remove("on"); c.setAttribute("aria-pressed", "false"); });
     render();
   });
 
@@ -634,7 +647,7 @@
         : "";
 
       card.innerHTML =
-        '<div class="set-card-head">' +
+        '<div class="set-card-head" role="button" tabindex="0" aria-expanded="false">' +
           '<span class="set-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
           '<div class="set-monogram" id="icon-' + set.slug + '">' + monogram(set.name) + '</div>' +
           '<div><div class="set-name">' + set.name + '</div><div class="set-source">' + set.source + ' \u00b7 ' + set.sourceDetail + '</div></div>' +
@@ -649,9 +662,14 @@
 
       if (set.slug === highlightSlug) card.classList.add("expanded");
 
-      card.querySelector(".set-card-head").addEventListener("click", () => {
+      const head = card.querySelector(".set-card-head");
+      const toggle = () => {
         card.classList.toggle("expanded");
         updateExpandAllLabel();
+      };
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
       });
 
       grid.appendChild(card);
@@ -662,11 +680,13 @@
 
     if (highlightSlug){
       const el = document.getElementById("set-" + highlightSlug);
-      if (el) setTimeout(() => el.scrollIntoView({ behavior:"smooth", block:"center" }), 100);
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"center" }), 100);
     }
   }
 
   function updateExpandAllLabel(){
+    // Every expand/collapse path ends here, so this keeps screen readers' view of each header in sync.
+    document.querySelectorAll(".set-card").forEach(c => { const h = c.querySelector(".set-card-head"); if (h) h.setAttribute("aria-expanded", String(c.classList.contains("expanded"))); });
     const cards = Array.from(document.querySelectorAll(".set-card")).filter(c => c.style.display !== "none");
     const anyCollapsed = cards.some(c => !c.classList.contains("expanded"));
     const btn = document.getElementById("expand-all-btn");
@@ -882,7 +902,7 @@
         refreshMixerSlot2();
         mixerSlot2.value = btn.dataset.slugB;
         renderMixerResults();
-        document.querySelector(".mixer-card").scrollIntoView({ behavior: "smooth", block: "center" });
+        document.querySelector(".mixer-card").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
       });
     });
   }

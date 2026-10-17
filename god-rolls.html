@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>God Rolls - Rally Flag</title>
 <meta name="description" content="The weapon rolls that have earned a permanent spot in our loadouts.">
 <meta property="og:type" content="website">
@@ -12,19 +12,25 @@
 <meta property="og:title" content="God Rolls">
 <meta property="og:description" content="The weapon rolls that have earned a permanent spot in our loadouts.">
 <meta property="og:url" content="https://rallyflag.gg/god-rolls.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rallyflag.gg/god-rolls.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="God Rolls">
 <meta name="twitter:description" content="The weapon rolls that have earned a permanent spot in our loadouts.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
+<link rel="preconnect" href="https://www.bungie.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
   .disclosure{
     max-width:720px; margin:32px auto 0; padding:16px 20px;
-    font-size:13px; color:var(--text-dim); line-height:1.6;
+    font-size:14px; color:var(--text-dim); line-height:1.6;
     text-align:center;
   }
   .disclosure strong{ color:var(--accent-bright); }
@@ -37,7 +43,7 @@
   .owned-auth-row a:hover{ text-decoration:underline; }
   .owned-auth-row .signed-in-text{ color:var(--text-dimmer); }
   .weapon-unlock-badge{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.04em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.04em;
     text-transform:uppercase; padding:3px 8px; border-radius:999px;
     background:var(--accent-fill-deep); color:var(--on-accent);
   }
@@ -53,7 +59,7 @@
     background:var(--accent-fill); color:var(--on-accent);
   }
   .weapon-unlock-rating{
-    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer);
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
   }
   .unlock-legend{
     max-width:1000px; margin:14px auto 0; padding:0 24px;
@@ -105,9 +111,9 @@
   .weapon-name.tier-legendary{ color:#a892d1; }
   .weapon-badges{ display:flex; align-items:center; gap:6px; margin-bottom:6px; }
   .alt-roll-btn{
-    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
-    padding:5px 12px; cursor:pointer; margin-top:10px; transition: all 0.15s ease;
+    padding:5px 12px; cursor:pointer; margin-top:10px; transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   }
   .alt-roll-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
   .alt-roll-btn.showing-alt{ color:var(--on-accent); background:var(--accent-fill); border-color:var(--accent-fill); }
@@ -122,14 +128,14 @@
     background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center;
   }
   .ammo-badge img{ width:12px; height:12px; object-fit:contain; }
-  .weapon-meta{ font-size:11.5px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); }
+  .weapon-meta{ font-size:12px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); }
   .weapon-unlock-row{ margin-top:8px; min-height:20px; display:flex; align-items:center; justify-content:flex-end; gap:8px; }
   .weapon-unlock-row:empty{ display:none; } /* only filled when signed in */
-  .weapon-flavor{ font-size:12.5px; color:var(--text-dim); font-style:italic; margin-top:8px; line-height:1.5; }
+  .weapon-flavor{ font-size:14px; color:var(--text-dim); font-style:italic; margin-top:8px; line-height:1.5; }
 
   .perk-section{ margin-top:16px; padding-top:16px; border-top:1px solid var(--panel-border); }
   .perk-section-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     text-transform:uppercase; color:var(--accent-text); margin-bottom:10px;
   }
   .perk-grid{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -142,19 +148,19 @@
     width:22px; height:22px; border-radius:50%; overflow:hidden;
     background:rgba(0,0,0,0.55); flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono', monospace; font-size:11px; color:#fff;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:#fff;
   }
   .perk-chip-icon img{ width:100%; height:100%; object-fit:cover; }
   .perk-chip-name{ font-size:12px; font-family:'Inter', sans-serif; font-weight:500; color:var(--accent-bright); }
 
-  .weapon-note{ margin-top:14px; font-size:13px; color:var(--text-dim); line-height:1.55; }
+  .weapon-note{ margin-top:14px; font-size:15px; max-width:62ch; color:var(--text-dim); line-height:1.55; }
 
   .pairing-section{ margin-top:16px; padding-top:16px; border-top:1px solid var(--panel-border); }
   .pairing-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     text-transform:uppercase; color:var(--accent-text); margin-bottom:8px;
   }
-  .pairing-note{ font-size:13px; color:var(--text-dim); line-height:1.55; }
+  .pairing-note{ font-size:15px; color:var(--text-dim); line-height:1.55; }
   .pairing-armor-link{
     display:inline-block; margin-top:8px; font-size:12px; font-family:'JetBrains Mono', monospace;
     color:var(--accent-bright); text-decoration:none; border-bottom:1px solid transparent;
@@ -170,7 +176,7 @@
   .cross-link:hover, .cross-link:focus-visible{ color:var(--accent-bright); border-color:var(--accent-bright); }
 
   .light-gg-link{
-    display:block; margin-top:12px; font-size:11px; font-family:'JetBrains Mono', monospace;
+    display:block; margin-top:12px; font-size:12px; font-family:'JetBrains Mono', monospace;
     color:var(--text-dimmer); text-decoration:none;
   }
   .light-gg-link:hover{ color:var(--text-dim); }
@@ -209,7 +215,7 @@
   .expand-all-btn{
     font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
-    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   }
   .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
 
@@ -220,7 +226,7 @@
   .filter-row[hidden]{ display:none; }
   .filter-row:last-child{ border-bottom:1px solid var(--panel-border); margin-bottom:30px; }
   .filter-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
   }
   .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -228,7 +234,7 @@
     font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
     color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
     padding:7px 14px; border-radius:999px; cursor:pointer;
-    transition: all 0.15s ease; user-select:none;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; user-select:none;
   }
   .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
   .chip.on{ color:var(--on-accent); background:var(--accent-fill); border-color:var(--accent-fill); font-weight:600; }
@@ -255,6 +261,8 @@
 
 <div id="site-nav"></div>
 
+<main id="main-content" tabindex="-1">
+
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Weapon Rolls</div>
   <h1 class="title">God Rolls</h1>
@@ -279,9 +287,9 @@
   </div>
   <div class="search-row">
     <div class="search-box">
-      <input type="text" id="search-input" placeholder="Search weapons or perks…" autocomplete="off">
+      <input type="text" id="search-input" aria-label="Search weapons or perks" placeholder="Search weapons or perks…" autocomplete="off">
     </div>
-    <div class="result-count"><strong id="count-num">…</strong> weapons</div>
+    <div class="result-count" aria-live="polite" aria-atomic="true"><strong id="count-num">…</strong> weapons</div>
     <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
   </div>
 
@@ -311,6 +319,8 @@
 <section>
   <div class="weapon-grid" id="weapon-grid"></div>
 </section>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
@@ -547,7 +557,7 @@
     card.dataset.builds = (weapon.buildTags || []).join("|");
 
     card.innerHTML =
-      '<div class="weapon-head">' +
+      '<div class="weapon-head" role="button" tabindex="0" aria-expanded="false">' +
         '<span class="weapon-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
         '<div class="weapon-icon" id="icon-' + weapon.slug + '">' + monogram(weapon.name) + '</div>' +
         '<div>' +
@@ -576,9 +586,13 @@
       '</div>';
 
     const head = card.querySelector(".weapon-head");
-    head.addEventListener("click", () => {
+    const toggle = () => {
       card.classList.toggle("expanded");
       updateExpandAllLabel();
+    };
+    head.addEventListener("click", toggle);
+    head.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
     });
 
     return card;
@@ -588,6 +602,8 @@
     const cards = Array.from(document.querySelectorAll(".weapon-card"));
     const visibleCards = cards.filter(c => c.style.display !== "none");
     const anyCollapsed = visibleCards.some(c => !c.classList.contains("expanded"));
+    // Every expand/collapse path ends here, so this keeps screen readers' view of each header in sync.
+    cards.forEach(c => { const h = c.querySelector(".weapon-head"); if (h) h.setAttribute("aria-expanded", String(c.classList.contains("expanded"))); });
     const btn = document.getElementById("expand-all-btn");
     if (btn) btn.textContent = anyCollapsed ? "Expand all" : "Collapse all";
   }
@@ -799,13 +815,16 @@
     const container = document.getElementById(containerId);
     container.innerHTML = "";
     values.forEach(value => {
-      const chip = document.createElement("div");
+      const chip = document.createElement("button");
+      chip.type = "button";
       chip.className = "chip";
       chip.textContent = labelFor ? labelFor(value) : value;
       if (stateSet.has(value)) chip.classList.add("on");
+      chip.setAttribute("aria-pressed", String(chip.classList.contains("on")));
       chip.addEventListener("click", () => {
         if (stateSet.has(value)) stateSet.delete(value); else stateSet.add(value);
         chip.classList.toggle("on");
+        chip.setAttribute("aria-pressed", String(chip.classList.contains("on")));
         applyFilters();
       });
       container.appendChild(chip);
@@ -856,7 +875,7 @@
       filterState.build.clear();
       filterState.buildRef.clear();
       document.getElementById("search-input").value = "";
-      document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+      document.querySelectorAll(".chip.on").forEach(c => { c.classList.remove("on"); c.setAttribute("aria-pressed", "false"); });
       applyFilters();
     });
 

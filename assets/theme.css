@@ -59,10 +59,35 @@ html,body{ margin:0; padding:0; }
    without this, every button/input silently falls back to the
    OS's system UI font instead of the site's actual typefaces. */
 button, input, select, textarea{ font-family: inherit; }
+
+/* Native scrollbars, form controls and pickers follow the site's mode. */
+:root{ color-scheme: dark; }
+[data-mode="light"]{ color-scheme: light; }
+
+/* Balanced line breaks on headings (no one-word last lines). */
+h1, h2, h3, .title{ text-wrap: balance; }
+
+/* No double-tap-zoom delay on controls. */
+a, button, input, select, textarea, summary, label, [role="button"]{ touch-action: manipulation; }
+
+/* Visible keyboard focus on form fields. Several pages set outline:none on
+   their inputs with only a border-colour change; html raises specificity
+   over those page rules. */
+html :is(input, select, textarea):focus-visible{ outline:2px solid var(--accent-text); outline-offset:1px; }
+
+/* Honour the OS "reduce motion" setting: no transitions or animations. */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.01ms !important; animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important; scroll-behavior:auto !important;
+  }
+}
 body{
   min-height:100vh;
+  /* Nebula in the subclass colour; the starfield is body::before (Cosmic layer below). */
   background:
-    radial-gradient(ellipse 900px 500px at 50% -10%, var(--accent-dim), transparent 60%),
+    radial-gradient(ellipse 1100px 620px at 85% -15%, var(--accent-dim), transparent 62%),
+    radial-gradient(ellipse 900px 700px at -10% 35%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
     var(--bg);
   color:var(--text);
   font-family:'Inter', sans-serif;
@@ -76,6 +101,11 @@ body{
 a{ color:inherit; }
 
 /* ---------- Top nav (injected by nav.js) ---------- */
+/* Reserve the nav's height before nav.js fills #site-nav. Without it the
+   browser can paint once with an empty placeholder: the page jumps down
+   when the nav arrives, and the first content block's top margin
+   collapses up through <body> (measured as a whole-page layout shift). */
+#site-nav{ min-height:86px; }
 nav.site-nav{
   display:flex; align-items:center; justify-content:space-between;
   max-width:1180px; margin:0 auto; padding:26px 24px; flex-wrap:wrap; gap:16px;
@@ -92,9 +122,10 @@ nav.site-nav{
 }
 .nav-links-wrap{ position:relative; display:flex; align-items:center; gap:12px; }
 .nav-links-btn{
+  display:flex; align-items:center; justify-content:center;
   background:none; border:1px solid var(--panel-border); border-radius:6px;
-  color:var(--text-dim); font-size:14px; line-height:1; cursor:pointer;
-  padding:7px 10px; transition: border-color 0.2s ease, color 0.2s ease;
+  color:var(--text-dim); line-height:1; cursor:pointer;
+  padding:8px; transition: border-color 0.2s ease, color 0.2s ease;
 }
 .nav-links-btn:hover, .nav-links-btn:focus-visible{ border-color:var(--accent); color:var(--accent-bright); }
 .nav-links-panel{
@@ -150,7 +181,7 @@ nav.site-nav{
 }
 .nav-menu-panel.open{ display:block; }
 .nav-menu-section-label{
-  font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+  font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
   text-transform:uppercase; color:var(--text-dim); margin-bottom:10px;
 }
 .nav-menu-section + .nav-menu-section{ margin-top:18px; }
@@ -163,7 +194,7 @@ nav.site-nav{
   background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
 }
 .mode-option{
-  font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--text-dim);
+  font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
   background:none; border:1px solid transparent; border-radius:999px;
   padding:6px 0; cursor:pointer; transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
@@ -185,7 +216,7 @@ nav.site-nav{
 .element-swatch img{ width:22px; height:22px; object-fit:contain; }
 
 .nav-auth-btn{
-  width:100%; font-family:'JetBrains Mono', monospace; font-size:11.5px;
+  width:100%; font-family:'JetBrains Mono', monospace; font-size:12px;
   background:var(--panel); border:1px solid var(--panel-border); border-radius:6px;
   color:var(--text-dim); padding:8px 10px; cursor:pointer; text-align:center;
   transition: border-color 0.2s ease, color 0.2s ease;
@@ -193,14 +224,46 @@ nav.site-nav{
 .nav-auth-btn:hover, .nav-auth-btn:focus-visible{ border-color:var(--accent); color:var(--accent-bright); }
 .nav-auth-signed-in{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
 .nav-auth-name{
-  font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--text);
+  font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .nav-auth-signout{
-  font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer);
+  font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
   background:none; border:none; cursor:pointer; padding:0; flex-shrink:0;
 }
 .nav-auth-signout:hover{ color:var(--accent-bright); }
+
+/* ---------- Skip link + main landmark ----------
+   The skip link (injected by nav.js) sits off-screen until it gets
+   keyboard focus. <main tabindex="-1"> only takes focus from the skip
+   link, so it needs no focus ring of its own. */
+.skip-link{
+  position:absolute; left:16px; top:-100px; z-index:100;
+  padding:10px 16px; border-radius:8px;
+  background:var(--accent-fill); color:var(--on-accent);
+  font-weight:600; font-size:14px; text-decoration:none;
+}
+.skip-link:focus{ top:12px; outline:2px solid var(--text); outline-offset:2px; }
+main:focus{ outline:none; }
+
+/* Load-time layout shift guard. Most pages fill their content from script
+   at the end of <body>, and the browser can paint once before that runs,
+   so content jumped as lists, chips and cards arrived. Each page's <head>
+   script sets .rf-boot and clears it one frame after DOMContentLoaded and
+   web fonts (fonts wait capped at 400ms; 2.5s overall fallback), keeping
+   <main> and the footer below it laid out but invisible until then. Set
+   by script only, so pages without JavaScript never hide anything. */
+.rf-boot main, .rf-boot footer{ visibility:hidden; }
+
+/* ---------- Keyboard focus for custom controls ----------
+   Filter chips (<button class="chip">) and expandable card headers
+   ([role="button"]) on God Rolls, Builds, Armor Sets and Artifacts. */
+.chip:focus-visible, [role="button"]:focus-visible{
+  outline:2px solid var(--accent-text); outline-offset:2px;
+}
+/* Buttons default to line-height:normal; the chips were divs inheriting
+   the page's 1.5, so keep that to stay pixel-identical. */
+button.chip{ line-height:inherit; }
 
 /* ---------- Dev/test-environment banner (dev branch only) ---------- */
 .dev-banner{
@@ -217,7 +280,7 @@ nav.site-nav{
 .subnav a{
   font-family:'JetBrains Mono', monospace; font-size:12px; text-decoration:none;
   color:var(--text-dim); border:1px solid var(--panel-border); background:var(--panel);
-  padding:8px 16px; border-radius:999px; transition: all 0.15s ease;
+  padding:8px 16px; border-radius:999px; transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 .subnav a:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
 .subnav a.active{ color:var(--on-accent); background:var(--accent-fill); border-color:var(--accent-fill); font-weight:700; }
@@ -232,7 +295,7 @@ h1.title{
   font-size:clamp(34px, 6vw, 54px); line-height:1.05; font-weight:700;
   letter-spacing:0.01em; margin:0 0 18px; color:var(--text);
 }
-.subtitle{ color:var(--text-dim); font-size:15px; max-width:600px; margin:0 auto; }
+.subtitle{ color:var(--text-dim); font-size:16px; max-width:600px; margin:0 auto; }
 
 /* ---------- Section labels ---------- */
 .section-label{
@@ -249,10 +312,10 @@ h1.title{
 
 /* ---------- Loot / reward pill (links out to armor-set-bonuses.html) ---------- */
 .loot-pill{
-  display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px;
+  display:inline-block; font-family:'JetBrains Mono', monospace; font-size:12px;
   text-decoration:none; color:var(--accent-bright); border:1px solid var(--panel-border);
   background:var(--accent-dim); padding:6px 14px; border-radius:999px;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 .loot-pill:hover, .loot-pill:focus-visible{ border-color:var(--accent-bright); }
 
@@ -265,6 +328,77 @@ footer{
 footer a{ color:var(--text-dim); text-decoration:underline; text-underline-offset:2px; }
 footer p{ max-width:560px; margin:10px auto 0; }
 
+/* ---------- Cosmic layer ----------
+   Starfield, see-through panels with a subclass-coloured edge, glow, and
+   official activity art. Everything is keyed to the theme tokens, so it
+   follows the 6 subclass themes and light mode. */
+:root{
+  --star: rgba(255,255,255,0.7); --star-dim: rgba(255,255,255,0.35);
+  --edge: color-mix(in srgb, var(--accent) 26%, var(--panel-border));
+}
+[data-mode="light"]{ --star: rgba(30,40,80,0.28); --star-dim: rgba(30,40,80,0.16); }
+body::before{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(1px 1px at 12% 18%, var(--star) 50%, transparent 51%),
+    radial-gradient(1px 1px at 72% 8%, var(--star-dim) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 38% 62%, var(--star) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 44%, var(--star-dim) 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 84%, var(--star) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 55% 30%, var(--star-dim) 50%, transparent 51%);
+  background-size:420px 420px, 520px 520px, 610px 610px, 380px 380px, 470px 470px, 690px 690px;
+}
+@media (prefers-reduced-motion: no-preference){
+  body::before{ animation: star-twinkle 7s ease-in-out infinite alternate; }
+}
+@keyframes star-twinkle{ from{ opacity:0.65; } to{ opacity:1; } }
+
+/* No backdrop blur: over the fixed starfield it repaints on every scroll,
+   which stutters on long card pages on phones. */
+.panel-card{
+  border-color:var(--edge);
+  background:color-mix(in srgb, var(--bg) 55%, transparent);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+a.panel-card:hover, a.panel-card:focus-visible, .featured-card:hover{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent), 0 14px 44px -16px var(--glow);
+}
+[data-mode="dark"] h1.title{ text-shadow:0 0 34px var(--glow); }
+[data-mode="dark"] .brand-mark{ box-shadow:0 0 14px var(--glow); }
+.chip[aria-pressed="true"], .subnav a.active{ box-shadow:0 0 18px -4px var(--glow); }
+
+/* Card thumbnail (window.rallyFlagArtThumb in nav.js). */
+.art-thumb{
+  position:relative; aspect-ratio:16/9; overflow:hidden;
+  border-bottom:1px solid var(--edge); background:var(--accent-dim);
+}
+.art-thumb img{ width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.5s ease; }
+.art-fallback{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'Oswald', sans-serif; font-weight:700; font-size:34px; color:var(--accent-text);
+  background:radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--accent) 35%, transparent), transparent 70%);
+}
+@media (prefers-reduced-motion: no-preference){
+  a:hover .art-thumb img, a:focus-visible .art-thumb img, .featured-card:hover .art-thumb img{ transform:scale(1.05); }
+}
+
+/* Raid/dungeon guide header over the activity's art (.hero.has-art). */
+.hero.has-art{
+  position:relative; isolation:isolate; overflow:hidden;
+  max-width:1000px; margin:24px auto 0; padding:84px 28px 30px;
+  border:1px solid var(--edge); border-radius:22px;
+  box-shadow:0 30px 80px -40px var(--glow);
+}
+.hero-art{ position:absolute; inset:0; z-index:-1; }
+.hero-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.hero-art::after{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 70% 85% at 50% 60%, color-mix(in srgb, var(--bg) 88%, transparent), transparent 78%),
+    linear-gradient(0deg, var(--bg) 4%, color-mix(in srgb, var(--bg) 60%, transparent) 55%, color-mix(in srgb, var(--bg) 15%, transparent));
+}
+
 /* ---------- Phone widths ---------- */
 @media (max-width:640px){
   /* Tighter spacing so the brand and the right-hand buttons fit on
@@ -272,8 +406,10 @@ footer p{ max-width:560px; margin:10px auto 0; }
      screens), .nav-right-wrap's margin-left:auto keeps it pinned right,
      so the right-anchored Appearance panel opens inward instead of
      running off the left edge of the screen. */
+  #site-nav{ min-height:74px; }
   nav.site-nav{ padding:20px 24px; gap:8px; }
   .nav-links-panel.open{ grid-template-columns:1fr; width:calc(100vw - 48px); max-width:320px; }
   .nav-links-panel .nav-menu-section + .nav-menu-section{ margin-top:8px; }
   .nav-links-wrap, .nav-right-wrap{ gap:8px; }
+  .hero.has-art{ margin:16px 12px 0; padding:110px 16px 22px; border-radius:18px; }
 }

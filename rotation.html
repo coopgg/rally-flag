@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>Rotation - Rally Flag</title>
 <meta name="description" content="The full Destiny 2 Distortion rotation schedule, hour by hour, in your own timezone.">
 <meta property="og:type" content="website">
@@ -12,13 +12,18 @@
 <meta property="og:title" content="Rotation">
 <meta property="og:description" content="The full Destiny 2 Distortion rotation schedule, hour by hour, in your own timezone.">
 <meta property="og:url" content="https://rallyflag.gg/rotation.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rallyflag.gg/rotation.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Rotation">
 <meta name="twitter:description" content="The full Destiny 2 Distortion rotation schedule, hour by hour, in your own timezone.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
@@ -35,7 +40,7 @@
     border-left:3px solid var(--accent);
   }
   .rotation-when{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer); line-height:1.4; }
-  .rotation-when .day{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; }
+  .rotation-when .day{ display:block; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; }
   .rotation-row.active .rotation-when{ color:var(--accent-bright); font-weight:700; }
   .rotation-dest{ font-family:'Oswald', sans-serif; font-weight:600; font-size:16px; color:var(--text); }
   .rotation-loot{ display:inline-flex; align-items:center; min-height:24px; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--accent-bright); text-decoration:none; border-bottom:1px solid transparent; transition: border-color 0.2s ease; }
@@ -45,7 +50,7 @@
     max-width:820px; margin:40px auto 0; padding:0 24px;
   }
   .recalibrate-box{
-    padding:20px 22px; font-size:13px; color:var(--text-dim); line-height:1.6;
+    padding:20px 22px; font-size:15px; color:var(--text-dim); line-height:1.6;
   }
   .recalibrate-box strong{ color:var(--accent-bright); }
 
@@ -58,6 +63,8 @@
 <body data-nav-group="distortions">
 
 <div id="site-nav"></div>
+
+<main id="main-content" tabindex="-1">
 
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Distortion Rotation</div>
@@ -79,6 +86,8 @@
     This schedule is anchored to a live in-game reading, then calculated forward from there. It isn't refetched from Bungie in real time. If what you see on your Destinations screen ever stops matching this page, <strong>it means the anchor needs recalibrating</strong>, not that anything here is randomized or broken.
   </div>
 </div>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>This Week - Rally Flag</title>
 <meta name="description" content="This week's featured raid and dungeon.">
 <meta property="og:type" content="website">
@@ -12,13 +12,18 @@
 <meta property="og:title" content="This Week">
 <meta property="og:description" content="This week's featured raid and dungeon.">
 <meta property="og:url" content="https://rallyflag.gg/this-week.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rallyflag.gg/this-week.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="This Week">
 <meta name="twitter:description" content="This week's featured raid and dungeon.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
@@ -33,7 +38,7 @@
     font-family:'Oswald', sans-serif; font-weight:700; font-size:20px; color:var(--text);
   }
   .tw-refresh-note{
-    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dimmer);
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dimmer);
   }
 
   .tw-collapsible{ margin:44px 0 0; }
@@ -66,7 +71,7 @@
 
   /* --- Featured This Week --- */
   .tw-subsection-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--text-dimmer); text-transform:uppercase; margin:18px 0 10px;
   }
   .tw-subsection-label:first-of-type{ margin-top:0; }
@@ -74,20 +79,21 @@
     display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
     gap:12px;
   }
-  .featured-card{ padding:16px 18px; }
+  .featured-card{ padding:16px 18px; overflow:hidden; }
+  .featured-card .art-thumb{ margin:-16px -18px 14px; aspect-ratio:21/9; }
   .featured-kind{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--accent-text); text-transform:uppercase; margin-bottom:6px;
   }
   .featured-always-badge{
-    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px;
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:12px;
     font-weight:400; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--accent-bright); border:1px solid var(--accent); border-radius:999px;
     padding:2px 8px; margin-left:6px; vertical-align:middle;
   }
   .featured-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:16px; color:var(--text); }
   .featured-set-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--text-dimmer); text-transform:uppercase; margin-top:14px; margin-bottom:8px;
   }
   .set-links{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -98,7 +104,7 @@
   }
   .set-link:hover, .set-link:focus-visible{ border-color:var(--accent-bright); }
   .featured-link{
-    display:block; font-size:11.5px; color:var(--accent-bright); margin-top:10px; padding:4px 0;
+    display:block; font-size:12px; color:var(--accent-bright); margin-top:10px; padding:4px 0;
     text-decoration:none;
   }
   .featured-link:hover{ text-decoration:underline; }
@@ -108,14 +114,14 @@
     border-left:3px solid var(--accent); background:var(--accent-dim);
   }
   .ib-banner-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--accent-bright); text-transform:uppercase; margin-bottom:6px;
   }
   .ib-banner-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:16px; color:var(--text); margin-bottom:10px; }
 
   .featured-card.predicted{ border-style:dashed; opacity:0.82; }
   .tw-predicted-badge{
-    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:11px;
+    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:12px;
     font-weight:400; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--text-dimmer); border:1px solid var(--panel-border); border-radius:999px;
     padding:3px 8px; margin-left:8px; vertical-align:middle;
@@ -126,6 +132,8 @@
 <body data-nav-group="thisweek">
 
 <div id="site-nav"></div>
+
+<main id="main-content" tabindex="-1">
 
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Live Info</div>
@@ -157,6 +165,8 @@
   </details>
 
 </section>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
@@ -238,6 +248,7 @@
     const cards = items.map(item => ({
       kind: kind,
       name: item.name,
+      art: item.art,
       href: hrefPrefix + item.slug,
       armorSlugs: item.armorSlugs || [],
       alwaysFeatured: item.slug === alwaysFeaturedSlug
@@ -257,6 +268,7 @@
         }).join("");
         const alwaysBadge = c.alwaysFeatured ? '<span class="featured-always-badge">Always Featured</span>' : '';
         return '<div class="featured-card panel-card' + (isPrediction ? ' predicted' : '') + '">' +
+          window.rallyFlagArtThumb(c) +
           '<div class="featured-kind">' + c.kind + alwaysBadge + '</div>' +
           '<div class="featured-name">' + c.name + '</div>' +
           (armorLinksHtml ? '<div class="featured-set-label">Armor Set</div><div class="set-links">' + armorLinksHtml + '</div>' : '') +

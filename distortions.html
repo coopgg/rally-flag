@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>Distortions - Rally Flag</title>
 <meta name="description" content="Live tracker for Destiny 2's hourly Distortion rotation. See what's distorted now and what's up next.">
 <meta property="og:type" content="website">
@@ -12,13 +12,18 @@
 <meta property="og:title" content="Distortions">
 <meta property="og:description" content="Live tracker for Destiny 2's hourly Distortion rotation. See what's distorted now and what's up next.">
 <meta property="og:url" content="https://rallyflag.gg/distortions.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rallyflag.gg/distortions.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Distortions">
 <meta name="twitter:description" content="Live tracker for Destiny 2's hourly Distortion rotation. See what's distorted now and what's up next.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
@@ -42,7 +47,7 @@
     100%{ transform: translateX(120%); }
   }
   .hud-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.18em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.18em;
     color:var(--accent-text); margin-bottom:14px; position:relative;
   }
   .hud-dest{
@@ -53,7 +58,7 @@
     font-family:'JetBrains Mono', monospace; font-size:15px; color:var(--text-dim);
     margin-bottom:28px; position:relative;
   }
-  .hud-countdown .clock{ color:var(--accent-bright); font-weight:700; font-size:18px; }
+  .hud-countdown .clock{ color:var(--accent-bright); font-weight:700; font-size:18px; font-variant-numeric:tabular-nums; }
   .hud-cta{
     position:relative;
     display:inline-block; text-decoration:none;
@@ -82,10 +87,10 @@
     border-top:1px solid var(--panel-border); text-align:left;
   }
   .nine-touched-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     text-transform:uppercase; color:var(--accent-text); margin-bottom:8px;
   }
-  .nine-touched-body{ font-size:13.5px; color:var(--text-dim); line-height:1.6; }
+  .nine-touched-body{ font-size:15px; max-width:62ch; color:var(--text-dim); line-height:1.6; }
   .nine-touched-body strong{ color:var(--text); }
 
   /* ---------- Up next ---------- */
@@ -105,6 +110,8 @@
 <body data-nav-group="distortions">
 
 <div id="site-nav"></div>
+
+<main id="main-content" tabindex="-1">
 
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Live Distortion Tracker</div>
@@ -134,6 +141,8 @@
   <div class="section-label">Up Next</div>
   <div class="next-grid" id="next-grid"></div>
 </section>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>

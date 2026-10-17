@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>Artifacts - Rally Flag</title>
 <meta name="description" content="Every seasonal artifact and what its mods actually do, organized by tier.">
 <meta property="og:type" content="website">
@@ -12,19 +12,24 @@
 <meta property="og:title" content="Artifacts">
 <meta property="og:description" content="Every seasonal artifact and what its mods actually do, organized by tier.">
 <meta property="og:url" content="https://rallyflag.gg/artifacts.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rallyflag.gg/artifacts.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Artifacts">
 <meta name="twitter:description" content="Every seasonal artifact and what its mods actually do, organized by tier.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
   .disclosure{
     max-width:720px; margin:32px auto 0; padding:16px 20px;
-    font-size:13px; color:var(--text-dim); line-height:1.6; text-align:center;
+    font-size:14px; color:var(--text-dim); line-height:1.6; text-align:center;
   }
   .disclosure strong{ color:var(--accent-bright); }
 
@@ -47,7 +52,7 @@
   .expand-all-btn{
     font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
-    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   }
   .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
 
@@ -57,7 +62,7 @@
   }
   .filter-row:last-child{ border-bottom:1px solid var(--panel-border); margin-bottom:24px; }
   .filter-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
   }
   .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -65,7 +70,7 @@
     font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
     color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
     padding:7px 14px; border-radius:999px; cursor:pointer;
-    transition: all 0.15s ease; user-select:none;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; user-select:none;
   }
   .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
   .chip.on{
@@ -107,12 +112,12 @@
   .artifact-caret svg{ width:11px; height:11px; }
   .artifact-card.expanded .artifact-caret{ transform:rotate(90deg); }
   .artifact-name{ font-family:'Oswald', sans-serif; font-weight:700; font-size:19px; color:var(--text); }
-  .artifact-season{ font-size:11.5px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); margin-top:2px; }
+  .artifact-season{ font-size:12px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); margin-top:2px; }
 
   .tag-row{ display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0; }
   .artifact-card.expanded .tag-row{ margin-bottom:16px; }
   .tag{
-    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:500;
+    font-size:12px; font-family:'JetBrains Mono', monospace; font-weight:500;
     padding:3px 9px; border-radius:999px; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border);
   }
@@ -139,19 +144,21 @@
   .tier-block{ margin-top:14px; padding-top:14px; border-top:1px solid var(--panel-border); }
   .tier-block:first-of-type{ margin-top:0; padding-top:0; border-top:none; }
   .tier-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.08em;
     text-transform:uppercase; color:var(--accent-text); margin-bottom:8px;
   }
-  .tier-note{ font-size:11px; color:var(--text-dimmer); font-weight:400; text-transform:none; letter-spacing:0; }
+  .tier-note{ font-size:12px; color:var(--text-dimmer); font-weight:400; text-transform:none; letter-spacing:0; }
   .mod-list{ margin:0; padding:0; list-style:none; }
   .mod-item{ margin-bottom:10px; }
-  .mod-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:12.5px; color:var(--accent-bright); text-transform:uppercase; letter-spacing:0.02em; }
-  .mod-desc{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-top:2px; }
+  .mod-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; color:var(--accent-bright); text-transform:uppercase; letter-spacing:0.02em; }
+  .mod-desc{ font-size:14.5px; color:var(--text-dim); line-height:1.5; margin-top:2px; }
 </style>
 </head>
 <body data-nav-group="artifacts">
 
 <div id="site-nav"></div>
+
+<main id="main-content" tabindex="-1">
 
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Seasonal Artifacts</div>
@@ -166,9 +173,9 @@
 <div class="controls">
   <div class="search-row">
     <div class="search-box">
-      <input type="text" id="search-input" placeholder="Search artifacts or perks…" autocomplete="off">
+      <input type="text" id="search-input" aria-label="Search artifacts or perks" placeholder="Search artifacts or perks…" autocomplete="off">
     </div>
-    <div class="artifact-count"><strong id="count-num">0</strong> artifacts</div>
+    <div class="artifact-count" aria-live="polite" aria-atomic="true"><strong id="count-num">0</strong> artifacts</div>
     <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
   </div>
 
@@ -186,6 +193,8 @@
 <section>
   <div class="artifact-grid" id="artifact-grid"></div>
 </section>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
@@ -280,12 +289,15 @@
   function buildChips(container, values, set){
     container.innerHTML = "";
     values.forEach(v => {
-      const chip = document.createElement("div");
+      const chip = document.createElement("button");
+      chip.type = "button";
       chip.className = "chip";
       chip.textContent = v;
+      chip.setAttribute("aria-pressed", "false");
       chip.addEventListener("click", () => {
         if (set.has(v)) set.delete(v); else set.add(v);
         chip.classList.toggle("on");
+        chip.setAttribute("aria-pressed", String(chip.classList.contains("on")));
         render();
       });
       container.appendChild(chip);
@@ -304,7 +316,7 @@
     state.elements.clear();
     state.weapons.clear();
     document.getElementById("search-input").value = "";
-    document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+    document.querySelectorAll(".chip.on").forEach(c => { c.classList.remove("on"); c.setAttribute("aria-pressed", "false"); });
     render();
   });
 
@@ -321,6 +333,8 @@
 
   function setCardExpanded(card, expanded){
     card.classList.toggle("expanded", expanded);
+    const head = card.querySelector(".artifact-head");
+    if (head) head.setAttribute("aria-expanded", String(expanded));
     if (expanded) expandedSlugs.add(card.dataset.slug); else expandedSlugs.delete(card.dataset.slug);
   }
 
@@ -360,7 +374,7 @@
       card.dataset.slug = artifact.slug;
 
       card.innerHTML =
-        '<div class="artifact-head">' +
+        '<div class="artifact-head" role="button" tabindex="0" aria-expanded="false">' +
           '<div class="artifact-head-left">' +
             '<span class="artifact-caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg></span>' +
             (artifact.iconUrl ? '<div class="artifact-icon"><img src="' + artifact.iconUrl + '" alt=""></div>' : '') +
@@ -375,9 +389,13 @@
         '</div>';
 
       const head = card.querySelector(".artifact-head");
-      head.addEventListener("click", () => {
+      const toggle = () => {
         setCardExpanded(card, !card.classList.contains("expanded"));
         updateExpandAllLabel();
+      };
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
       });
       if (expandedSlugs.has(artifact.slug)) setCardExpanded(card, true);
 

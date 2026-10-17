@@ -82,6 +82,9 @@
   // reproduction of their actual brand mark.
   const KOFI_ICON_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M17 9.5h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 4.5c-.6.6-.6 1.4 0 2s.6 1.4 0 2"/><path d="M12 4.5c-.6.6-.6 1.4 0 2s.6 1.4 0 2"/></svg>';
 
+  // Site-menu button. Was the ☰ text glyph, which renders as an emoji on
+  // some platforms and at a different weight per font; drawn to match the gear.
+  const MENU_ICON_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
   // Gear outline (same 16px stroke style as the Ko-fi glyph) for the
   // settings button — a second ☰ here read as a duplicate of the site
   // menu button on the left.
@@ -113,6 +116,18 @@
 
   // localStorage can throw (blocked site data, some private modes); the
   // nav must still render, just without remembering the choice.
+  // Official activity art. raids-data.js / dungeons-data.js store each
+  // activity's pgcrImage path (`art`); these turn it into a URL and into
+  // the 16:9 card thumbnail. No art (Pantheon) → the name's initials.
+  window.rallyFlagArtUrl = path => path ? "https://www.bungie.net" + path : "";
+  window.rallyFlagArtThumb = (item, eager) => {
+    const url = window.rallyFlagArtUrl(item.art);
+    const initials = item.name.replace(/^The /, "").split(/\s+/).map(w => w[0]).join("").slice(0, 2);
+    return '<div class="art-thumb">' + (url
+      ? '<img src="' + url + '" alt=""' + (eager ? '' : ' loading="lazy"') + '>'
+      : '<div class="art-fallback" aria-hidden="true">' + initials + '</div>') + '</div>';
+  };
+
   function storageGet(key){ try { return localStorage.getItem(key); } catch (e) { return null; } }
   function storageSet(key, value){ try { localStorage.setItem(key, value); } catch (e) {} }
   function storageRemove(key){ try { localStorage.removeItem(key); } catch (e) {} }
@@ -324,10 +339,16 @@
       );
     }).join("");
 
-    container.innerHTML =
+    // First thing Tab reaches: jumps past the nav to the page's <main>.
+    // Handled in script (focus + scroll) so the URL doesn't gain a
+    // #main-content hash, which some pages use for their own deep links.
+    const skipLink = document.getElementById("main-content")
+      ? '<a class="skip-link" href="#main-content">Skip to main content</a>' : '';
+
+    container.innerHTML = skipLink +
       '<nav class="site-nav">' +
         '<div class="nav-links-wrap">' +
-          '<button class="nav-links-btn" id="nav-links-btn" title="Menu" aria-label="Site menu">\u2630</button>' +
+          '<button class="nav-links-btn" id="nav-links-btn" title="Menu" aria-label="Site menu">' + MENU_ICON_SVG + '</button>' +
           // Panel sits right after its button (it's absolutely positioned,
           // so this doesn't move it) so Tab goes from the button into the links.
           '<div class="nav-links-panel" id="nav-links-panel" style="--nav-cols:' + NAV_SECTIONS.length + '">' + linksHtml + '</div>' +
@@ -349,6 +370,17 @@
     // Both dropdowns share one open/close path so aria-expanded always
     // matches what's on screen, only one is open at a time, and Escape /
     // clicking outside / tabbing out all close them the same way.
+    const skip = container.querySelector(".skip-link");
+    if (skip){
+      skip.addEventListener("click", (e) => {
+        const main = document.getElementById("main-content");
+        if (!main) return;
+        e.preventDefault();
+        main.focus({ preventScroll: true });
+        main.scrollIntoView();
+      });
+    }
+
     const menus = [
       { btn: document.getElementById("nav-links-btn"), panel: document.getElementById("nav-links-panel") },
       { btn: document.getElementById("nav-menu-btn"), panel: document.getElementById("nav-menu-panel") }

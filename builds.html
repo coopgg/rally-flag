@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);})();</script>
+<script>/* Apply the saved theme + mode before first paint; nav.js does the rest. Keep in sync with getStoredTheme/getStoredModePref/resolveMode there. */(function(){var d=document.documentElement,T=["solar","void","arc","stasis","strand","prismatic"],t=null,p=null,o=null;try{t=localStorage.getItem("rallyflag_theme");if(T.indexOf(t)<0){t=T[Math.floor(Math.random()*T.length)];localStorage.setItem("rallyflag_theme",t);}p=localStorage.getItem("rallyflag_mode_pref");o=localStorage.getItem("rallyflag_mode");}catch(e){}if(T.indexOf(t)<0)t=T[Math.floor(Math.random()*T.length)];if(p!=="light"&&p!=="dark")p=o==="light"?"light":(window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");d.setAttribute("data-theme",t);d.setAttribute("data-mode",p);d.classList.add("rf-boot");var u=function(){d.classList.remove("rf-boot")};document.addEventListener("DOMContentLoaded",function(){Promise.race([document.fonts?document.fonts.ready:0,new Promise(function(r){setTimeout(r,400)})]).then(function(){requestAnimationFrame(u)})});setTimeout(u,2500);})();</script>
 <title>Suggested Builds - Rally Flag</title>
 <meta name="description" content="Full loadouts (exotic armor, exotic weapon, armor set, and artifact) built around a single synergy, with the perks explained.">
 <meta property="og:type" content="website">
@@ -12,13 +12,19 @@
 <meta property="og:title" content="Suggested Builds">
 <meta property="og:description" content="Full loadouts (exotic armor, exotic weapon, armor set, and artifact) built around a single synergy, with the perks explained.">
 <meta property="og:url" content="https://rallyflag.gg/builds.html">
-<meta property="og:image" content="https://rallyflag.gg/assets/icon-512.png">
-<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://rallyflag.gg/builds.html">
+<meta property="og:image" content="https://rallyflag.gg/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Rally Flag: Destiny 2 raid and dungeon guides, weapon god rolls, builds and live trackers">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Suggested Builds">
 <meta name="twitter:description" content="Full loadouts (exotic armor, exotic weapon, armor set, and artifact) built around a single synergy, with the perks explained.">
-<meta name="twitter:image" content="https://rallyflag.gg/assets/icon-512.png">
+<meta name="twitter:image" content="https://rallyflag.gg/assets/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.bungie.net">
+<link rel="preconnect" href="https://www.bungie.net" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
@@ -43,7 +49,7 @@
   .expand-all-btn{
     font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border); border-radius:999px;
-    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: all 0.15s ease;
+    padding:6px 12px; cursor:pointer; white-space:nowrap; transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
   }
   .expand-all-btn:hover{ color:var(--accent-bright); border-color:var(--accent); }
 
@@ -53,7 +59,7 @@
   }
   .filter-row:last-child{ border-bottom:1px solid var(--panel-border); }
   .filter-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     color:var(--text-dimmer); text-transform:uppercase; min-width:78px;
   }
   .chip-group{ display:flex; flex-wrap:wrap; gap:8px; }
@@ -61,7 +67,7 @@
     font-family:'Inter', sans-serif; font-size:12.5px; font-weight:500;
     color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
     padding:7px 14px; border-radius:999px; cursor:pointer;
-    transition: all 0.15s ease; user-select:none;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; user-select:none;
   }
   .chip:hover{ color:var(--text); border-color:rgba(255,255,255,0.2); }
   .chip.on{
@@ -101,13 +107,13 @@
   .build-title{ font-family:'Oswald', sans-serif; font-weight:700; font-size:21px; color:var(--text); }
   .build-badges{ display:flex; gap:6px; flex-shrink:0; }
   .class-badge{
-    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:600;
+    font-size:12px; font-family:'JetBrains Mono', monospace; font-weight:600;
     color:var(--text-dim); background:var(--panel); border:1px solid var(--panel-border);
     padding:4px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:0.04em;
   }
   .subclass-badge{
     display:inline-flex; align-items:center; gap:5px;
-    font-size:11px; font-family:'JetBrains Mono', monospace; font-weight:600;
+    font-size:12px; font-family:'JetBrains Mono', monospace; font-weight:600;
     color:#0b0700; border:1px solid transparent; padding:4px 10px 4px 8px; border-radius:999px;
     text-transform:uppercase; letter-spacing:0.04em;
   }
@@ -119,13 +125,13 @@
   .subclass-strand{ background:#3ddc84; }
   .subclass-prismatic{ background:#ff6fd5; }
 
-  .build-tagline{ font-size:13.5px; color:var(--text-dim); line-height:1.5; }
+  .build-tagline{ font-size:15px; max-width:62ch; color:var(--text-dim); line-height:1.5; }
   .build-card.expanded .build-tagline{ margin-bottom:20px; }
   .build-body{ display:none; }
   .build-card.expanded .build-body{ display:block; }
 
   .loadout-label, .section-label{
-    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.1em;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.1em;
     text-transform:uppercase; color:var(--accent-text); margin-bottom:10px;
   }
   .loadout-grid{
@@ -151,28 +157,28 @@
     object-fit:contain; pointer-events:none;
   }
   .loadout-body{ min-width:0; }
-  .loadout-role{ font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.08em; }
+  .loadout-role{ font-size:12px; font-family:'JetBrains Mono', monospace; color:var(--text-dimmer); text-transform:uppercase; letter-spacing:0.02em; }
   .loadout-name{ font-family:'Oswald', sans-serif; font-weight:600; font-size:14px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .loadout-sub{ font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .loadout-sub{ font-size:12px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
-  .loop-list{ margin:0 0 20px; padding:0; list-style:none; counter-reset:loop; }
+  .loop-list{ max-width:66ch; margin:0 auto 20px; padding:0; list-style:none; counter-reset:loop; }
   .loop-item{ display:flex; gap:10px; margin-bottom:10px; counter-increment:loop; }
   .loop-item::before{
     content:counter(loop); flex-shrink:0; width:20px; height:20px; border-radius:50%;
     background:var(--accent-dim); color:var(--accent-bright); border:1px solid var(--panel-border);
     display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; margin-top:1px;
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700; margin-top:1px;
   }
-  .loop-text{ font-size:13px; color:var(--text-dim); line-height:1.55; }
+  .loop-text{ font-size:15px; color:var(--text-dim); line-height:1.55; }
 
   .why-block{
     padding-top:16px; border-top:1px solid var(--panel-border); margin-bottom:16px;
   }
-  .why-text{ font-size:13px; color:var(--text-dim); line-height:1.6; }
+  .why-text{ font-size:15px; max-width:62ch; margin:0 auto; color:var(--text-dim); line-height:1.6; }
 
   .perks-row{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
   .perk-tag{
-    font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
+    font-size:12px; font-family:'JetBrains Mono', monospace; color:var(--accent-bright);
     background:var(--accent-dim); border:1px solid var(--panel-border);
     padding:3px 9px; border-radius:999px;
   }
@@ -188,7 +194,7 @@
   }
   .mobalytics-link.pending:hover{ text-decoration:none; }
   .build-tag{
-    font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);
+    font-size:12px; font-family:'JetBrains Mono', monospace; color:var(--text-dim);
     background:var(--panel); border:1px solid var(--panel-border);
     padding:3px 9px; border-radius:999px;
   }
@@ -212,6 +218,8 @@
 
 <div id="site-nav"></div>
 
+<main id="main-content" tabindex="-1">
+
 <div class="hero">
   <div class="eyebrow">Destiny 2 · Suggested Loadouts</div>
   <h1 class="title">Suggested Builds</h1>
@@ -221,9 +229,9 @@
 <div class="controls">
   <div class="search-row">
     <div class="search-box">
-      <input type="text" id="search-input" placeholder="Search builds…" autocomplete="off">
+      <input type="text" id="search-input" aria-label="Search builds" placeholder="Search builds…" autocomplete="off">
     </div>
-    <div class="build-count"><strong id="count-num">0</strong> builds</div>
+    <div class="build-count" aria-live="polite" aria-atomic="true"><strong id="count-num">0</strong> builds</div>
     <button class="expand-all-btn" id="expand-all-btn">Expand all</button>
   </div>
 
@@ -241,6 +249,8 @@
 <div class="grid-section">
   <div class="build-grid" id="build-grid"></div>
 </div>
+
+</main>
 
 <footer>
   <div>Unofficial fan project. Not affiliated with or endorsed by Bungie.</div>
@@ -369,12 +379,15 @@
   function buildChips(container, values, set){
     container.innerHTML = "";
     values.forEach(v => {
-      const chip = document.createElement("div");
+      const chip = document.createElement("button");
+      chip.type = "button";
       chip.className = "chip";
       chip.textContent = v;
+      chip.setAttribute("aria-pressed", "false");
       chip.addEventListener("click", () => {
         if (set.has(v)) set.delete(v); else set.add(v);
         chip.classList.toggle("on");
+        chip.setAttribute("aria-pressed", String(chip.classList.contains("on")));
         render();
       });
       container.appendChild(chip);
@@ -393,7 +406,7 @@
     state.classes.clear();
     state.subclasses.clear();
     document.getElementById("search-input").value = "";
-    document.querySelectorAll(".chip.on").forEach(c => c.classList.remove("on"));
+    document.querySelectorAll(".chip.on").forEach(c => { c.classList.remove("on"); c.setAttribute("aria-pressed", "false"); });
     render();
   });
 
