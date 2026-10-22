@@ -2,7 +2,10 @@
    Shared top nav + persistent theme/mode picker.
    Every page includes this file and a `<div id="site-nav"></div>`
    right after the opening <body> tag. Set `<body data-nav-group="...">`
-   to control which top-level nav link is marked active:
+   to control which top-level nav link is marked active. A page shared on
+   its own (the Locker preview) sets `<body data-nav="standalone">`: the bar
+   keeps the brand (not a link) and the settings menu (theme, mode, sign-in)
+   but drops the site menu and the Discord / Ko-fi buttons. Groups:
      "distortions" | "setbonuses" | "guides" | "godrolls" | "artifacts" | "builds" | "puzzlehelper" | "codes" | "tracker" | "vendors" | "publicevents" | "debug"
 
    Theme (element) and mode (auto/light/dark) are stored in localStorage
@@ -36,6 +39,7 @@
       label: "Live",
       items: [
         { label: "This Week", href: "this-week.html", group: "thisweek" },
+        { label: "Your Week", href: "your-week.html", group: "yourweek" },
         { label: "Tracker", href: "tracker.html", group: "tracker" },
         { label: "Vendors", href: "vendors.html", group: "vendors" },
         { label: "Distortions", href: "distortions.html", group: "distortions" }
@@ -65,6 +69,9 @@
   // than deleted so this exact file can ship to prod unmodified — no
   // manual "strip the Debug section" step at promotion time.
   if (window.location.hostname !== "rallyflag.gg"){
+    // The Locker stays on dev until the owner promotes it (its files are
+    // excluded from promotion); first in Loadouts, as it will be on prod.
+    NAV_SECTIONS.find(s => s.label === "Loadouts").items.unshift({ label: "Locker", href: "locker.html", group: "locker" });
     NAV_SECTIONS.push({
       label: "Debug",
       items: [
@@ -339,6 +346,7 @@
 
   function buildNav(){
     const activeGroup = document.body.getAttribute("data-nav-group") || "";
+    const standalone = document.body.getAttribute("data-nav") === "standalone";
     const container = document.getElementById("site-nav");
     if (!container) return;
 
@@ -365,15 +373,17 @@
     container.innerHTML = skipLink +
       '<nav class="site-nav">' +
         '<div class="nav-links-wrap">' +
-          '<button class="nav-links-btn" id="nav-links-btn" title="Menu" aria-label="Site menu">' + MENU_ICON_SVG + '</button>' +
-          // Panel sits right after its button (it's absolutely positioned,
-          // so this doesn't move it) so Tab goes from the button into the links.
-          '<div class="nav-links-panel" id="nav-links-panel" style="--nav-cols:' + NAV_SECTIONS.length + '">' + linksHtml + '</div>' +
-          '<a href="index.html" class="brand"><span class="brand-mark"></span><span class="brand-name">RALLY FLAG</span></a>' +
+          (standalone ? "" :
+            '<button class="nav-links-btn" id="nav-links-btn" title="Menu" aria-label="Site menu">' + MENU_ICON_SVG + '</button>' +
+            // Panel sits right after its button (it's absolutely positioned,
+            // so this doesn't move it) so Tab goes from the button into the links.
+            '<div class="nav-links-panel" id="nav-links-panel" style="--nav-cols:' + NAV_SECTIONS.length + '">' + linksHtml + '</div>') +
+          (standalone ? '<span class="brand">' : '<a href="index.html" class="brand">') + '<span class="brand-mark"></span><span class="brand-name">RALLY FLAG</span>' + (standalone ? "</span>" : "</a>") +
         '</div>' +
         '<div class="nav-right-wrap">' +
-          '<a class="nav-icon-btn" href="' + DISCORD_INVITE_URL + '" target="_blank" rel="noopener" title="Join the Discord">' + DISCORD_ICON_SVG + '</a>' +
-          '<a class="nav-icon-btn" href="' + KOFI_URL + '" target="_blank" rel="noopener" title="Support us on Ko-fi">' + KOFI_ICON_SVG + '</a>' +
+          (standalone ? "" :
+            '<a class="nav-icon-btn" href="' + DISCORD_INVITE_URL + '" target="_blank" rel="noopener" title="Join the Discord">' + DISCORD_ICON_SVG + '</a>' +
+            '<a class="nav-icon-btn" href="' + KOFI_URL + '" target="_blank" rel="noopener" title="Support us on Ko-fi">' + KOFI_ICON_SVG + '</a>') +
           '<div class="nav-menu-wrap">' +
             '<button class="nav-menu-btn" id="nav-menu-btn" title="Settings" aria-label="Settings">' +
               '<span class="nav-menu-gear">' + SETTINGS_ICON_SVG + '</span>' +
@@ -401,7 +411,7 @@
     const menus = [
       { btn: document.getElementById("nav-links-btn"), panel: document.getElementById("nav-links-panel") },
       { btn: document.getElementById("nav-menu-btn"), panel: document.getElementById("nav-menu-panel") }
-    ];
+    ].filter(menu => menu.btn); // standalone pages have no site menu
     function setMenuOpen(menu, open){
       menu.panel.classList.toggle("open", open);
       menu.btn.setAttribute("aria-expanded", String(open));
