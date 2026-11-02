@@ -40,6 +40,7 @@
       items: [
         { label: "This Week", href: "this-week.html", group: "thisweek" },
         { label: "Your Week", href: "your-week.html", group: "yourweek" },
+        { label: "Seals & Triumphs", href: "seals.html", group: "seals" },
         { label: "Tracker", href: "tracker.html", group: "tracker" },
         { label: "Vendors", href: "vendors.html", group: "vendors" },
         { label: "Distortions", href: "distortions.html", group: "distortions" }
@@ -50,6 +51,7 @@
       items: [
         { label: "Builds", href: "builds.html", group: "builds" },
         { label: "God Rolls", href: "god-rolls.html", group: "godrolls" },
+        { label: "Weapon Lookup", href: "weapons.html", group: "weapons" },
         { label: "Armor Sets", href: "armor-set-bonuses.html", group: "setbonuses" },
         { label: "Artifacts", href: "artifacts.html", group: "artifacts" }
       ]
@@ -58,9 +60,11 @@
       label: "Reference",
       items: [
         { label: "Guides", href: "guides.html", group: "guides" },
+        { label: "Raid & Dungeon Report", href: "report.html", group: "report" },
         { label: "Public Events", href: "public-events.html", group: "publicevents" },
         { label: "Puzzle Helper", href: "puzzle-helper.html", group: "puzzlehelper" },
-        { label: "Codes", href: "codes.html", group: "codes" }
+        { label: "Codes", href: "codes.html", group: "codes" },
+        { label: "Tools", href: "tools.html", group: "tools" }
       ]
     }
   ];
