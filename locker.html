@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.bungie.net https://images.steamusercontent.com https://raw.githubusercontent.com; connect-src 'self' https://www.bungie.net https://stats.bungie.net https://raw.githubusercontent.com https://rallyflag-sync.rallyflag.workers.dev https://rallyflag-dim.rallyflag.workers.dev https://cloudflareinsights.com; frame-src 'self' https://player.twitch.tv; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <script>/* Boot script: theme, light/dark mode, load guard. Generated from tools/boot-script.js; edit there and run node tools/sync-boot-script.js. */
 (function(){
   var d = document.documentElement;
@@ -483,10 +484,16 @@
     position:fixed; left:50%; bottom:20px; z-index:1000; max-width:min(520px, calc(100vw - 32px)); transform:translate(-50%, 20px);
     padding:10px 16px 10px 32px; border-radius:10px; border:1px solid var(--edge); background:var(--bg); color:var(--text);
     font-size:14px; box-shadow:0 14px 40px -12px rgba(0,0,0,0.6), 0 0 22px -10px var(--glow); opacity:0; pointer-events:none;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.16s ease-in, transform 0.16s ease-in; /* leaving: a touch shorter than arriving */
   }
   .locker-toast::before{ content:""; position:absolute; left:12px; top:50%; width:9px; height:9px; margin-top:-4.5px; background:var(--accent); clip-path:polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
-  .locker-toast.show{ opacity:1; transform:translate(-50%, 0); }
+  .locker-toast.show{ opacity:1; transform:translate(-50%, 0); transition-duration:0.2s; transition-timing-function:cubic-bezier(0.16, 1, 0.3, 1); }
+  @media (prefers-reduced-motion:no-preference){
+    .locker-toast.show.ok::before{ animation:rf-dot 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes rf-dot{ 40%{ scale:1.7; } }
+    dialog.item-dialog[open]:modal{ animation:rf-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    dialog.item-dialog.drawer[open]{ animation:rf-rise 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  }
   .locker-toast.has-action{ pointer-events:auto; }
   .toast-code{ display:block; margin-top:4px; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--text-dim); }
   .toast-action{ display:block; margin-top:8px; padding:6px 14px; border-radius:999px; border:1px solid var(--accent-fill); background:var(--accent-fill); color:var(--on-accent); font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
